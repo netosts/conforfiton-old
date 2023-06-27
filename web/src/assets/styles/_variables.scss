@@ -1,0 +1,26 @@
+// Breakpoints
+$breakpoints: (
+  xs: 375px,
+  xs-s: 460px,
+  s: 576px,
+  s-m: 630px,
+  m: 768px,
+  l: 900px,
+  xl: 1200px,
+  xxl: 1500px,
+);
+
+// Colors
+$background: #f3f3f9;
+$sidebar: #010e38;
+$buttons: #364574;
+$txt-sidebar: #abb9e8;
+$txt-title: #495057;
+$txt-subtitle: #878a99;
+$txt-aside: #212529;
+$validation: #099885;
+$logo-color: #e50c68;
+
+// Fonts
+//$conforfit: ;
+$main-font: "Poppins", sans-serif;
