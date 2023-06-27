@@ -1,20 +1,29 @@
 <script setup>
-
+import { RouterLink } from 'vue-router';
 </script>
 
 <template>
   <aside>
     <div class="logo">
-      <div class="logo__image"><img src="../assets/images/temp-logo.png" alt="logo temporaria"></div>
-      <div class="logo__title">
-        <h1>Confor<span>Fit</span></h1>
-      </div>
-      <div class="logo__subtitle">
-        Soluções Esportivas
-      </div>
+      <RouterLink to="/">
+        <div class="logo__image">
+          <img src="../assets/images/temp-logo.png" alt="logo temporaria">
+        </div>
+        <div class="logo__title">
+          <h1>Confor<span>Fit</span></h1>
+        </div>
+        <div class="logo__subtitle">
+          Soluções Esportivas
+        </div>
+      </RouterLink>
+
     </div>
     <div class="menu">
       <h2>Menu</h2>
+      <p>Calendar</p>
+      <p>Chat</p>
+      <p>Email</p>
+      <p>Ecommerce</p>
     </div>
   </aside>
 </template>
@@ -34,8 +43,12 @@ aside {
   .logo {
     display: flex;
     flex-direction: column;
-    text-align: center;
     margin: 20px;
+    text-align: center;
+
+    a {
+      text-decoration: none;
+    }
 
     &__image {
       margin-bottom: 5px;
@@ -60,6 +73,22 @@ aside {
       color: $txt-subtitle;
       margin-top: -8px;
       text-transform: uppercase;
+    }
+  }
+
+  .menu {
+    padding: 20px;
+    color: $txt-sidebar;
+
+    h2 {
+      font-size: .7rem;
+      color: $menu-color;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: .9rem;
+      padding: 5px 10px;
     }
   }
 }
