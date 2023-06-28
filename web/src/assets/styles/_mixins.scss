@@ -1,0 +1,25 @@
+@import "variables";
+
+@mixin mq($value) {
+  $size: map-get($breakpoints, $value);
+  @media (max-width: $size) {
+    @content;
+  }
+}
+
+// TopBar.vue
+@mixin tool() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: $background;
+    color: rgb(33, 64, 186);
+  }
+}

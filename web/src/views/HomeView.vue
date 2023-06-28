@@ -18,11 +18,11 @@ onMounted(getMessage);
 </script>
 
 <template>
-  <div>
+  <main>
     <h1>HOME</h1>
     <RouterLink to="/about">About</RouterLink>
     <p>{{ msg.name }}</p>
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped></style>

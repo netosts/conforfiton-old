@@ -1,30 +1,77 @@
 <script setup>
 import { RouterLink } from 'vue-router';
+import { ref, onMounted, onUnmounted } from 'vue';
+
+// Get the DOM elements
+const sidebar = ref('navbar-active');
+const sidebarIsActive = ref(null);
+// define the emit
+const emit = defineEmits(['sidebar']);
+
+// Functions
+function toggleSidebar() {
+  if (sidebar.value.classList.contains('navbar-active')) {
+    sidebar.value.classList.remove('navbar-active');
+    sidebarIsActive.value = false;
+  } else {
+    sidebar.value.classList.add('navbar-active');
+    sidebarIsActive.value = true;
+  }
+};
+
+// toggle sidebar when window resize
+function windowResizeSidebar() {
+  if (window.innerWidth >= 1050) {
+    sidebar.value.classList.add('navbar-active');
+    sidebarIsActive.value = true;
+  } else {
+    sidebar.value.classList.remove('navbar-active');
+    sidebarIsActive.value = false;
+  }
+};
+
+// DOM Mount Functions
+onMounted(() => {
+  window.addEventListener('resize', windowResizeSidebar);
+  windowResizeSidebar();
+  // Send emit
+  emit('sidebar', sidebar.value);
+});
+onUnmounted(() => {
+  window.removeEventListener('resize', windowResizeSidebar);
+});
 </script>
 
 <template>
-  <aside>
-    <div class="logo">
-      <RouterLink to="/">
-        <div class="logo__image">
-          <img src="../assets/images/temp-logo.png" alt="logo temporaria">
-        </div>
-        <div class="logo__title">
-          <h1>Confor<span>Fit</span></h1>
-        </div>
-        <div class="logo__subtitle">
-          Soluções Esportivas
-        </div>
-      </RouterLink>
-
+  <aside class="sidebar" ref="sidebar">
+    <div class="menu-button" @click="toggleSidebar">
+      <div class="line__1"></div>
+      <div class="line__2"></div>
+      <div class="line__3"></div>
     </div>
-    <div class="menu">
-      <h2>Menu</h2>
-      <p>Calendar</p>
-      <p>Chat</p>
-      <p>Email</p>
-      <p>Ecommerce</p>
+    <div class="sidebar__1">
+      <div class="logo" v-show="sidebarIsActive">
+        <RouterLink to="/">
+          <div class="logo__image">
+            <img src="../assets/images/temp-logo.png" alt="logo temporaria">
+          </div>
+          <div class="logo__title">
+            <h1>Confor<span>Fit</span></h1>
+          </div>
+          <div class="logo__subtitle">
+            Soluções Esportivas
+          </div>
+        </RouterLink>
+      </div>
+      <div class="menu" v-show="sidebarIsActive">
+        <h2>Menu</h2>
+        <p>Calendar</p>
+        <p>Chat</p>
+        <p>Email</p>
+        <p>Ecommerce</p>
+      </div>
     </div>
+    <div class="sidebar__2" @click="toggleSidebar"></div>
   </aside>
 </template>
 
@@ -32,13 +79,69 @@ import { RouterLink } from 'vue-router';
 @import '../assets/styles/variables';
 @import '../assets/styles/mixins';
 
-aside {
+.sidebar {
+  display: grid;
+  grid-template-columns: 250px 1fr;
   position: absolute;
   top: 0;
   left: 0;
-  background-color: $sidebar;
-  width: 227px;
+  z-index: 2;
+  width: 250px;
   height: 100%;
+  transition: .2s;
+  transform: translateX(-70%);
+
+  @include mq(s) {
+    transition: none;
+  }
+
+  &__1 {
+    background-color: $sidebar;
+  }
+
+  &__2 {
+    background-color: rgba(0, 0, 0, 0.208);
+  }
+
+  .menu-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    position: absolute;
+    top: 10px;
+    right: -65px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: .3s;
+
+    &:hover {
+      gap: 4px;
+    }
+
+    div {
+      height: 2px;
+      border-radius: 20px;
+      background-color: $txt-subtitle;
+    }
+
+    .line__1 {
+      margin-left: -5px;
+      width: 22px;
+    }
+
+    .line__2 {
+      width: 26px;
+    }
+
+    .line__3 {
+      margin-left: -12px;
+      width: 15px;
+    }
+  }
 
   .logo {
     display: flex;
@@ -90,6 +193,14 @@ aside {
       font-size: .9rem;
       padding: 5px 10px;
     }
+  }
+}
+
+.navbar-active {
+  transform: translateX(0);
+
+  @include mq(s) {
+    width: 100%;
   }
 }
 </style>
