@@ -80,7 +80,7 @@ watch(sidebarIsActive, (newValue) => {
 .sidebar {
   display: grid;
   grid-template-columns: 250px 1fr;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 2;
@@ -107,7 +107,7 @@ watch(sidebarIsActive, (newValue) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     position: absolute;
     top: 10px;
     right: -65px;
@@ -118,17 +118,17 @@ watch(sidebarIsActive, (newValue) => {
     transition: .3s;
 
     &:hover {
-      gap: 4px;
+      gap: 5px;
     }
 
     div {
       height: 2px;
-      border-radius: 20px;
+      border-radius: 10px;
       background-color: $txt-subtitle;
     }
 
     .line__1 {
-      margin-left: -5px;
+      margin-left: -4px;
       width: 22px;
     }
 
@@ -137,7 +137,7 @@ watch(sidebarIsActive, (newValue) => {
     }
 
     .line__3 {
-      margin-left: -12px;
+      margin-left: -11px;
       width: 15px;
     }
   }

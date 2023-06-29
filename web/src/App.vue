@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router';
 import { ref } from 'vue';
 
 
-// get sidebar element with emit
+// get emit
 const sidebarIsActive = ref(null);
 const handleSidebarIsActive = (emittedValue) => {
   return sidebarIsActive.value = emittedValue;
@@ -21,6 +21,7 @@ const handleSidebarIsActive = (emittedValue) => {
 <style lang="scss" scoped>
 @import './assets/styles/variables';
 @import './assets/styles/mixins';
+
 
 header {
   position: fixed;
@@ -48,19 +49,31 @@ main {
   position: relative;
   top: 69px;
   left: 75px;
+
+  margin: {
+    top: 25px;
+    right: calc(25px + 75px);
+    bottom: calc(25px + 69px);
+    left: 25px;
+  }
+
+  ;
   transition: .2s;
 
   @include mq(s) {
     left: 0;
+    margin-right: 25px;
     transition: none;
   }
 }
 
 .main__sidebar-active {
   left: 250px;
+  margin-right: calc(25px + 250px);
 
   @include mq(s) {
     left: 0;
+    margin-right: 25px;
   }
 }
 </style>

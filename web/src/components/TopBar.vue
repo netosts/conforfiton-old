@@ -4,12 +4,14 @@
 
 <template>
   <header>
-    <div class="tools">
-      <div class="full-screen">
-        <font-awesome-icon icon="fa-solid fa-expand" size="xl" />
-      </div>
-      <div class="dark-mode">
-        <font-awesome-icon icon="fa-regular fa-moon" size="xl" />
+    <div class="topbar">
+      <div class="tools">
+        <div class="full-screen">
+          <font-awesome-icon icon="fa-solid fa-expand" size="xl" />
+        </div>
+        <div class="dark-mode">
+          <font-awesome-icon icon="fa-regular fa-moon" size="xl" />
+        </div>
       </div>
       <div class="user">
         <div class="user__image">
@@ -32,18 +34,29 @@ header {
   justify-content: flex-end;
   padding: 0 20px;
   background-color: white;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
 
-  .tools {
+  .topbar {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 
-    .full-screen {
-      @include tool();
-    }
+    .tools {
+      display: flex;
+      gap: 5px;
 
-    .dark-mode {
-      @include tool();
+      .full-screen {
+        @include tool();
+      }
+
+      .dark-mode {
+        @include tool();
+      }
+
+      .fa-expand,
+      .fa-moon {
+        width: 18px
+      }
     }
 
     .user {
