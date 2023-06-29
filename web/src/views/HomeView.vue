@@ -37,13 +37,13 @@ onMounted(getMessage);
       </div>
     </div>
 
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
-    <div class="box"></div>
+    <div class="box" v-motion-slide-right></div>
+    <div class="box" v-motion-slide-right></div>
+    <div class="box" v-motion-slide-right></div>
+    <div class="box" v-motion-slide-visible-once-right></div>
+    <div class="box" v-motion-slide-visible-once-right></div>
+    <div class="box" v-motion-slide-visible-once-right></div>
+    <div class="box" v-motion-slide-visible-once-right></div>
   </main>
 </template>
 
@@ -101,6 +101,11 @@ main {
       display: flex;
       gap: 25px;
 
+      @include mq(m) {
+        flex-direction: column;
+        gap: 15px;
+      }
+
       &__db {
         position: relative;
         width: 100%;
@@ -125,7 +130,7 @@ main {
       }
 
       select {
-        padding-left: 10px;
+        padding: 8px 15px 8px 10px;
         width: 100%;
         @include inputBar();
         cursor: pointer;
