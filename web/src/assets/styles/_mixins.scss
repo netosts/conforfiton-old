@@ -12,14 +12,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   cursor: pointer;
   transition: 0.2s;
 
   &:hover {
-    background-color: $background;
-    color: rgb(33, 64, 186);
+    background-color: #eaf1fe;
+    color: #6477f1;
   }
+}
+
+// HomeView.vue
+@mixin inputBar() {
+  outline: none;
+  border: none;
+  border-radius: $border-radius;
+  background-color: $background;
 }
