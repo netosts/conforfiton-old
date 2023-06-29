@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, onMounted, onUnmounted, watchEffect } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 
 // Get the refs
 const sidebar = ref('');
@@ -16,7 +16,6 @@ function toggleSidebar() {
     sidebarIsActive.value = true;
   }
 };
-
 // toggle sidebar when window resize
 function windowResizeSidebar() {
   if (window.innerWidth >= 1050) {
@@ -30,15 +29,14 @@ function windowResizeSidebar() {
 onMounted(() => {
   window.addEventListener('resize', windowResizeSidebar);
   windowResizeSidebar();
-  // send emit
-  emit('sidebarIsActive', sidebarIsActive.value);
 });
 onUnmounted(() => {
   window.removeEventListener('resize', windowResizeSidebar);
 });
 
-watchEffect(() => {
-  console.log(sidebarIsActive.value);
+// Watch for changes and then send emit
+watch(sidebarIsActive, (newValue) => {
+  emit('sidebarIsActive', newValue);
 })
 </script>
 
@@ -92,6 +90,7 @@ watchEffect(() => {
   transform: translateX(-70%);
 
   @include mq(s) {
+    transform: translateX(-100%);
     transition: none;
   }
 
@@ -100,7 +99,7 @@ watchEffect(() => {
   }
 
   &__2 {
-    background-color: rgba(0, 0, 0, 0.208);
+    background-color: rgba(0, 0, 0, 0.205);
   }
 
   .menu-button {
