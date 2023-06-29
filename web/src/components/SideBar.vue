@@ -1,20 +1,18 @@
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watchEffect } from 'vue';
 
-// Get the DOM elements
-const sidebar = ref('navbar-active');
+// Get the refs
+const sidebar = ref('');
 const sidebarIsActive = ref(null);
 // define the emit
-const emit = defineEmits(['sidebar']);
+const emit = defineEmits(['sidebarIsActive']);
 
 // Functions
 function toggleSidebar() {
-  if (sidebar.value.classList.contains('navbar-active')) {
-    sidebar.value.classList.remove('navbar-active');
+  if (sidebar.value.classList.contains('sidebar-active')) {
     sidebarIsActive.value = false;
   } else {
-    sidebar.value.classList.add('navbar-active');
     sidebarIsActive.value = true;
   }
 };
@@ -22,10 +20,8 @@ function toggleSidebar() {
 // toggle sidebar when window resize
 function windowResizeSidebar() {
   if (window.innerWidth >= 1050) {
-    sidebar.value.classList.add('navbar-active');
     sidebarIsActive.value = true;
   } else {
-    sidebar.value.classList.remove('navbar-active');
     sidebarIsActive.value = false;
   }
 };
@@ -34,16 +30,20 @@ function windowResizeSidebar() {
 onMounted(() => {
   window.addEventListener('resize', windowResizeSidebar);
   windowResizeSidebar();
-  // Send emit
-  emit('sidebar', sidebar.value);
+  // send emit
+  emit('sidebarIsActive', sidebarIsActive.value);
 });
 onUnmounted(() => {
   window.removeEventListener('resize', windowResizeSidebar);
 });
+
+watchEffect(() => {
+  console.log(sidebarIsActive.value);
+})
 </script>
 
 <template>
-  <aside class="sidebar" ref="sidebar">
+  <aside class="sidebar" :class="sidebarIsActive ? 'sidebar-active' : null" ref="sidebar">
     <div class="menu-button" @click="toggleSidebar">
       <div class="line__1"></div>
       <div class="line__2"></div>
@@ -196,7 +196,7 @@ onUnmounted(() => {
   }
 }
 
-.navbar-active {
+.sidebar-active {
   transform: translateX(0);
 
   @include mq(s) {

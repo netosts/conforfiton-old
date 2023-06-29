@@ -5,27 +5,25 @@ import { RouterView } from 'vue-router';
 import { ref, watch } from 'vue';
 
 
-// get refs
-const sidebarIsActive = ref(null);
 // get sidebar element with emit
-const sidebar = ref(null);
-const handleSidebar = (emittedValue) => {
-  return sidebar.value = emittedValue;
+const sidebarIsActive = ref(null);
+const handleSidebarIsActive = (emittedValue) => {
+  return sidebarIsActive.value = emittedValue.classList;
 };
 
 // Functions
 // is side bar active?
-watch(() => sidebar.value, (newValue) => {
-  if (newValue.classList.contains('sidebar-active')) {
-    sidebarIsActive.value = true;
+watch(sidebarIsActive, (newValue) => {
+  if (newValue === true) {
+    console.log("sidebar is active");
   } else {
-    sidebarIsActive.value = false;
+    console.log("sidebar is not active");
   }
-});
+})
 </script>
 
 <template>
-  <SideBar @sidebar="handleSidebar" />
+  <SideBar @sidebarIsActive="handleSidebarIsActive" />
   <TopBar :class="sidebarIsActive ? 'header__sidebar-active' : null" />
   <RouterView :class="sidebarIsActive ? 'main__sidebar-active' : null" />
   <h1 v-show="sidebarIsActive">TESTEEEEEEEEEEEEEEEEEEEEEE</h1>
