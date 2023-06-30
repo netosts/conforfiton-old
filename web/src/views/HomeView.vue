@@ -131,10 +131,14 @@ main {
 
       select {
         padding: 8px 15px 8px 10px;
-        width: 100%;
+        width: 250px;
         @include inputBar();
         cursor: pointer;
         color: $txt-title;
+
+        @include mq(m) {
+          width: 100%;
+        }
       }
     }
   }

@@ -37,7 +37,7 @@ onUnmounted(() => {
 // Watch for changes and then send emit
 watch(sidebarIsActive, (newValue) => {
   emit('sidebarIsActive', newValue);
-})
+});
 </script>
 
 <template>
