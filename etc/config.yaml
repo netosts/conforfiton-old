@@ -1,0 +1,8 @@
+databases:
+  postgres:
+    driver: postgres
+    host: 127.0.0.1
+    database: conforfit_db
+    user: conforfit
+    password: wG2LZ1DA9S#6[sx
+    prefix: ""

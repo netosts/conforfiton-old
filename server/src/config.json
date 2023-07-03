@@ -1,7 +1,0 @@
-{
-    "host":"localhost",
-    "port":5432,
-    "user":"postgres",
-    "password":"sql4078",
-    "database":"conforfit_db"
-}
