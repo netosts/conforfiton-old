@@ -5,8 +5,9 @@ import axios from 'axios';
 const msg = ref('');
 const userId = ref(1);
 
+
 function getMessage() {
-  axios.get(`/user/${userId.value}`).then((res) => {
+  axios.get(`/users`).then((res) => {
     msg.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -37,13 +38,16 @@ onMounted(getMessage);
       </div>
     </div>
 
+    <section v-for="(student) in msg" :key="container" class="box" v-motion-slide-right>
+      <h1>{{ student.name }}</h1>
+      <h2>{{ student.email }}</h2>
+    </section>
+    <!-- <div class="box" v-motion-slide-right></div>
     <div class="box" v-motion-slide-right></div>
-    <div class="box" v-motion-slide-right></div>
-    <div class="box" v-motion-slide-right></div>
     <div class="box" v-motion-slide-visible-once-right></div>
     <div class="box" v-motion-slide-visible-once-right></div>
     <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
+    <div class="box" v-motion-slide-visible-once-right></div> -->
   </main>
 </template>
 
