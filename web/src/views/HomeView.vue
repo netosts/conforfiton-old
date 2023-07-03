@@ -2,19 +2,19 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-const msg = ref('');
+const students = ref([]);
 const userId = ref(1);
 
 
-function getMessage() {
-  axios.get(`/users`).then((res) => {
-    msg.value = res.data;
+function getStudents() {
+  axios.get(`/persons`).then((res) => {
+    students.value = res.data;
   }).catch((err) => {
     console.error(err);
   })
 };
 
-onMounted(getMessage);
+onMounted(getStudents);
 </script>
 
 <template>
@@ -38,16 +38,13 @@ onMounted(getMessage);
       </div>
     </div>
 
-    <section v-for="(student) in msg" :key="container" class="box" v-motion-slide-right>
-      <h1>{{ student.name }}</h1>
-      <h2>{{ student.email }}</h2>
+    <section v-for="student in students" :key="student.id" class="student" v-motion-slide-visible-once-right>
+      <h4 class="student__name">{{ student.nmPessoa }}</h4>
+      <p class="student__cpf">{{ student.cpfCnpj }}</p>
+      <!-- <p class="student__age"></p>
+      <p class="student__weight"></p>
+      <p class="student__score"></p> -->
     </section>
-    <!-- <div class="box" v-motion-slide-right></div>
-    <div class="box" v-motion-slide-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div> -->
   </main>
 </template>
 
@@ -147,7 +144,7 @@ main {
     }
   }
 
-  .box {
+  .student {
     width: 100%;
     height: 200px;
     border-radius: $border-radius;
