@@ -20,7 +20,7 @@ class CreateTblPessoa(Migration):
             table.string('dsInscricaoEstadual', 30).nullable()
             table.string('dsInscricaoMunicipal', 30).nullable()
             table.boolean('isentoIE').nullable()
-            table.date('dtNascimento')
+            table.date('dtNascimento').nullable()
             table.text('dsObs').nullable()
             table.string('dsEmail', 80).nullable()
             table.string('telefone', 11).nullable()

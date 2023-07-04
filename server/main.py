@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 bootstrap()
 from models.person import Person
+from models.student import Student
 
 app = FastAPI()
 
@@ -37,7 +38,7 @@ class NewPerson(BaseModel):
     dsInscricaoEstadual: str = None
     dsInscricaoMunicipal: str = None
     isentoIE: bool = None
-    dtNascimento: date
+    dtNascimento: date = None
     dsObs: str = None
     dsEmail: str = None
     telefone: str = None
@@ -47,6 +48,11 @@ class NewPerson(BaseModel):
         if v == "string" or v == "":
             return None
         return v
+    
+class NewStudent(BaseModel):
+    altura: int
+    sexo: str
+    fotoAluno: dict = None
 
 
 @app.get('/')
@@ -88,6 +94,17 @@ async def new_person(data: NewPerson):
     person.save()
 
     return "OK! Pessoa criada na tabela 'tbl_Pessoa'..."
+
+
+@app.post('/student')
+async def new_student(data: NewStudent):
+    student = Student()
+    student.altura = data.altura
+    student.sexo = data.sexo
+    student.fotoAluno = data.fotoAluno
+    student.save()
+
+    return "OK! Aluno criado na tabela 'tbl_Aluno'..."
 
 
 @app.put('/person/{person_id}')

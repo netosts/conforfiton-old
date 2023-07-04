@@ -1,21 +1,33 @@
 <script setup>
+import CreateStudent from '../components/CreateStudent.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
+
+// Variables
+const bodyElement = ref(null);
 const students = ref([]);
 const studentsCpfCnpj = [];
-const userId = ref(1);
+const isCreateStudentActive = ref(false);
 
+// handle emits
+const handleCreate = (emittedValue) => {
+  return isCreateStudentActive.value = emittedValue;
+}
 
+// Functions
+// toggle the create student form
+function toggleCreate() {
+  isCreateStudentActive.value = !isCreateStudentActive.value;
+  bodyElement.value.style.overflow = isCreateStudentActive.value ? 'hidden' : 'auto';
+}
+
+// axios functions
 function getStudents() {
   axios.get(`/persons`).then((res) => {
     students.value = res.data;
     for (let i = 0; i < students.value.length; i++) {
       studentsCpfCnpj.push(students.value[i].cpfCnpj);
-    }
-    console.log(studentsCpfCnpj);
-    if (studentsCpfCnpj.includes('1234567')) {
-      console.log('esse cpf já está em uso');
     }
   }).catch((err) => {
     console.error(err);
@@ -23,14 +35,14 @@ function getStudents() {
 };
 
 function createPerson() {
-  if (!studentsCpfCnpj.includes('128179181')) {
+  if (!studentsCpfCnpj.includes('1281739181')) {
     console.log('CRIANDO PESSOA...');
     axios.post('/person', {
-      "nmPessoa": "None man",
-      "ativo": false,
+      "nmPessoa": "None man 2",
+      "ativo": "",
       "ser": "f",
       "tipoPessoa": "f",
-      "cpfCnpj": "128179181",
+      "cpfCnpj": "1281739181",
       "rg": "",
       "ufRG": "SE",
       "dsRazaoSocial": "",
@@ -42,6 +54,7 @@ function createPerson() {
       "dsEmail": "",
       "telefone": ""
     }).then((res) => {
+      alert(res.data);
       console.log('...PESSOA CRIADA COM SUCESSO!')
     }).catch((err) => {
       console.error(err);
@@ -51,17 +64,21 @@ function createPerson() {
   }
 };
 
+// DOM Mounted
 onMounted(() => {
   getStudents();
+  bodyElement.value = document.body;
 });
 </script>
 
 <template>
   <main>
+    <CreateStudent @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
+
     <div class="searchbox">
       <div class="searchbox__title">
         <h3>Procurar Alunos</h3>
-        <button class="create-button" @click="createPerson">+ Cadastrar Aluno</button>
+        <button class="create-button" @click="toggleCreate">+ Cadastrar Aluno</button>
       </div>
 
       <div class="searchbox__input">
