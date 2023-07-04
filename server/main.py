@@ -44,7 +44,9 @@ class NewPerson(BaseModel):
 
     @validator("*", pre=True, always=True)
     def check_none(cls, v):
-        return v if v != "string" else None
+        if v == "string" or v == "":
+            return None
+        return v
 
 
 @app.get('/')
@@ -84,6 +86,7 @@ async def new_person(data: NewPerson):
     person.dsEmail = data.dsEmail
     person.telefone = data.telefone
     person.save()
+
     return "OK! Pessoa criada na tabela 'tbl_Pessoa'..."
 
 

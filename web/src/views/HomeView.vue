@@ -3,18 +3,57 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const students = ref([]);
+const studentsCpfCnpj = [];
 const userId = ref(1);
 
 
 function getStudents() {
   axios.get(`/persons`).then((res) => {
     students.value = res.data;
+    for (let i = 0; i < students.value.length; i++) {
+      studentsCpfCnpj.push(students.value[i].cpfCnpj);
+    }
+    console.log(studentsCpfCnpj);
+    if (studentsCpfCnpj.includes('1234567')) {
+      console.log('esse cpf já está em uso');
+    }
   }).catch((err) => {
     console.error(err);
   })
 };
 
-onMounted(getStudents);
+function createPerson() {
+  if (!studentsCpfCnpj.includes('128179181')) {
+    console.log('CRIANDO PESSOA...');
+    axios.post('/person', {
+      "nmPessoa": "None man",
+      "ativo": false,
+      "ser": "f",
+      "tipoPessoa": "f",
+      "cpfCnpj": "128179181",
+      "rg": "",
+      "ufRG": "SE",
+      "dsRazaoSocial": "",
+      "dsInscricaoEstadual": "",
+      "dsInscricaoMunicipal": "",
+      "isentoIE": "",
+      "dtNascimento": "2023-07-04",
+      "dsObs": "",
+      "dsEmail": "",
+      "telefone": ""
+    }).then((res) => {
+      console.log('...PESSOA CRIADA COM SUCESSO!')
+    }).catch((err) => {
+      console.error(err);
+    });
+  } else {
+    console.error('ERRO: Esse CPF já está em uso.');
+  }
+};
+
+onMounted(() => {
+  getStudents();
+});
 </script>
 
 <template>
@@ -22,7 +61,7 @@ onMounted(getStudents);
     <div class="searchbox">
       <div class="searchbox__title">
         <h3>Procurar Alunos</h3>
-        <button class="create-button">+ Criar Cadastro</button>
+        <button class="create-button" @click="createPerson">+ Cadastrar Aluno</button>
       </div>
 
       <div class="searchbox__input">
@@ -32,6 +71,7 @@ onMounted(getStudents);
         </div>
         <select>
           <option value="#" selected>Novos</option>
+          <option value="#">Antigos</option>
           <option value="#">Nome</option>
           <option value="#">CPF</option>
         </select>
