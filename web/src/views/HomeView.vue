@@ -34,36 +34,6 @@ function getStudents() {
   })
 };
 
-function createPerson() {
-  if (!studentsCpfCnpj.includes('1281739181')) {
-    console.log('CRIANDO PESSOA...');
-    axios.post('/person', {
-      "nmPessoa": "None man 2",
-      "ativo": "",
-      "ser": "f",
-      "tipoPessoa": "f",
-      "cpfCnpj": "1281739181",
-      "rg": "",
-      "ufRG": "SE",
-      "dsRazaoSocial": "",
-      "dsInscricaoEstadual": "",
-      "dsInscricaoMunicipal": "",
-      "isentoIE": "",
-      "dtNascimento": "2023-07-04",
-      "dsObs": "",
-      "dsEmail": "",
-      "telefone": ""
-    }).then((res) => {
-      alert(res.data);
-      console.log('...PESSOA CRIADA COM SUCESSO!')
-    }).catch((err) => {
-      console.error(err);
-    });
-  } else {
-    console.error('ERRO: Esse CPF já está em uso.');
-  }
-};
-
 // DOM Mounted
 onMounted(() => {
   getStudents();
@@ -102,6 +72,17 @@ onMounted(() => {
       <p class="student__weight"></p>
       <p class="student__score"></p> -->
     </section>
+
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
   </main>
 </template>
 
