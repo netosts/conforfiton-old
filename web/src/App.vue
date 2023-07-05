@@ -7,13 +7,14 @@ import { ref } from 'vue';
 
 // get emit
 const sidebarIsActive = ref(null);
-const handleSidebarIsActive = (emittedValue) => {
+// handle emits
+const handleSidebar = (emittedValue) => {
   return sidebarIsActive.value = emittedValue;
 };
 </script>
 
 <template>
-  <SideBar @sidebarIsActive="handleSidebarIsActive" />
+  <SideBar @sidebarIsActive="handleSidebar" />
   <TopBar :class="sidebarIsActive ? 'header__sidebar-active' : null" />
   <RouterView :class="sidebarIsActive ? 'main__sidebar-active' : null" />
 </template>

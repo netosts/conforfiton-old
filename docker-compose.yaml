@@ -1,0 +1,25 @@
+version: "3.2"
+services:
+  db:
+    container_name: conforfit_db
+    image: postgres
+    restart: always
+    hostname: postgres
+    volumes:
+      - ./ivar/data/:/var/lib/postgresql/data
+    enviroment:
+      POSTGRES_DB: conforfit_db
+      POSTGRES_USER: conforfit
+      POSTGRES_PASSWORD: wG2LZ1DA9S#6[sx
+    command: ["-c", "shared_buffers=256MB", "-c", "max_connections=2000"]
+    ports:
+      - "5432:5432"
+    networks:
+      - db-network
+      - auth-network
+
+networks:
+  auth-network:
+    driver: bridge
+  db-network:
+    driver: bridge

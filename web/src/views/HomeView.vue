@@ -1,28 +1,54 @@
 <script setup>
+import CreateStudent from '../components/CreateStudent.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-const msg = ref('');
-const userId = ref(1);
 
+// Variables
+const bodyElement = ref(null);
+const students = ref([]);
+const studentsCpfCnpj = [];
+const isCreateStudentActive = ref(false);
 
-function getMessage() {
-  axios.get(`/users`).then((res) => {
-    msg.value = res.data;
+// handle emits
+const handleCreate = (emittedValue) => {
+  return isCreateStudentActive.value = emittedValue;
+}
+
+// Functions
+// toggle the create student form
+function toggleCreate() {
+  isCreateStudentActive.value = !isCreateStudentActive.value;
+  bodyElement.value.style.overflow = isCreateStudentActive.value ? 'hidden' : 'auto';
+}
+
+// axios functions
+function getStudents() {
+  axios.get(`/persons`).then((res) => {
+    students.value = res.data;
+    for (let i = 0; i < students.value.length; i++) {
+      studentsCpfCnpj.push(students.value[i].cpfCnpj);
+    }
   }).catch((err) => {
     console.error(err);
   })
 };
 
-onMounted(getMessage);
+// DOM Mounted
+onMounted(() => {
+  getStudents();
+  bodyElement.value = document.body;
+});
 </script>
 
 <template>
   <main>
+    <CreateStudent @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
+
     <div class="searchbox">
       <div class="searchbox__title">
         <h3>Procurar Alunos</h3>
-        <button class="create-button">+ Criar Cadastro</button>
+        <button class="create-button" @click="toggleCreate">+ Cadastrar Aluno</button>
       </div>
 
       <div class="searchbox__input">
@@ -32,22 +58,31 @@ onMounted(getMessage);
         </div>
         <select>
           <option value="#" selected>Novos</option>
+          <option value="#">Antigos</option>
           <option value="#">Nome</option>
           <option value="#">CPF</option>
         </select>
       </div>
     </div>
 
-    <section v-for="(student) in msg" :key="container" class="box" v-motion-slide-right>
-      <h1>{{ student.name }}</h1>
-      <h2>{{ student.email }}</h2>
+    <section v-for="student in students" :key="student.id" class="student" v-motion-slide-visible-once-right>
+      <h4 class="student__name">{{ student.nmPessoa }}</h4>
+      <p class="student__cpf">{{ student.cpfCnpj }}</p>
+      <!-- <p class="student__age"></p>
+      <p class="student__weight"></p>
+      <p class="student__score"></p> -->
     </section>
-    <!-- <div class="box" v-motion-slide-right></div>
-    <div class="box" v-motion-slide-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div>
-    <div class="box" v-motion-slide-visible-once-right></div> -->
+
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
+    <div class="student"></div>
   </main>
 </template>
 
@@ -147,7 +182,7 @@ main {
     }
   }
 
-  .box {
+  .student {
     width: 100%;
     height: 200px;
     border-radius: $border-radius;
