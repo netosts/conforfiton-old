@@ -1,55 +1,185 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 
 
 // Variables
 const bodyElement = ref(null);
+// form variables
+const nmPessoa = ref(null);
+const cpfCnpj = ref(null);
+const rg = ref(null);
+const ufRG = ref(null);
+const dtNascimento = ref(null);
+const dsObs = ref(null);
+const dsEmail = ref(null);
+const telefone = ref(null);
+const altura = ref(null);
+const sexo = ref(null);
+const peso = ref(null);
 // emits
-const emit = defineEmits(['isCreateStudentActive'])
+const emit = defineEmits(['isCreateStudentActive']);
+// props
+const props = defineProps({
+  cpfCnpjList: Array
+  // rg
+  // ufRG
+  // tratar erro de duplicada no rg e uf
+})
+
+// Watches
+
+// capitalize first letter of each word in the name
+// watch(nmPessoa, (newValue) => {
+//   const cleannedValue = newValue.replace(/\b\w/g, (match) => match.toUpperCase());
+//   nmPessoa.value = cleannedValue;
+// })
+
+watch(cpfCnpj, (newValue) => {
+  const cleanedValue = newValue.replace(/[^0-9]/g, '');
+  const restrictedValue = cleanedValue.substring(0, 11);
+  cpfCnpj.value = restrictedValue;
+});
+
+watch(rg, (newValue) => {
+  const cleanedValue = newValue.replace(/[^0-9]/g, '');
+  const restrictedValue = cleanedValue.substring(0, 20);
+  rg.value = restrictedValue;
+});
+
+watch(ufRG, (newValue) => {
+  const cleanedValue = newValue.replace(/[^A-Za-z]/g, ''); // only allow letters (uppercase and lowercase)
+  const restrictedValue = cleanedValue.substring(0, 2).toUpperCase(); // restrict to the first two characters and convert to uppercase
+  ufRG.value = restrictedValue;
+});
+
+watch(telefone, (newValue) => {
+  const cleannedValue = newValue.replace(/\D/g, '');
+  const formattedValue = formatTelefone(cleannedValue);
+  telefone.value = formattedValue;
+});
+
+watch(altura, (newValue) => {
+  const cleannedValue = newValue.replace(/[^0-9]/g, '');
+  const restrictedValue = cleannedValue.substring(0, 3);
+  const formattedValue = formatAltura(restrictedValue);
+  altura.value = formattedValue;
+});
+
+watch(peso, (newValue) => { // transform peso in 0-3 int numbers and 0-2 decimals
+  const cleanedValue = newValue.replace(/[^0-9.]/g, '');
+  const parts = cleanedValue.split('.');
+
+  parts[0] = parts[0].substring(0, 3);
+
+  if (parts.length > 1) {
+    parts[1] = parts[1].substring(0, 2);
+    peso.value = `${parts.join('.')}kg`; // add kg at the end when it has decimals
+  } else {
+    peso.value = parts.join('.');
+  }
+});
+
+// !NO KG AT THE END!
+// watch(peso, (newValue) => {
+//   const cleanedValue = newValue.replace(/[^0-9.]/g, '');
+//   const parts = cleanedValue.split('.');
+
+//   parts[0] = parts[0].substring(0, 3);
+
+//   if (parts.length > 1) {
+//     parts[1] = parts[1].substring(0, 2);
+//   }
+
+//   const restrictedValue = parts.join('.');
+//   peso.value = restrictedValue;
+// });
 
 // Functions
 // close the create tab
 function closeCreate() {
   emit('isCreateStudentActive', false);
   bodyElement.value.style.overflow = 'auto';
-}
+};
 
 // create a new student
-// function createStudent() {
-//   if (!studentsCpfCnpj.includes('1281739181')) {
-//     console.log('CRIANDO ALUNO...');
-//     axios.post('/student', {
-//       "nmPessoa": "None man 2",
-//       "ativo": "",
-//       "ser": "f",
-//       "tipoPessoa": "f",
-//       "cpfCnpj": "1281739181",
-//       "rg": "",
-//       "ufRG": "SE",
-//       "dsRazaoSocial": "",
-//       "dsInscricaoEstadual": "",
-//       "dsInscricaoMunicipal": "",
-//       "isentoIE": "",
-//       "dtNascimento": "2023-07-04",
-//       "dsObs": "",
-//       "dsEmail": "",
-//       "telefone": ""
-//     }).then((res) => {
-//       alert(res.data);
-//       console.log('...PESSOA CRIADA COM SUCESSO!')
-//     }).catch((err) => {
-//       console.error(err);
-//     });
-//   } else {
-//     console.error('ERRO: Esse CPF já está em uso.');
-//   }
-// };
+function createStudent() {
+  // transform the values that can break the db
+  let telefoneTransformed = null;
+  let alturaTransformed = null;
+  let pesoTransformed = null;
+  if (telefone.value !== null) {
+    const cleannedTelefone = telefone.value.replace(/\D/g, '');
+    telefoneTransformed = cleannedTelefone;
+  }
+  if (altura.value !== null) {
+    const cleannedAltura = altura.value.replace(/\D/g, '');
+    const alturaInteger = parseInt(cleannedAltura, 10);
+    alturaTransformed = alturaInteger;
+  }
+  if (peso.value !== null) {
+    const cleannedPeso = peso.value.replace(/[^\d.]/g, '');
+    const pesoFloat = parseFloat(cleannedPeso);
+    pesoTransformed = pesoFloat;
+  }
+
+  // get the current date and time
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString();
+
+  // axios post the form
+  console.log('CRIANDO ALUNO...');
+  if (!props.cpfCnpjList.includes(cpfCnpj.value)) { // check for cpf duplicates
+    axios.post('/student', {
+      "nmPessoa": nmPessoa.value,
+      "ativo": true, // default: true
+      "ser": "AL", // default: Aluno (AL)
+      "tipoPessoa": "F", // default: Pessoa Física (F)
+      "cpfCnpj": cpfCnpj.value,
+      "rg": rg.value,
+      "ufRG": ufRG.value,
+      "dtNascimento": dtNascimento.value,
+      "dsObs": dsObs.value,
+      "dsEmail": dsEmail.value,
+      "telefone": telefoneTransformed,
+      "altura": alturaTransformed,
+      "sexo": sexo.value,
+      "fotoAluno": null,
+      "peso": pesoTransformed,
+      "dtData": formattedDate // current date and time
+    }).then((res) => {
+      alert(res.data);
+      console.log('ALUNO CRIADO COM SUCESSO..');
+    }).catch((err) => {
+      console.error(err);
+    });
+  } else {
+    console.error('ERRO: ESTE CPF JÁ EXISTE NO BANCO DE DADOS!');
+  }
+};
+
+// function to format the telefone number
+function formatTelefone(value) {
+  const match = value.match(/^(\d{2})(\d{5})(\d{4})$/);
+  if (match) {
+    return `(${match[1]})${match[2]}-${match[3]}`;
+  }
+  return value;
+};
+
+// function to format the altura value
+function formatAltura(value) {
+  const match = value.match(/^(\d{3})$/)
+  if (match) {
+    return `${match[0]}cm`;
+  }
+  return value;
+}
 
 // DOM Mount
 onMounted(() => {
   bodyElement.value = document.body;
-})
+});
 </script>
 
 <template>
@@ -63,61 +193,69 @@ onMounted(() => {
 
       <div class="create__form__fotoAluno">
         <img src="#" alt="#">
-        <p>Foto do aluno</p>
+        <p>Adicionar Foto</p>
       </div>
 
+      <!-- Início do cadastro -->
       <div class="create__form__nmPessoa">
         <label for="nmPessoa">Nome completo</label>
-        <input type="text" id="nmPessoa" name="nmPessoa" maxlength="10" placeholder="Digite o nome do aluno" required>
+        <input v-model="nmPessoa" type="text" id="nmPessoa" maxlength="60" placeholder="Digite o nome do aluno" required>
       </div>
-
-      <!-- <div class="create__form__ser">
-        <label for="aluno">Aluno</label>
-        <input type="radio" id="aluno" name="ser" value="A" required checked>
-
-        <label for="funcionario">Funcionário</label>
-        <input type="radio" id="funcionario" name="ser" value="F" required>
-
-        <label for="fornecedor">Fornecedor</label>
-        <input type="radio" id="fornecedor" name="ser" value="FO" required>
-      </div> -->
-
-      <!-- <div class="create__form__tipoPessoa">
-        <label for="pf">Pessoa física</label>
-        <input type="radio" id="pf" name="tipoPessoa" value="F" required checked>
-
-        <label for="pj">Pessoa Jurídica</label>
-        <input type="radio" id="pj" name="tipoPessoa" value="J" required>
-      </div> -->
 
       <div class="create__form__cpfCnpj">
         <label for="cpfCnpj">CPF</label>
-        <input type="text" id="cpfCnpj" name="cpfCnpj" minlength="11" maxlength="11" placeholder="Digite o CPF do aluno">
+        <input v-model="cpfCnpj" type="text" id="cpfCnpj" placeholder="Digite o CPF do aluno" required>
+      </div>
+
+      <div class="create__form__rg">
+        <label for="rg">RG</label>
+        <input v-model="rg" type="text" id="rg" placeholder="Digite o RG do aluno">
+      </div>
+
+      <div class="create__form__ufRG">
+        <label for="ufRG">UF</label>
+        <input v-model="ufRG" type="text" id="ufRG" placeholder="SE">
+      </div>
+
+      <div class="create__form__dtNascimento">
+        <label for="dtNascimento">Data Nascimento</label>
+        <input v-model="dtNascimento" type="date" id="dtNascimento">
+      </div>
+
+      <div class="create__form__dsObs">
+        <label for="dsObs">Observação</label>
+        <textarea v-model="dsObs" id="dsObs" cols="30" rows="10"></textarea>
       </div>
 
       <div class="create__form__dsEmail">
         <label for="dsEmail">E-mail</label>
-        <input type="text" id="dsEmail" name="dsEmail" maxlength="80" placeholder="Digite o Email do aluno">
+        <input v-model="dsEmail" type="email" id="dsEmail" maxlength="80" placeholder="Digite o Email do aluno">
       </div>
 
       <div class="create__form__telefone">
         <label for="telefone">Telefone</label>
-        <input type="tel" id="telefone" name="telefone" minlength="11" maxlength="11" placeholder="(79)99999-9999">
+        <input v-model="telefone" type="tel" id="telefone" minlength="11" maxlength="11" placeholder="(79)99999-9999">
       </div>
 
       <div class="create__form__altura">
         <label for="altura">Altura (cm)</label>
-        <input type="number" id="altura" name="altura" minlength="3" placeholder="180cm">
+        <input v-model="altura" type="text" id="altura" minlength="3" placeholder="180cm" required>
       </div>
 
       <div class="create__form__sexo">
         <label for="masculino">Masculino</label>
-        <input type="radio" id="masculino" name="sexo" value="Masculino" required checked>
+        <input v-model="sexo" type="radio" id="masculino" name="sexo" value="Masculino" required>
 
         <label for="feminino">Feminino</label>
-        <input type="radio" id="feminino" name="sexo" value="Feminino" required>
+        <input v-model="sexo" type="radio" id="feminino" name="sexo" value="Feminino" required>
       </div>
 
+      <div class="create__form__peso">
+        <label for="peso">Peso (kg)</label>
+        <input v-model="peso" type="text" id="peso" placeholder="90.30kg">
+      </div>
+
+      <!-- SUBMIT -->
       <div class="create__form__submit">
         <input type="submit" value="Cadastrar Aluno">
       </div>

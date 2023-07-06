@@ -5,6 +5,7 @@ from typing import Union
 import json
 from kink import di
 
+# bootstrap the config and db inside di[]
 from bootstrap import bootstrap
 bootstrap()
 
@@ -17,6 +18,8 @@ from models.peso import Peso
 
 app = FastAPI()
 
+# CORS Middleware validation
+# who has access to the backend ↓
 origins = [
     "http://localhost:5173"
 ]
@@ -80,18 +83,31 @@ async def home():
 @app.get('/students')  # list all students
 async def list_students():
     query = di["db"].table('tbl_Pessoa') \
+                    .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
+                    .order_by('tbl_Pessoa.updated_at', 'desc')
+    students = query.get()
+    return students.serialize()
+
+
+@app.get('/students/peso')  # list all students with peso
+async def list_students_and_peso():
+    newest_peso = di["db"].table('tbl_peso').max('dtData')
+    query = di["db"].table('tbl_Pessoa') \
                    .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
                    .join('tbl_peso', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
-                   .order_by('tbl_Pessoa.ID_Pessoa')
+                   .order_by('tbl_Pessoa.updated_at', 'desc')
     students = query.get()
     return students.serialize()
 
 
 @app.get('/student/{ID_Pessoa}')  # find student by id
 async def find_student(ID_Pessoa):
+    newest_peso = di["db"].table('tbl_peso').max('dtData')
     student = di["db"].table('tbl_Pessoa') \
                     .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
                     .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
+                    .join('tbl_peso', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
+                    .where('tbl_peso.dtData', '=', newest_peso) \
                     .first()
     return student.serialize()
 
@@ -127,6 +143,39 @@ async def new_student(data: NewStudent):
                 peso.save()
 
     return f"{person.nmPessoa} foi cadastrado(a) com sucesso!"
+
+
+@app.put('/student/{ID_Pessoa}')  # update student
+async def update_student(ID_Pessoa, data: NewStudent):
+    person = Person.find(ID_Pessoa)
+    person.nmPessoa = data.nmPessoa
+    person.ativo = data.ativo
+    person.ser = data.ser
+    person.tipoPessoa = data.tipoPessoa
+    person.cpfCnpj = data.cpfCnpj
+    person.rg = data.rg
+    person.ufRG = data.ufRG
+    person.dtNascimento = data.dtNascimento
+    person.dsObs = data.dsObs
+    person.dsEmail = data.dsEmail
+    person.telefone = data.telefone
+    person.save()
+    if person.save():
+        student = Student()
+        student.ID_Pessoa = person.ID_Pessoa
+        student.altura = data.altura
+        student.sexo = data.sexo
+        student.fotoAluno = data.fotoAluno
+        student.save()
+        if student.save():
+            peso = Peso()
+            peso.ID_Pessoa = person.ID_Pessoa
+            peso.peso = data.peso
+            peso.dtData = data.dtData
+            if peso.peso != None:
+                peso.save()
+
+    return f"{person.nmPessoa} foi atualizado(a) com sucesso!"
 
 
 # ------------------------------------------------------------------------------

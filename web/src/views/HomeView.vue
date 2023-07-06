@@ -7,31 +7,33 @@ import axios from 'axios';
 // Variables
 const bodyElement = ref(null);
 const students = ref([]);
-const studentsCpfCnpj = [];
+const studentsCpfCnpj = ref([]);
 const isCreateStudentActive = ref(false);
 
-// handle emits
+// Handle emits
 const handleCreate = (emittedValue) => {
   return isCreateStudentActive.value = emittedValue;
-}
+};
 
 // Functions
 // toggle the create student form
 function toggleCreate() {
   isCreateStudentActive.value = !isCreateStudentActive.value;
   bodyElement.value.style.overflow = isCreateStudentActive.value ? 'hidden' : 'auto';
-}
+};
 
 // axios functions
+// get students from the API
 function getStudents() {
-  axios.get(`/persons`).then((res) => {
+  axios.get(`/students`).then((res) => {
     students.value = res.data;
+    // send all the cpfs to a ref list
     for (let i = 0; i < students.value.length; i++) {
-      studentsCpfCnpj.push(students.value[i].cpfCnpj);
-    }
+      studentsCpfCnpj.value.push(students.value[i].cpfCnpj);
+    };
   }).catch((err) => {
     console.error(err);
-  })
+  });
 };
 
 // DOM Mounted
@@ -43,7 +45,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <CreateStudent @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
+    <CreateStudent :cpfCnpjList="studentsCpfCnpj" @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
 
     <div class="searchbox">
       <div class="searchbox__title">
@@ -72,17 +74,6 @@ onMounted(() => {
       <p class="student__weight"></p>
       <p class="student__score"></p> -->
     </section>
-
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
-    <div class="student"></div>
   </main>
 </template>
 
