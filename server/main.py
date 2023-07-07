@@ -82,11 +82,53 @@ async def home():
 # Students
 @app.get('/students')  # list all students
 async def list_students():
-    query = di["db"].table('tbl_Pessoa') \
-                    .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
-                    .order_by('tbl_Pessoa.updated_at', 'desc')
+    query = di["db"].table('tbl_Pessoa as tp') \
+                    .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
+                    .left_join('tbl_peso as tp2', 'tp2.ID_Pessoa', '=', 'ta.ID_Pessoa') \
+                    .order_by('tp.updated_at', 'desc') \
+                    .order_by('tp2.dtData', 'desc')
     students = query.get()
-    return students.serialize()
+
+    # # Create a set to store unique students
+    unique_students = list()
+
+    # # Filter out duplicates
+    filtered_students = []
+    for student in students:
+        if student[0] not in unique_students:
+            unique_students.append(student[0])
+            student_dict = {  # manually serialize [serialize() is bugged]
+                "ID_Pessoa": student[0],
+                "nmPessoa": student[1],
+                "ativo": student[2],
+                "ser": student[3],
+                "tipoPessoa": student[4],
+                "cpfCnpj": student[5],
+                "rg": student[6],
+                "ufRG": student[7],
+                "dsRazaoSocial": student[8],
+                "dsInscricaoEstadual": student[9],
+                "dsInscricaoMunicipal": student[10],
+                "isentoIE": student[11],
+                "dtNascimento": student[12],
+                "dsObs": student[13],
+                "dsEmail": student[14],
+                "telefone": student[15],
+                "created_at": student[16],
+                "updated_at": student[17],
+                "deleted_at": student[18],
+                # student[19] is ID_Pessoa
+                "altura": student[20],
+                "sexo": student[21],
+                "fotoAluno": student[22],
+                "ID_peso": student[23],
+                # student[24] is ID_Pessoa
+                "peso": student[25],
+                "dtData": student[26],
+            }
+            filtered_students.append(student_dict)
+
+    return filtered_students
 
 
 @app.get('/students/peso')  # list all students with peso
@@ -102,14 +144,24 @@ async def list_students_and_peso():
 
 @app.get('/student/{ID_Pessoa}')  # find student by id
 async def find_student(ID_Pessoa):
-    newest_peso = di["db"].table('tbl_peso').max('dtData')
-    student = di["db"].table('tbl_Pessoa') \
-                    .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
-                    .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
-                    .join('tbl_peso', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
-                    .where('tbl_peso.dtData', '=', newest_peso) \
-                    .first()
-    return student.serialize()
+    newest_peso = Peso.where('ID_Pessoa', ID_Pessoa).max('dtData')
+    if newest_peso:
+        student = di["db"].table('tbl_Pessoa') \
+                        .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
+                        .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
+                        .join('tbl_peso', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
+                        .where('tbl_peso.dtData', newest_peso) \
+                        .first()
+    else:
+        student = di["db"].table('tbl_Pessoa') \
+                        .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
+                        .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
+                        .first()
+    
+    if student:
+        return student.serialize()
+    else:
+        return "Aluno não encontrado."
 
 
 @app.post('/student')  # create a new student
@@ -161,8 +213,7 @@ async def update_student(ID_Pessoa, data: NewStudent):
     person.telefone = data.telefone
     person.save()
     if person.save():
-        student = Student()
-        student.ID_Pessoa = person.ID_Pessoa
+        student = Student.find(ID_Pessoa)
         student.altura = data.altura
         student.sexo = data.sexo
         student.fotoAluno = data.fotoAluno
@@ -172,10 +223,19 @@ async def update_student(ID_Pessoa, data: NewStudent):
             peso.ID_Pessoa = person.ID_Pessoa
             peso.peso = data.peso
             peso.dtData = data.dtData
-            if peso.peso != None:
+            if peso.peso != None or peso.peso > 0:
                 peso.save()
 
     return f"{person.nmPessoa} foi atualizado(a) com sucesso!"
+
+
+@app.delete('/student/{ID_Pessoa}')
+async def delete_student(ID_Pessoa):
+    person = Person.find(ID_Pessoa)
+    personName = person.nmPessoa
+    person.delete()
+
+    return f"{personName} foi deletado(a) com sucesso!"
 
 
 # ------------------------------------------------------------------------------
@@ -196,6 +256,14 @@ async def new_peso(data: NewPeso):
     peso.save()
 
     return f"Peso cadastrado com sucesso!"
+
+
+# ------------------------------------------------------------------------------
+# cpfCnpj
+@app.get('/cpfCnpj')
+async def list_cpfCnpj():  # list all cpf and cnpj in database
+    cpfCnpj = di["db"].table('tbl_Pessoa').lists('cpfCnpj')
+    return cpfCnpj.serialize()
 
 
 # @app.put('/person/{person_id}')

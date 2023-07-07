@@ -23,14 +23,19 @@ function toggleCreate() {
 };
 
 // axios functions
-// get students from the API
+// get students from database
 function getStudents() {
   axios.get(`/students`).then((res) => {
     students.value = res.data;
-    // send all the cpfs to a ref list
-    for (let i = 0; i < students.value.length; i++) {
-      studentsCpfCnpj.value.push(students.value[i].cpfCnpj);
-    };
+  }).catch((err) => {
+    console.error(err);
+  });
+};
+
+// get all cpf/cnpj in database
+function getCpfCnpj() {
+  axios.get(`/cpfCnpj`).then((res) => {
+    studentsCpfCnpj.value = res.data;
   }).catch((err) => {
     console.error(err);
   });
@@ -39,6 +44,7 @@ function getStudents() {
 // DOM Mounted
 onMounted(() => {
   getStudents();
+  getCpfCnpj();
   bodyElement.value = document.body;
 });
 </script>
@@ -67,7 +73,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <section v-for="student in students" :key="student.id" class="student" v-motion-slide-visible-once-right>
+    <section v-for="student in students" :key="student" class="student">
       <h4 class="student__name">{{ student.nmPessoa }}</h4>
       <p class="student__cpf">{{ student.cpfCnpj }}</p>
       <!-- <p class="student__age"></p>

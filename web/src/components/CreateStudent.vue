@@ -27,6 +27,13 @@ const props = defineProps({
   // tratar erro de duplicada no rg e uf
 })
 
+// uf list
+const ufList = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
+  'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
+  'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];
+
 // Watches
 
 // capitalize first letter of each word in the name
@@ -98,8 +105,9 @@ watch(peso, (newValue) => { // transform peso in 0-3 int numbers and 0-2 decimal
 // Functions
 // close the create tab
 function closeCreate() {
-  emit('isCreateStudentActive', false);
-  bodyElement.value.style.overflow = 'auto';
+  // emit('isCreateStudentActive', false);
+  // bodyElement.value.style.overflow = 'auto';
+  location.reload();
 };
 
 // create a new student
@@ -150,6 +158,7 @@ function createStudent() {
     }).then((res) => {
       alert(res.data);
       console.log('ALUNO CRIADO COM SUCESSO..');
+      location.reload();
     }).catch((err) => {
       console.error(err);
     });
@@ -184,80 +193,102 @@ onMounted(() => {
 
 <template>
   <aside id="createScroll" class="create">
-    <form @submit.prevent="createStudent" class="create__form">
-      <button type="button" @click="closeCreate">CLOSE</button>
+    <form @submit.prevent="createStudent" class="create__form" v-motion-slide-visible-top>
+      <div class="create__form__bg"></div>
 
-      <div class="create__form__title">
-        <h1>Cadastrar Novo Aluno</h1>
-      </div>
+      <div class="form__container">
 
-      <div class="create__form__fotoAluno">
-        <img src="#" alt="#">
-        <p>Adicionar Foto</p>
-      </div>
+        <div class="form__container__title">
+          <h1 class="form__container__title__text">Cadastrar Novo Aluno</h1>
+          <button type="button" @click="closeCreate" class="form__container__title__button">
+            <font-awesome-icon icon="fa-solid fa-xmark" size="2xl" />
+          </button>
+        </div>
 
-      <!-- Início do cadastro -->
-      <div class="create__form__nmPessoa">
-        <label for="nmPessoa">Nome completo</label>
-        <input v-model="nmPessoa" type="text" id="nmPessoa" maxlength="60" placeholder="Digite o nome do aluno" required>
-      </div>
+        <div class="form__container__fotoAluno">
+          <img src="../assets/images/default-profile-picture2.jpg" alt="#" class="form__container__fotoAluno__image">
+          <p class="form__container__fotoAluno__text">Foto do Aluno</p>
+        </div>
 
-      <div class="create__form__cpfCnpj">
-        <label for="cpfCnpj">CPF</label>
-        <input v-model="cpfCnpj" type="text" id="cpfCnpj" placeholder="Digite o CPF do aluno" required>
-      </div>
+        <!-- Início do cadastro -->
+        <div class="form__container__nmPessoa">
+          <label for="nmPessoa">Nome completo <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
+          <input v-model="nmPessoa" type="text" id="nmPessoa" maxlength="60" placeholder="Digite o nome do aluno"
+            required>
+        </div>
 
-      <div class="create__form__rg">
-        <label for="rg">RG</label>
-        <input v-model="rg" type="text" id="rg" placeholder="Digite o RG do aluno">
-      </div>
 
-      <div class="create__form__ufRG">
-        <label for="ufRG">UF</label>
-        <input v-model="ufRG" type="text" id="ufRG" placeholder="SE">
-      </div>
+        <div class="form__container__cpf-rg">
+          <div class="form__container__cpf-rg__cpfCnpj">
+            <label for="cpfCnpj">CPF <abbr title="VALOR NECESSÁRIO | Apenas números" class="required">*</abbr> </label>
+            <input v-model="cpfCnpj" type="text" id="cpfCnpj" minlength="11" placeholder="Digite o CPF do aluno" required>
+          </div>
+          <div class="form__container__cpf-rg__rg">
+            <label for="rg">RG</label>
+            <input v-model="rg" type="text" id="rg" placeholder="Digite o RG do aluno">
+          </div>
+        </div>
 
-      <div class="create__form__dtNascimento">
-        <label for="dtNascimento">Data Nascimento</label>
-        <input v-model="dtNascimento" type="date" id="dtNascimento">
-      </div>
+        <div class="form__container__tel-email">
+          <div class="form__container__tel-email__telefone">
+            <label for="telefone">Telefone</label>
+            <input v-model="telefone" type="tel" id="telefone" minlength="11" maxlength="11" placeholder="(79)99999-9999">
+          </div>
 
-      <div class="create__form__dsObs">
-        <label for="dsObs">Observação</label>
-        <textarea v-model="dsObs" id="dsObs" cols="30" rows="10"></textarea>
-      </div>
+          <div class="form__container__tel-email__dsEmail">
+            <label for="dsEmail">E-mail</label>
+            <input v-model="dsEmail" type="email" id="dsEmail" maxlength="80" placeholder="Digite o Email do aluno">
+          </div>
+        </div>
 
-      <div class="create__form__dsEmail">
-        <label for="dsEmail">E-mail</label>
-        <input v-model="dsEmail" type="email" id="dsEmail" maxlength="80" placeholder="Digite o Email do aluno">
-      </div>
+        <div class="form__container__uf-data-sexo">
+          <div class="form__container__uf-data-sexo__ufRG">
+            <label for="ufRG">UF</label>
+            <!-- <input v-model="ufRG" type="text" id="ufRG" minlength="2" placeholder="SE"> -->
+            <select v-model="ufRG" id="ufRG">
+              <option v-for="uf in ufList" :value="uf">{{ uf }}</option>
+            </select>
+          </div>
 
-      <div class="create__form__telefone">
-        <label for="telefone">Telefone</label>
-        <input v-model="telefone" type="tel" id="telefone" minlength="11" maxlength="11" placeholder="(79)99999-9999">
-      </div>
+          <div class="form__container__uf-data-sexo__dtNascimento">
+            <label for="dtNascimento">Data Nascimento</label>
+            <input v-model="dtNascimento" type="date" id="dtNascimento">
+          </div>
 
-      <div class="create__form__altura">
-        <label for="altura">Altura (cm)</label>
-        <input v-model="altura" type="text" id="altura" minlength="3" placeholder="180cm" required>
-      </div>
+          <div class="form__container__uf-data-sexo__sexo">
+            <label for="sexo">Sexo Biológico <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
+            <select v-model="sexo" id="sexo" required>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="create__form__sexo">
-        <label for="masculino">Masculino</label>
-        <input v-model="sexo" type="radio" id="masculino" name="sexo" value="Masculino" required>
+        <div class="form__container__altura-peso">
+          <div class="form__container__altura-peso__altura">
+            <label for="altura">Altura(cm) <abbr
+                title="VALOR NECESSÁRIO | Digite pelo menos 3 números. A altura será representada em centímetros"
+                class="required">*</abbr> </label>
+            <input v-model="altura" type="text" id="altura" minlength="3" placeholder="180cm" required>
+          </div>
 
-        <label for="feminino">Feminino</label>
-        <input v-model="sexo" type="radio" id="feminino" name="sexo" value="Feminino" required>
-      </div>
+          <div class="form__container__altura-peso__peso">
+            <label for="peso">Peso(kg)</label>
+            <input v-model="peso" type="text" id="peso" placeholder="90.30kg">
+          </div>
+        </div>
 
-      <div class="create__form__peso">
-        <label for="peso">Peso (kg)</label>
-        <input v-model="peso" type="text" id="peso" placeholder="90.30kg">
-      </div>
+        <div class="form__container__dsObs">
+          <label for="dsObs">Observação</label>
+          <textarea v-model="dsObs" id="dsObs" placeholder="Digite aqui se tiver alguma observação"></textarea>
+        </div>
 
-      <!-- SUBMIT -->
-      <div class="create__form__submit">
-        <input type="submit" value="Cadastrar Aluno">
+        <!-- SUBMIT -->
+        <div class="form__container__submit">
+          <input type="submit" value="Cadastrar Aluno">
+
+          <button type="button" @click="closeCreate" class="form__container__submit__button">Cancelar</button>
+        </div>
       </div>
     </form>
   </aside>
@@ -278,8 +309,12 @@ onMounted(() => {
   height: 100%;
   z-index: 888;
   overflow: auto;
-  padding: 50px;
+  padding: 30px;
   background-color: rgba(79, 79, 79, 0.442);
+
+  @include mq(s) {
+    padding: 10px;
+  }
 
   &__form {
     position: relative;
@@ -287,11 +322,239 @@ onMounted(() => {
     margin: auto;
     border-radius: $border-radius;
     background-color: white;
+    transition: .5s ease-out;
 
-    button {
+    @include mq(s) {
+      width: 100%;
+    }
+
+    &__bg {
       position: absolute;
-      top: 0;
-      right: -60px;
+      width: 100%;
+      height: 140px;
+      z-index: 0;
+      border-radius: 4px 4px 0 0;
+      background-color: #46578b;
+    }
+
+    .form__container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      padding: 10px 20px 20px 20px;
+      width: 800px;
+      font-size: .85rem;
+      font-weight: 500;
+      color: $txt-aside;
+
+      @include mq(l) {
+        width: 500px;
+      }
+
+      @include mq(s) {
+        width: 100%;
+      }
+
+      &__title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &__text {
+          font-size: 1rem;
+          font-weight: 600;
+          color: white;
+        }
+
+        &__button {
+          margin-right: -10px;
+          width: 40px;
+          height: 40px;
+          border: none;
+          border-radius: 50%;
+          background-color: transparent;
+          color: rgba(255, 255, 255, 0.588);
+          cursor: pointer;
+          transition: .2s;
+
+          &:hover {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.267);
+          }
+        }
+      }
+
+      &__fotoAluno {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 29px 0 15px 0;
+
+        &__image {
+          width: 80px;
+          height: 80px;
+          border: 8px solid $profile-pic;
+          border-radius: 50%;
+        }
+
+        &__text {
+          padding-top: 10px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: $txt-title;
+        }
+      }
+
+      &__nmPessoa {
+        @include inputContainers();
+
+        input {
+          @include createInput();
+        }
+      }
+
+      &__cpf-rg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+
+        @include mq(xs-s) {
+          display: flex;
+          flex-direction: column;
+        }
+
+        &__cpfCnpj {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+
+        &__rg {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+      }
+
+      &__tel-email {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 20px;
+
+        @include mq(l) {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        @include mq(xs-s) {
+          display: flex;
+          flex-direction: column;
+        }
+
+        &__telefone {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+
+        &__dsEmail {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+      }
+
+      &__uf-data-sexo {
+        display: grid;
+        grid-template-columns: 80px 150px 200px;
+        gap: 20px;
+
+        @include mq(l) {
+          grid-template-columns: 80px 1fr 1fr
+        }
+
+        @include mq(xs-s) {
+          display: flex;
+          flex-direction: column;
+        }
+
+        &__ufRG {
+          @include inputContainers();
+
+          select {
+            @include createInput();
+          }
+        }
+
+        &__dtNascimento {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+
+        &__sexo {
+          @include inputContainers();
+
+          select {
+            @include createInput();
+          }
+        }
+      }
+
+      &__altura-peso {
+        display: grid;
+        grid-template-columns: 200px 200px;
+        gap: 20px;
+
+        &__altura {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+
+        &__peso {
+          @include inputContainers();
+
+          input {
+            @include createInput();
+          }
+        }
+      }
+
+      &__dsObs {
+        @include inputContainers();
+
+        textarea {
+          height: 80px;
+          @include createInput();
+          resize: none;
+        }
+      }
+
+      &__submit {
+        display: flex;
+        justify-content: space-between;
+
+        input {
+          @include submitButtons($validation, white);
+        }
+
+        &__button {
+          @include submitButtons($profile-pic, $txt-title);
+        }
+      }
     }
   }
 
@@ -303,5 +566,13 @@ onMounted(() => {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.456);
   }
+}
+
+.required {
+  position: absolute;
+  color: red;
+  font-size: 1.2rem;
+  margin-left: 5px;
+  text-decoration: none;
 }
 </style>
