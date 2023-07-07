@@ -9,6 +9,7 @@ const bodyElement = ref(null);
 const students = ref([]);
 const studentsCpfCnpj = ref([]);
 const isCreateStudentActive = ref(false);
+const studentDetails = ref(null);
 
 // Handle emits
 const handleCreate = (emittedValue) => {
@@ -24,7 +25,7 @@ function toggleCreate() {
 
 // axios functions
 // get students from database
-function getStudents() {
+function getLimitedStudents() {
   axios.get(`/students/limit`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
@@ -41,9 +42,47 @@ function getCpfCnpj() {
   });
 };
 
+// get student by id from database
+function getStudent(ID_Pessoa) {
+  axios.get(`/student/${ID_Pessoa}`).then((res) => {
+    studentDetails.value = res.data;
+  }).catch((err) => {
+    console.error(err);
+  });
+};
+
+// format functions
+function formatTelefone(phoneNumber) {
+  const tel = phoneNumber;
+
+  // extract the different parts of the phone number
+  const ddd = tel.slice(0, 2);
+  const firstPart = tel.slice(2, 7);
+  const secondPart = tel.slice(7, 11);
+
+  // create the formatted phone number string
+  const formattedPhoneNumber = `(${ddd})${firstPart}-${secondPart}`;
+
+  return formattedPhoneNumber;
+};
+
+function formatCpf(cpf) {
+
+  // extract the different parts of the cpf number
+  const firstPart = cpf.slice(0, 3);
+  const secondPart = cpf.slice(3, 6);
+  const thirdPart = cpf.slice(6, 9);
+  const lastPart = cpf.slice(9, 11);
+
+  // create the formatted cpf number string
+  const formattedCpfNumber = `${firstPart}.${secondPart}.${thirdPart}-${lastPart}`;
+
+  return formattedCpfNumber;
+};
+
 // DOM Mounted
 onMounted(() => {
-  getStudents();
+  getLimitedStudents();
   getCpfCnpj();
   bodyElement.value = document.body;
 });
@@ -74,12 +113,63 @@ onMounted(() => {
     </div>
 
     <section v-for="student in students" :key="student" class="student">
-      <h4 class="student__name">{{ student.nmPessoa }}</h4>
-      <p class="student__cpf">{{ student.cpfCnpj }}</p>
-      <!-- <p class="student__age"></p> -->
-      <p class="student__weight">{{ student.peso }}</p>
-      <!-- <p class="student__score"></p> -->
+      <div class="student__container1">
+        <div class="student__container1__identity">
+          <div class="student__container1__identity__profile">
+            <div class="student__container1__identity__profile__picture">
+              <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
+            </div>
+            <div class="student__container1__identity__profile__info">
+              <div class="student__container1__identity__profile__info__name">
+                <p>{{ student.nmPessoa }}</p>
+              </div>
+              <div class="student__container1__identity__profile__info__desempenho">
+                <p>Desempenho: Bom</p>
+              </div>
+            </div>
+          </div>
+          <div class="student__container1__identity__button">
+            <button>Avaliar</button>
+          </div>
+        </div>
+        <div class="student__container1__info">
+          <p>Sexo: <strong>{{ student.sexo }}</strong></p>
+          <p>Idade: <strong>{{ student.dtNascimento ? student.dtNascimento : '' }}</strong></p>
+          <p>Altura: <strong>{{ student.altura }}cm</strong></p>
+          <p>Peso: <strong>{{ student.peso ? student.peso : '' }}</strong></p>
+        </div>
+        <div class="student__container1__dsObs">
+          <p>{{ student.dsObs ? student.dsObs : '' }}</p>
+        </div>
+      </div>
+
+      <div class="student__container2">
+        <div class="student__container2__details">
+          <p v-if="student.ativo">
+            <font-awesome-icon icon="fa-solid fa-check" />
+            Ativo
+          </p>
+          <p v-if="student.ufRG">
+            <font-awesome-icon icon="fa-solid fa-location-dot" />
+            {{ student.ufRG }}
+          </p>
+          <p v-if="student.telefone">
+            <font-awesome-icon icon="fa-solid fa-phone-flip" />
+            {{ formatTelefone(student.telefone) }}
+          </p>
+          <p v-if="student.dsEmail">
+            <font-awesome-icon icon="fa-solid fa-envelope" />
+            {{ student.dsEmail }}
+          </p>
+          <button @click="getStudent(student.ID_Pessoa)">Mais Detalhes</button>
+        </div>
+      </div>
     </section>
+
+    <div class="details" v-if="studentDetails">
+      <p>Nome do aluno: {{ studentDetails.nmPessoa }}</p>
+      <p>Telefone: {{ studentDetails.telefone ? formatTelefone(studentDetails.telefone) : '' }}</p>
+    </div>
   </main>
 </template>
 
@@ -180,11 +270,113 @@ main {
   }
 
   .student {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: 200px;
     border-radius: $border-radius;
-    background: white;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
+    background-color: white;
+
+    &__container1 {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px 20px 10px 20px;
+      border-bottom: 2px dotted $background;
+
+      &__identity {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+
+        &__profile {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 14px;
+
+          &__picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: black;
+          }
+
+          &__info {
+            display: flex;
+            flex-direction: column;
+
+            &__name {
+              font-size: 1.2rem;
+              font-weight: 600;
+              color: $txt-title;
+            }
+
+            &__desempenho {
+              font-size: 0.85rem;
+              color: $txt-subtitle;
+            }
+          }
+        }
+
+        &__button {
+          button {
+            @include submitButtons($validation, white);
+          }
+        }
+      }
+
+      &__info {
+        font-size: .9rem;
+        color: $txt-aside;
+      }
+
+      &__dsObs {
+        font-size: .85rem;
+        color: $txt-subtitle;
+      }
+    }
+
+    &__container2 {
+      padding: 10px 20px;
+
+      &__details {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+
+        p {
+          font-size: 0.85rem;
+          color: $txt-aside;
+        }
+
+        button {
+          padding: 8px 16px;
+          border: none;
+          border-radius: $border-radius;
+          background-color: $buttons;
+          color: white;
+          cursor: pointer;
+          transition: 0.2s;
+
+          &:hover {
+            filter: brightness(0.9);
+          }
+
+          &:active {
+            filter: brightness(0.7);
+          }
+        }
+      }
+    }
+  }
+
+  .details {
+    width: 100%;
+    border-radius: $border-radius;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
+    background-color: white;
   }
 }
 </style>

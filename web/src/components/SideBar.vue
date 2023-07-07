@@ -63,10 +63,14 @@ watch(sidebarIsActive, (newValue) => {
       </div>
       <div class="menu" v-show="sidebarIsActive">
         <h2>Menu</h2>
-        <p>Calendar</p>
-        <p>Chat</p>
-        <p>Email</p>
-        <p>Ecommerce</p>
+        <ul>
+          <li>Alunos</li>
+          <ul>
+            <li>Visualizar todos</li>
+            <li>Avaliar aluno</li>
+            <li>Adicionar peso</li>
+          </ul>
+        </ul>
       </div>
     </div>
     <div class="sidebar__2" @click="toggleSidebar"></div>
