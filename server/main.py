@@ -82,11 +82,24 @@ async def home():
 # Students
 @app.get('/students')  # list all students
 async def list_students():
+    students = di["db"].table('tbl_Pessoa as tp') \
+                       .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
+                       .order_by('tp.updated_at', 'desc') \
+                       .get()
+
+    return students.serialize()
+
+@app.get('/students/limit')  # list a limited amount of students
+async def limit_students():
+    # distinct_peso = Peso.select(di["db"].raw('DISTINCT ON ("ID_Pessoa") *')) \
+    #                     .order_by(di["db"].raw('"ID_Pessoa", "dtData"'), 'desc').get()
+
     query = di["db"].table('tbl_Pessoa as tp') \
-                    .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
-                    .left_join('tbl_peso as tp2', 'tp2.ID_Pessoa', '=', 'ta.ID_Pessoa') \
+                    .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
+                    .left_join('tbl_peso as tp2', 'tp2.ID_Pessoa', '=', 'tp.ID_Pessoa') \
                     .order_by('tp.updated_at', 'desc') \
                     .order_by('tp2.dtData', 'desc')
+                    
     students = query.get()
 
     # # Create a set to store unique students
@@ -128,7 +141,7 @@ async def list_students():
             }
             filtered_students.append(student_dict)
 
-    return filtered_students
+    return filtered_students[:5]
 
 
 @app.get('/students/peso')  # list all students with peso

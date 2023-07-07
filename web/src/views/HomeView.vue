@@ -25,7 +25,7 @@ function toggleCreate() {
 // axios functions
 // get students from database
 function getStudents() {
-  axios.get(`/students`).then((res) => {
+  axios.get(`/students/limit`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -76,9 +76,9 @@ onMounted(() => {
     <section v-for="student in students" :key="student" class="student">
       <h4 class="student__name">{{ student.nmPessoa }}</h4>
       <p class="student__cpf">{{ student.cpfCnpj }}</p>
-      <!-- <p class="student__age"></p>
-      <p class="student__weight"></p>
-      <p class="student__score"></p> -->
+      <!-- <p class="student__age"></p> -->
+      <p class="student__weight">{{ student.peso }}</p>
+      <!-- <p class="student__score"></p> -->
     </section>
   </main>
 </template>

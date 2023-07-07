@@ -118,17 +118,17 @@ function createStudent() {
   let pesoTransformed = null;
   if (telefone.value !== null) {
     const cleannedTelefone = telefone.value.replace(/\D/g, '');
-    telefoneTransformed = cleannedTelefone;
+    telefoneTransformed = cleannedTelefone; // telefone only digits
   }
   if (altura.value !== null) {
     const cleannedAltura = altura.value.replace(/\D/g, '');
     const alturaInteger = parseInt(cleannedAltura, 10);
-    alturaTransformed = alturaInteger;
+    alturaTransformed = alturaInteger; // altura as INT
   }
   if (peso.value !== null) {
     const cleannedPeso = peso.value.replace(/[^\d.]/g, '');
     const pesoFloat = parseFloat(cleannedPeso);
-    pesoTransformed = pesoFloat;
+    pesoTransformed = pesoFloat; // peso as FLOAT
   }
 
   // get the current date and time
@@ -286,7 +286,6 @@ onMounted(() => {
         <!-- SUBMIT -->
         <div class="form__container__submit">
           <input type="submit" value="Cadastrar Aluno">
-
           <button type="button" @click="closeCreate" class="form__container__submit__button">Cancelar</button>
         </div>
       </div>
