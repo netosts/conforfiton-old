@@ -28,6 +28,7 @@ function toggleCreate() {
 function getLimitedStudents() {
   axios.get(`/students/limit`).then((res) => {
     students.value = res.data;
+    studentDetails.value = students.value[0];
   }).catch((err) => {
     console.error(err);
   });
@@ -80,6 +81,31 @@ function formatCpf(cpf) {
   return formattedCpfNumber;
 };
 
+// transform dtNascimento YYYY-MM-DD into person's age
+function formatAge(value) {
+  const birthdate = value;
+  const today = new Date();
+
+  // extract the birthdate parts
+  const birthdateParts = birthdate.split('-');
+  const birthYear = parseInt(birthdateParts[0]);
+  const birthMonth = parseInt(birthdateParts[1]);
+  const birthDay = parseInt(birthdateParts[2]);
+
+  // calculate the person's age
+  let age = today.getFullYear() - birthYear;
+
+  // check if the current month and day are before the birth month and day
+  if (
+    today.getMonth() < birthMonth - 1 ||
+    (today.getMonth() === birthMonth - 1 && today.getDate() < birthDay)
+  ) {
+    age--;
+  }
+
+  return age;
+}
+
 // DOM Mounted
 onMounted(() => {
   getLimitedStudents();
@@ -112,63 +138,68 @@ onMounted(() => {
       </div>
     </div>
 
-    <section v-for="student in students" :key="student" class="student">
-      <div class="student__container1">
-        <div class="student__container1__identity">
-          <div class="student__container1__identity__profile">
-            <div class="student__container1__identity__profile__picture">
-              <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
+    <div class="sections">
+      <div class="sections__students">
+        <section v-for="student in students" :key="student" class="student">
+          <div class="student__container1">
+            <div class="student__container1__identity">
+              <div class="student__container1__identity__profile">
+                <div class="student__container1__identity__profile__picture">
+                  <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
+                </div>
+                <div class="student__container1__identity__profile__info">
+                  <div class="student__container1__identity__profile__info__name">
+                    <p>{{ student.nmPessoa }}</p>
+                  </div>
+                  <div class="student__container1__identity__profile__info__desempenho">
+                    <p>Desempenho: Bom</p>
+                  </div>
+                </div>
+              </div>
+              <div class="student__container1__identity__button">
+                <button>Avaliar</button>
+              </div>
             </div>
-            <div class="student__container1__identity__profile__info">
-              <div class="student__container1__identity__profile__info__name">
-                <p>{{ student.nmPessoa }}</p>
-              </div>
-              <div class="student__container1__identity__profile__info__desempenho">
-                <p>Desempenho: Bom</p>
-              </div>
+            <div class="student__container1__info">
+              <p>Sexo: <strong>{{ student.sexo }}</strong></p>
+              <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong></p>
+              <p>Altura: <strong>{{ student.altura }}cm</strong></p>
+              <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
+            </div>
+            <div class="student__container1__dsObs">
+              <p>{{ student.dsObs ? student.dsObs : '' }}</p>
             </div>
           </div>
-          <div class="student__container1__identity__button">
-            <button>Avaliar</button>
+          <div class="student__container2">
+            <div class="student__container2__details">
+              <p v-if="student.ativo">
+                <font-awesome-icon icon="fa-solid fa-check" />
+                Ativo
+              </p>
+              <p v-if="student.ufRG">
+                <font-awesome-icon icon="fa-solid fa-location-dot" />
+                {{ student.ufRG }}
+              </p>
+              <p v-if="student.telefone">
+                <font-awesome-icon icon="fa-solid fa-phone-flip" />
+                {{ formatTelefone(student.telefone) }}
+              </p>
+              <p v-if="student.dsEmail">
+                <font-awesome-icon icon="fa-solid fa-envelope" />
+                {{ student.dsEmail }}
+              </p>
+              <button @click="getStudent(student.ID_Pessoa)">Mais Detalhes</button>
+            </div>
           </div>
-        </div>
-        <div class="student__container1__info">
-          <p>Sexo: <strong>{{ student.sexo }}</strong></p>
-          <p>Idade: <strong>{{ student.dtNascimento ? student.dtNascimento : '' }}</strong></p>
-          <p>Altura: <strong>{{ student.altura }}cm</strong></p>
-          <p>Peso: <strong>{{ student.peso ? student.peso : '' }}</strong></p>
-        </div>
-        <div class="student__container1__dsObs">
-          <p>{{ student.dsObs ? student.dsObs : '' }}</p>
-        </div>
+        </section>
       </div>
 
-      <div class="student__container2">
-        <div class="student__container2__details">
-          <p v-if="student.ativo">
-            <font-awesome-icon icon="fa-solid fa-check" />
-            Ativo
-          </p>
-          <p v-if="student.ufRG">
-            <font-awesome-icon icon="fa-solid fa-location-dot" />
-            {{ student.ufRG }}
-          </p>
-          <p v-if="student.telefone">
-            <font-awesome-icon icon="fa-solid fa-phone-flip" />
-            {{ formatTelefone(student.telefone) }}
-          </p>
-          <p v-if="student.dsEmail">
-            <font-awesome-icon icon="fa-solid fa-envelope" />
-            {{ student.dsEmail }}
-          </p>
-          <button @click="getStudent(student.ID_Pessoa)">Mais Detalhes</button>
+      <div class="sections__details">
+        <div class="details" v-if="studentDetails">
+          <p>Nome do aluno: {{ studentDetails.nmPessoa }}</p>
+          <p>Telefone: {{ studentDetails.telefone ? formatTelefone(studentDetails.telefone) : '' }}</p>
         </div>
       </div>
-    </section>
-
-    <div class="details" v-if="studentDetails">
-      <p>Nome do aluno: {{ studentDetails.nmPessoa }}</p>
-      <p>Telefone: {{ studentDetails.telefone ? formatTelefone(studentDetails.telefone) : '' }}</p>
     </div>
   </main>
 </template>
@@ -269,114 +300,131 @@ main {
     }
   }
 
-  .student {
+  .sections {
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    border-radius: $border-radius;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
-    background-color: white;
+    gap: 25px;
 
-    &__container1 {
+    @include mq(l) {
+      flex-direction: column;
+    }
+
+    &__students {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      padding: 20px 20px 10px 20px;
-      border-bottom: 2px dotted $background;
+      gap: 25px;
+      width: 100%;
 
-      &__identity {
+      .student {
         display: flex;
-        justify-content: space-between;
-        gap: 20px;
+        flex-direction: column;
+        width: 100%;
+        border-radius: $border-radius;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
+        background-color: white;
 
-        &__profile {
+        &__container1 {
           display: flex;
-          flex-wrap: wrap;
-          gap: 14px;
+          flex-direction: column;
+          gap: 20px;
+          padding: 16px 16px 10px 16px;
+          border-bottom: 2px dotted $background;
 
-          &__picture {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: black;
+          &__identity {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            &__profile {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 14px;
+
+              &__picture {
+                width: 50px;
+                height: 50px;
+                border-radius: $border-radius;
+                background-image: url('../assets/images/default-profile-picture2.jpg');
+                background-size: cover;
+              }
+
+              &__info {
+                display: flex;
+                flex-direction: column;
+
+                &__name {
+                  font-size: 1.2rem;
+                  font-weight: 600;
+                  color: $txt-title;
+                }
+
+                &__desempenho {
+                  font-size: 0.85rem;
+                  color: $txt-subtitle;
+                }
+              }
+            }
+
+            &__button {
+              button {
+                @include submitButtons($validation, white);
+              }
+            }
           }
 
           &__info {
+            font-size: .9rem;
+            color: $txt-aside;
+          }
+
+          &__dsObs {
+            font-size: .85rem;
+            color: $txt-subtitle;
+          }
+        }
+
+        &__container2 {
+          padding: 10px 16px;
+
+          &__details {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
 
-            &__name {
-              font-size: 1.2rem;
-              font-weight: 600;
-              color: $txt-title;
-            }
-
-            &__desempenho {
+            p {
               font-size: 0.85rem;
-              color: $txt-subtitle;
+              color: $txt-aside;
+            }
+
+            button {
+              padding: 8px 16px;
+              border: none;
+              border-radius: $border-radius;
+              background-color: $buttons;
+              color: white;
+              cursor: pointer;
+              transition: 0.2s;
+
+              &:hover {
+                filter: brightness(0.9);
+              }
+
+              &:active {
+                filter: brightness(0.7);
+              }
             }
           }
         }
-
-        &__button {
-          button {
-            @include submitButtons($validation, white);
-          }
-        }
-      }
-
-      &__info {
-        font-size: .9rem;
-        color: $txt-aside;
-      }
-
-      &__dsObs {
-        font-size: .85rem;
-        color: $txt-subtitle;
       }
     }
 
-    &__container2 {
-      padding: 10px 20px;
-
-      &__details {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
-
-        p {
-          font-size: 0.85rem;
-          color: $txt-aside;
-        }
-
-        button {
-          padding: 8px 16px;
-          border: none;
-          border-radius: $border-radius;
-          background-color: $buttons;
-          color: white;
-          cursor: pointer;
-          transition: 0.2s;
-
-          &:hover {
-            filter: brightness(0.9);
-          }
-
-          &:active {
-            filter: brightness(0.7);
-          }
-        }
-      }
+    .details {
+      width: 300px;
+      border-radius: $border-radius;
+      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
+      background-color: white;
     }
-  }
-
-  .details {
-    width: 100%;
-    border-radius: $border-radius;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
-    background-color: white;
   }
 }
 </style>
