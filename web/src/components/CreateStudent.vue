@@ -206,7 +206,8 @@ onMounted(() => {
         </div>
 
         <div class="form__container__fotoAluno">
-          <img src="../assets/images/default-profile-picture2.jpg" alt="#" class="form__container__fotoAluno__image">
+          <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"
+            class="form__container__fotoAluno__image">
           <p class="form__container__fotoAluno__text">Foto do Aluno</p>
         </div>
 
