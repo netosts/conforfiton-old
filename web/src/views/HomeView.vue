@@ -161,9 +161,9 @@ onMounted(() => {
               </div>
             </div>
             <div class="student__container1__info">
-              <p>Sexo: <strong>{{ student.sexo }}</strong></p>
-              <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong></p>
-              <p>Altura: <strong>{{ student.altura }}cm</strong></p>
+              <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
+              <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong> | </p>
+              <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
               <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
             </div>
             <div class="student__container1__dsObs">
@@ -372,6 +372,8 @@ main {
           }
 
           &__info {
+            display: flex;
+            gap: 5px;
             font-size: .9rem;
             color: $txt-aside;
           }
