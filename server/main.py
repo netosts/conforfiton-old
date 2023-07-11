@@ -38,7 +38,6 @@ app.add_middleware(
 class NewStudent(BaseModel):
     # tbl_Pessoa
     nmPessoa: str
-    ativo: bool = None
     ser: str
     tipoPessoa: str
     cpfCnpj: str
@@ -82,66 +81,58 @@ async def home():
 # Students
 @app.get('/students')  # list all students
 async def list_students():
-    students = di["db"].table('tbl_Pessoa as tp') \
-                       .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
-                       .order_by('tp.updated_at', 'desc') \
-                       .get()
+    # tp = pessoa
+    # tp2 = peso
+    # ta = aluno
+    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
+    students = di["db"].table('tbl_Pessoa as tp') \
+                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
+                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .order_by('tp.created_at', 'desc') \
+                       .limit(5) \
+                       .get()
+    
     return students.serialize()
 
-@app.get('/students/limit')  # list a limited amount of students
-async def limit_students():
-    # distinct_peso = Peso.select(di["db"].raw('DISTINCT ON ("ID_Pessoa") *')) \
-    #                     .order_by(di["db"].raw('"ID_Pessoa", "dtData"'), 'desc').get()
 
-    query = di["db"].table('tbl_Pessoa as tp') \
-                    .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
-                    .left_join('tbl_peso as tp2', 'tp2.ID_Pessoa', '=', 'tp.ID_Pessoa') \
-                    .order_by('tp.updated_at', 'desc') \
-                    .order_by('tp2.dtData', 'desc')
-                    
-    students = query.get()
+@app.get('/students/active')  # list students who are active
+async def active_students():
+    # tp = pessoa
+    # tp2 = peso
+    # ta = aluno
+    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
-    # # Create a set to store unique students
-    unique_students = list()
+    students = di["db"].table('tbl_Pessoa as tp') \
+                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
+                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
+                       .where_null('tp.deleted_at') \
+                       .order_by('tp.created_at', 'desc') \
+                       .limit(5) \
+                       .get()
+    
+    return students.serialize()
 
-    # # Filter out duplicates
-    filtered_students = []
-    for student in students:
-        if student[0] not in unique_students:
-            unique_students.append(student[0])
-            student_dict = {  # manually serialize [serialize() is bugged]
-                "ID_Pessoa": student[0],
-                "nmPessoa": student[1],
-                "ativo": student[2],
-                "ser": student[3],
-                "tipoPessoa": student[4],
-                "cpfCnpj": student[5],
-                "rg": student[6],
-                "ufRG": student[7],
-                "dsRazaoSocial": student[8],
-                "dsInscricaoEstadual": student[9],
-                "dsInscricaoMunicipal": student[10],
-                "isentoIE": student[11],
-                "dtNascimento": student[12],
-                "dsObs": student[13],
-                "dsEmail": student[14],
-                "telefone": student[15],
-                "created_at": student[16],
-                "updated_at": student[17],
-                "deleted_at": student[18],
-                # student[19] is ID_Pessoa
-                "altura": student[20],
-                "sexo": student[21],
-                "fotoAluno": student[22],
-                "ID_peso": student[23],
-                # student[24] is ID_Pessoa
-                "peso": student[25],
-                "dtData": student[26],
-            }
-            filtered_students.append(student_dict)
 
-    return filtered_students[:5]
+@app.get('/students/inactive')  # list students who are not active
+async def inactive_students():
+    # tp = pessoa
+    # tp2 = peso
+    # ta = aluno
+    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
+
+    students = di["db"].table('tbl_Pessoa as tp') \
+                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
+                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .where_not_null('tp.deleted_at') \
+                       .order_by('tp.created_at', 'desc') \
+                       .limit(5) \
+                       .get()
+    
+    return students.serialize()
 
 
 @app.get('/students/peso')  # list all students with peso
@@ -181,7 +172,6 @@ async def find_student(ID_Pessoa):
 async def new_student(data: NewStudent):
     person = Person()
     person.nmPessoa = data.nmPessoa
-    person.ativo = data.ativo
     person.ser = data.ser
     person.tipoPessoa = data.tipoPessoa
     person.cpfCnpj = data.cpfCnpj
@@ -214,7 +204,6 @@ async def new_student(data: NewStudent):
 async def update_student(ID_Pessoa, data: NewStudent):
     person = Person.find(ID_Pessoa)
     person.nmPessoa = data.nmPessoa
-    person.ativo = data.ativo
     person.ser = data.ser
     person.tipoPessoa = data.tipoPessoa
     person.cpfCnpj = data.cpfCnpj

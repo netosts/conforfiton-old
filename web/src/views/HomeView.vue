@@ -1,5 +1,6 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
+import StudentDetails from '../components/StudentDetails.vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
@@ -10,11 +11,17 @@ const students = ref([]);
 const studentsCpfCnpj = ref([]);
 const isCreateStudentActive = ref(false);
 const studentDetails = ref(null);
+const studentsFilter = ref('ativos');
+const isStudentDetailsActive = ref(false);
 
 // Handle emits
 const handleCreate = (emittedValue) => {
   return isCreateStudentActive.value = emittedValue;
 };
+
+const handleDetails = (emittedValue) => {
+  return isStudentDetailsActive.value = emittedValue;
+}
 
 // Functions
 // toggle the create student form
@@ -25,12 +32,28 @@ function toggleCreate() {
 
 // axios functions
 // get students from database
-function getLimitedStudents() {
-  axios.get(`/students/limit`).then((res) => {
+function getActiveStudents() {
+  axios.get(`/students/active`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
   }).catch((err) => {
     console.error(err);
+  });
+};
+
+function getInactiveStudents() {
+  axios.get(`/students/inactive`).then((res) => {
+    students.value = res.data;
+    studentDetails.value = students.value[0];
+  }).catch((err) => {
+    console.error(err);
+  });
+};
+
+function getAllStudents() {
+  axios.get(`/students`).then((res) => {
+    students.value = res.data;
+    studentDetails.value = students.value[0];
   });
 };
 
@@ -47,6 +70,8 @@ function getCpfCnpj() {
 function getStudent(ID_Pessoa) {
   axios.get(`/student/${ID_Pessoa}`).then((res) => {
     studentDetails.value = res.data;
+    isStudentDetailsActive.value = true;
+    bodyElement.value.style.overflow = isStudentDetailsActive.value ? 'hidden' : 'auto';
   }).catch((err) => {
     console.error(err);
   });
@@ -104,11 +129,22 @@ function formatAge(value) {
   }
 
   return age;
-}
+};
+
+// Watch
+function filterNget() {
+  if (studentsFilter.value === 'ativos') {
+    getActiveStudents();
+  } else if (studentsFilter.value === 'desativados') {
+    getInactiveStudents();
+  } else if (studentsFilter.value === 'todos') {
+    getAllStudents();
+  }
+};
 
 // DOM Mounted
 onMounted(() => {
-  getLimitedStudents();
+  getActiveStudents();
   getCpfCnpj();
   bodyElement.value = document.body;
 });
@@ -130,76 +166,84 @@ onMounted(() => {
           <input type="text" name="searchDb" id="searchDb" placeholder="Procurar alunos no banco de dados...">
         </div>
         <select>
-          <option value="#" selected>Novos</option>
-          <option value="#">Antigos</option>
-          <option value="#">Nome</option>
+          <option value="#" selected>Nome</option>
           <option value="#">CPF</option>
         </select>
       </div>
     </div>
 
+    <div class="filter">
+      <select v-model="studentsFilter" @change="filterNget">
+        <option value="ativos">Ativos</option>
+        <option value="desativados">Desativados</option>
+        <option value="todos">Todos</option>
+      </select>
+    </div>
+
     <div class="sections">
       <div class="sections__students">
         <section v-for="student in students" :key="student" class="student">
-          <div class="student__container1">
-            <div class="student__container1__identity">
-              <div class="student__container1__identity__profile">
-                <div class="student__container1__identity__profile__picture">
-                  <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
+          <div class="student__if">
+            <div class="student__if__container1">
+              <div class="student__if__container1__identity">
+                <div class="student__if__container1__identity__profile">
+                  <div class="student__if__container1__identity__profile__picture">
+                    <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
+                  </div>
+                  <div class="student__if__container1__identity__profile__info">
+                    <div class="student__if__container1__identity__profile__info__name">
+                      <p>{{ student.nmPessoa }}</p>
+                    </div>
+                    <div class="student__if__container1__identity__profile__info__desempenho">
+                      <p>Desempenho: Bom</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="student__container1__identity__profile__info">
-                  <div class="student__container1__identity__profile__info__name">
-                    <p>{{ student.nmPessoa }}</p>
-                  </div>
-                  <div class="student__container1__identity__profile__info__desempenho">
-                    <p>Desempenho: Bom</p>
-                  </div>
+                <div class="student__if__container1__identity__button">
+                  <button>Avaliar</button>
                 </div>
               </div>
-              <div class="student__container1__identity__button">
-                <button>Avaliar</button>
+              <div class="student__if__container1__info">
+                <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
+                <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong> | </p>
+                <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
+                <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
+              </div>
+              <div class="student__if__container1__dsObs">
+                <p>{{ student.dsObs ? student.dsObs : '' }}</p>
               </div>
             </div>
-            <div class="student__container1__info">
-              <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
-              <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong> | </p>
-              <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
-              <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
-            </div>
-            <div class="student__container1__dsObs">
-              <p>{{ student.dsObs ? student.dsObs : '' }}</p>
-            </div>
-          </div>
-          <div class="student__container2">
-            <div class="student__container2__details">
-              <p v-if="student.ativo">
-                <font-awesome-icon icon="fa-solid fa-check" />
-                Ativo
-              </p>
-              <p v-if="student.ufRG">
-                <font-awesome-icon icon="fa-solid fa-location-dot" />
-                {{ student.ufRG }}
-              </p>
-              <p v-if="student.telefone">
-                <font-awesome-icon icon="fa-solid fa-phone-flip" />
-                {{ formatTelefone(student.telefone) }}
-              </p>
-              <p v-if="student.dsEmail">
-                <font-awesome-icon icon="fa-solid fa-envelope" />
-                {{ student.dsEmail }}
-              </p>
-              <button @click="getStudent(student.ID_Pessoa)">Mais Detalhes</button>
+            <div class="student__if__container2">
+              <div class="student__if__container2__details">
+                <p v-if="!student.deleted_at">
+                  <font-awesome-icon icon="fa-solid fa-check" />
+                  Ativo
+                </p>
+                <p v-if="student.deleted_at">
+                  <font-awesome-icon icon="fa-solid fa-x" size="sm" />
+                  Desativado
+                </p>
+                <p v-if="student.ufRG">
+                  <font-awesome-icon icon="fa-solid fa-location-dot" />
+                  {{ student.ufRG }}
+                </p>
+                <p v-if="student.telefone">
+                  <font-awesome-icon icon="fa-solid fa-phone-flip" />
+                  {{ formatTelefone(student.telefone) }}
+                </p>
+                <p v-if="student.dsEmail">
+                  <font-awesome-icon icon="fa-solid fa-envelope" />
+                  {{ student.dsEmail }}
+                </p>
+                <button @click="getStudent(student.ID_Pessoa)">Mais Detalhes</button>
+              </div>
             </div>
           </div>
         </section>
       </div>
 
-      <div class="sections__details">
-        <div class="details" v-if="studentDetails">
-          <p>Nome do aluno: {{ studentDetails.nmPessoa }}</p>
-          <p>Telefone: {{ studentDetails.telefone ? formatTelefone(studentDetails.telefone) : '' }}</p>
-        </div>
-      </div>
+      <StudentDetails :studentDetails="studentDetails" @isStudentDetailsActive="handleDetails"
+        v-show="isStudentDetailsActive" />
     </div>
   </main>
 </template>
@@ -217,6 +261,7 @@ main {
   .searchbox {
     display: flex;
     flex-direction: column;
+    gap: 10px;
     width: 100%;
     padding: 16px;
     border-radius: $border-radius;
@@ -227,7 +272,7 @@ main {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 30px;
+      padding-bottom: 16px;
 
       h3 {
         font-size: 1rem;
@@ -300,6 +345,24 @@ main {
     }
   }
 
+  .filter {
+    display: flex;
+    justify-content: flex-end;
+
+    select {
+      padding: 8px 15px 8px 10px;
+      outline: none;
+      border: none;
+      border-radius: $border-radius;
+      cursor: pointer;
+      color: $txt-title;
+
+      @include mq(m) {
+        width: 100%;
+      }
+    }
+  }
+
   .sections {
     display: flex;
     gap: 25px;
@@ -322,110 +385,105 @@ main {
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
         background-color: white;
 
-        &__container1 {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          padding: 16px 16px 10px 16px;
-          border-bottom: 2px dotted $background;
-
-          &__identity {
+        &__if {
+          &__container1 {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             gap: 20px;
+            padding: 16px 16px 10px 16px;
+            border-bottom: 2px dotted $background;
 
-            &__profile {
+            &__identity {
               display: flex;
-              flex-wrap: wrap;
-              gap: 14px;
+              justify-content: space-between;
+              gap: 20px;
 
-              &__picture {
-                width: 50px;
-                height: 50px;
-                border-radius: $border-radius;
-                background-image: url('../assets/images/default-profile-picture2.jpg');
-                background-size: cover;
-              }
-
-              &__info {
+              &__profile {
                 display: flex;
-                flex-direction: column;
+                flex-wrap: wrap;
+                gap: 14px;
 
-                &__name {
-                  font-size: 1.2rem;
-                  font-weight: 600;
-                  color: $txt-title;
+                &__picture {
+                  width: 50px;
+                  height: 50px;
+                  border-radius: $border-radius;
+                  background-image: url('../assets/images/default-profile-picture2.jpg');
+                  background-size: cover;
                 }
 
-                &__desempenho {
-                  font-size: 0.85rem;
-                  color: $txt-subtitle;
+                &__info {
+                  display: flex;
+                  flex-direction: column;
+
+                  &__name {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    color: $txt-title;
+                  }
+
+                  &__desempenho {
+                    font-size: 0.85rem;
+                    color: $txt-subtitle;
+                  }
+                }
+              }
+
+              &__button {
+                button {
+                  @include submitButtons($validation, white);
                 }
               }
             }
 
-            &__button {
-              button {
-                @include submitButtons($validation, white);
-              }
-            }
-          }
-
-          &__info {
-            display: flex;
-            gap: 5px;
-            font-size: .9rem;
-            color: $txt-aside;
-          }
-
-          &__dsObs {
-            font-size: .85rem;
-            color: $txt-subtitle;
-          }
-        }
-
-        &__container2 {
-          padding: 10px 16px;
-
-          &__details {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-
-            p {
-              font-size: 0.85rem;
+            &__info {
+              display: flex;
+              gap: 5px;
+              font-size: .9rem;
               color: $txt-aside;
             }
 
-            button {
-              padding: 8px 16px;
-              border: none;
-              border-radius: $border-radius;
-              background-color: $buttons;
-              color: white;
-              cursor: pointer;
-              transition: 0.2s;
+            &__dsObs {
+              font-size: .85rem;
+              color: $txt-subtitle;
+            }
+          }
 
-              &:hover {
-                filter: brightness(0.9);
+          &__container2 {
+            padding: 10px 16px;
+
+            &__details {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 16px;
+
+              p {
+                font-size: 0.85rem;
+                color: $txt-aside;
               }
 
-              &:active {
-                filter: brightness(0.7);
+              button {
+                padding: 8px 16px;
+                border: none;
+                border-radius: $border-radius;
+                background-color: $buttons;
+                color: white;
+                cursor: pointer;
+                transition: 0.2s;
+
+                &:hover {
+                  filter: brightness(0.9);
+                }
+
+                &:active {
+                  filter: brightness(0.7);
+                }
               }
             }
           }
         }
       }
-    }
-
-    .details {
-      width: 300px;
-      border-radius: $border-radius;
-      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
-      background-color: white;
     }
   }
 }

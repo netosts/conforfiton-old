@@ -4,7 +4,7 @@ import './assets/styles/_index.scss'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
-import { faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope, faX } from '@fortawesome/free-solid-svg-icons'
 import { faMoon } from '@fortawesome/free-regular-svg-icons'
 
 // Vue Motion plugin
@@ -16,7 +16,7 @@ import router from './router'
 
 import axios from 'axios'
 
-library.add(faMoon, faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope)
+library.add(faMoon, faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope, faX)
 
 const app = createApp(App)
 
