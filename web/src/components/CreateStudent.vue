@@ -1,4 +1,5 @@
 <script setup>
+import { formatTelefone, formatAltura, cpfValidator } from '../assets/js/formatFunctions';
 import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 
@@ -37,10 +38,10 @@ const ufList = [
 // Watches
 
 // capitalize first letter of each word in the name
-// watch(nmPessoa, (newValue) => {
-//   const cleannedValue = newValue.replace(/\b\w/g, (match) => match.toUpperCase());
-//   nmPessoa.value = cleannedValue;
-// })
+watch(nmPessoa, (newValue) => {
+  const cleannedValue = newValue.replace(/\b\w/g, (match) => match.toUpperCase());
+  nmPessoa.value = cleannedValue;
+})
 
 watch(cpfCnpj, (newValue) => {
   const cleanedValue = newValue.replace(/[^0-9]/g, '');
@@ -137,7 +138,7 @@ function createStudent() {
 
   // axios post the form
   console.log('CRIANDO ALUNO...');
-  if (!props.cpfCnpjList.includes(cpfCnpj.value)) { // check for cpf duplicates
+  if (!props.cpfCnpjList.includes(cpfCnpj.value) && cpfValidator(cpfCnpj.value)) { // check for cpf duplicates
     axios.post('/student', {
       "nmPessoa": nmPessoa.value,
       "ativo": true, // default: true
@@ -163,27 +164,9 @@ function createStudent() {
       console.error(err);
     });
   } else {
-    console.error('ERRO: ESTE CPF JÁ EXISTE NO BANCO DE DADOS!');
+    console.error(!cpfValidator(cpfCnpj.value) ? 'Cpf inválido' : 'ERRO: ESTE CPF JÁ EXISTE NO BANCO DE DADOS!');
   }
 };
-
-// function to format the telefone number
-function formatTelefone(value) {
-  const match = value.match(/^(\d{2})(\d{5})(\d{4})$/);
-  if (match) {
-    return `(${match[1]})${match[2]}-${match[3]}`;
-  }
-  return value;
-};
-
-// function to format the altura value
-function formatAltura(value) {
-  const match = value.match(/^(\d{3})$/)
-  if (match) {
-    return `${match[0]}cm`;
-  }
-  return value;
-}
 
 // DOM Mount
 onMounted(() => {

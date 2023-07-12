@@ -1,7 +1,7 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
 import StudentDetails from '../components/StudentDetails.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 
 
@@ -13,6 +13,8 @@ const isCreateStudentActive = ref(false);
 const studentDetails = ref(null);
 const studentsFilter = ref('ativos');
 const isStudentDetailsActive = ref(false);
+const inputBar = ref('');
+const inputFilter = ref('inputName');
 
 // Handle emits
 const handleCreate = (emittedValue) => {
@@ -32,8 +34,11 @@ function toggleCreate() {
 
 // axios functions
 // get students from database
-function getActiveStudents() {
-  axios.get(`/students/active`).then((res) => {
+function getActiveStudents(value) {
+  if (inputBar.value === '') {
+    value = '%';
+  }
+  axios.get(`/students/active/${inputFilter.value}/${value}`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
   }).catch((err) => {
@@ -41,8 +46,11 @@ function getActiveStudents() {
   });
 };
 
-function getInactiveStudents() {
-  axios.get(`/students/inactive`).then((res) => {
+function getInactiveStudents(value) {
+  if (inputBar.value === '') {
+    value = '%';
+  }
+  axios.get(`/students/inactive/${inputFilter.value}/${value}`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
   }).catch((err) => {
@@ -50,10 +58,15 @@ function getInactiveStudents() {
   });
 };
 
-function getAllStudents() {
-  axios.get(`/students`).then((res) => {
+function getAllStudents(value) {
+  if (inputBar.value === '') {
+    value = '%';
+  }
+  axios.get(`/students/${inputFilter.value}/${value}`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
+  }).catch((err) => {
+    console.error(err);
   });
 };
 
@@ -134,13 +147,23 @@ function formatAge(value) {
 // Watch
 function filterNget() {
   if (studentsFilter.value === 'ativos') {
-    getActiveStudents();
+    getActiveStudents('%');
   } else if (studentsFilter.value === 'desativados') {
-    getInactiveStudents();
+    getInactiveStudents('%');
   } else if (studentsFilter.value === 'todos') {
-    getAllStudents();
+    getAllStudents('%');
   }
 };
+
+watch(inputBar, (newValue) => {
+  if (studentsFilter.value === 'ativos') {
+    getActiveStudents(newValue);
+  } else if (studentsFilter.value === 'desativados') {
+    getInactiveStudents(newValue)
+  } else if (studentsFilter.value === 'todos') {
+    getAllStudents(newValue);
+  }
+});
 
 // DOM Mounted
 onMounted(() => {
@@ -163,11 +186,11 @@ onMounted(() => {
       <div class="searchbox__input">
         <div class="searchbox__input__db">
           <font-awesome-icon class="searchbox__input__db__icon" icon="fa-solid fa-magnifying-glass" size="sm" />
-          <input type="text" name="searchDb" id="searchDb" placeholder="Procurar alunos no banco de dados...">
+          <input v-model="inputBar" type="text" id="searchDb" placeholder="Procurar alunos no banco de dados...">
         </div>
-        <select>
-          <option value="#" selected>Nome</option>
-          <option value="#">CPF</option>
+        <select v-model="inputFilter">
+          <option value="inputName">Nome</option>
+          <option value="inputCpf">CPF</option>
         </select>
       </div>
     </div>
