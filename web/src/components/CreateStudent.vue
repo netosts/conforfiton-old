@@ -1,5 +1,7 @@
 <script setup>
 import { formatTelefone, formatAltura, cpfValidator } from '../assets/js/formatFunctions';
+import { getCpfCnpj, getRgUF } from '../assets/js/axiosGets';
+import { postStudent } from '../assets/js/axiosPost';
 import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 
@@ -7,58 +9,258 @@ import axios from 'axios';
 // Variables
 const bodyElement = ref(null);
 // form variables
-const nmPessoa = ref(null);
-const cpfCnpj = ref(null);
-const rg = ref(null);
-const ufRG = ref(null);
-const dtNascimento = ref(null);
-const dsObs = ref(null);
-const dsEmail = ref(null);
-const telefone = ref(null);
-const altura = ref(null);
-const sexo = ref(null);
-const peso = ref(null);
+const nmPessoa = ref('');
+const cpfCnpj = ref('');
+const rg = ref('');
+const ufRG = ref('');
+const telefone = ref('');
+const dsEmail = ref('');
+const dtNascimento = ref('');
+const sexo = ref('');
+const nCamisa = ref('');
+const altura = ref('');
+const peso = ref('');
+const fcMaxima = ref('');
+const fcRepouso = ref('');
+const dsObs = ref('');
+// form classess
+const invalidInputs = {};
+const input_nmPessoa = ref('input--null');
+const input_cpfCnpj = ref('input--null');
+const input_rg = ref('input--null');
+const input_ufRG = ref('input--null');
+const input_telefone = ref('input--null');
+const input_dsEmail = ref('input--null');
+const input_dtNascimento = ref('input--null');
+const input_sexo = ref('input--null');
+const input_camisa = ref('input--null');
+const input_altura = ref('input--null');
+const input_peso = ref('input--null');
+const input_fcMaxima = ref('input--null');
+const input_fcRepouso = ref('input--null');
+const input_dsObs = ref('input--null');
+// validation msgs
+const nmPessoaMsg = ref(null);
+const cpfCnpjMsg = ref(null);
+const rgMsg = ref(null);
+const ufMsg = ref(null);
+const telefoneMsg = ref(null);
+const dsEmailMsg = ref(null);
+const dtNascimentoMsg = ref(null);
+const sexoMsg = ref(null);
+const camisaMsg = ref(null);
+const alturaMsg = ref(null);
+const pesoMSg = ref(null);
+
 // emits
 const emit = defineEmits(['isCreateStudentActive']);
 // props
-const props = defineProps({
-  cpfCnpjList: Array
-  // rg
-  // ufRG
-  // tratar erro de duplicada no rg e uf
-})
 
+
+// Lists
 // uf list
 const ufList = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
+  '', 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
   'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
   'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
+// nCamisa list
+const nCamisaList = [
+  'PP', 'P', 'M', 'G', 'GG', 'XG'
+];
+
+// Functions
+// close the create tab
+function closeCreate() {
+  location.reload();
+};
+
+// create a new student
+async function createStudent() {
+  console.log('CRIANDO ALUNO...');
+  // validators
+  // name
+  if (nmPessoa.value === '') { // required
+    input_nmPessoa.value = 'input--invalid';
+    invalidInputs['nmPessoa'] = true;
+    nmPessoaMsg.value = 'Por favor digite o nome do aluno.';
+  }
+  // cpf
+  if (cpfCnpj.value === '' || cpfCnpj.value.length < 11) { // required + minlength 11
+    input_cpfCnpj.value = 'input--invalid';
+    invalidInputs['cpfCnpj'] = true;
+    cpfCnpjMsg.value = 'O CPF precisa ter pelo menos 11 números.';
+  } else if (!cpfValidator(cpfCnpj.value)) {
+    input_cpfCnpj.value = 'input--invalid';
+    invalidInputs['cpfCnpj'] = true;
+    cpfCnpjMsg.value = 'O CPF digitado não é válido.';
+  } else {  // look if cpf is duplicated
+    const studentsCpfCnpj = await getCpfCnpj(axios);
+    if (studentsCpfCnpj.includes(cpfCnpj.value)) {
+      input_cpfCnpj.value = 'input--invalid';
+      invalidInputs['cpfCnpj'] = true;
+      cpfCnpjMsg.value = 'O CPF digitado já foi cadastrado.';
+    }
+  }
+  // rg/uf
+  if (rg.value !== '' || ufRG.value !== '') {
+    if (ufRG.value === '') {
+      input_ufRG.value = 'input--invalid';
+      invalidInputs['ufRG'] = true;
+      ufMsg.value = 'Não nulo.';
+    } else if (rg.value === '') {
+      input_rg.value = 'input--invalid';
+      invalidInputs['rg'] = true;
+      rgMsg.value = 'O RG não pode ser nulo.';
+    } else {  // look if rg is duplicated based on UF
+      const studentsRgUFs = await getRgUF(axios, ufRG.value);
+      if (studentsRgUFs.includes(rg.value)) {
+        input_rg.value = 'input--invalid';
+        invalidInputs['rg'] = true;
+        rgMsg.value = `O RG já foi cadastrado em ${ufRG.value}.`;
+      }
+    }
+  }
+  // telefone
+  if (telefone.value !== '' && telefone.value.length < 11) {
+    input_telefone.value = 'input--invalid';
+    invalidInputs['telefone'] = true;
+    telefoneMsg.value = 'O telefone está incompleto.';
+  }
+  // email
+  if (dsEmail.value === '') { // required
+    input_dsEmail.value = 'input--invalid';
+    invalidInputs['dsEmail'] = true;
+    dsEmailMsg.value = 'Por favor digite o Email do aluno.';
+  }
+  // sexo
+  if (sexo.value === '') {
+    input_sexo.value = 'input--invalid';
+    invalidInputs['sexo'] = true;
+    sexoMsg.value = 'Por favor informe um sexo.';
+  }
+  // altura
+  if (altura.value === '') {
+    input_altura.value = 'input--invalid';
+    invalidInputs['altura'] = true;
+    alturaMsg.value = 'Por favor informe uma altura.';
+  }
+
+  // verify if there is any input error, then continues if not
+  if (Object.keys(invalidInputs).length > 0) {
+    console.log('tem erro na tela');
+    console.log(Object.keys(invalidInputs).length);
+    return;  // AQUI ELE PARA
+  }
+  // PAROU NO RETURN ACIMA, SÓ CONTINUA SE N TIVER ERRO
+
+  // transform the values that can break the db
+  let telefoneTransformed = null;
+  let alturaTransformed = null;
+  let pesoTransformed = null;
+  if (telefone.value !== null) {
+    const cleannedTelefone = telefone.value.replace(/\D/g, '');
+    telefoneTransformed = cleannedTelefone; // telefone only digits
+  }
+  if (altura.value !== null) {
+    const cleannedAltura = altura.value.replace(/\D/g, '');
+    const alturaInteger = parseInt(cleannedAltura, 10);
+    alturaTransformed = alturaInteger; // altura as INT
+  }
+  if (peso.value !== null) {
+    const cleannedPeso = peso.value.replace(/[^\d.]/g, '');
+    const pesoFloat = parseFloat(cleannedPeso);
+    pesoTransformed = pesoFloat; // peso as FLOAT
+  }
+  // get the current date and time
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString();
+  // axios post the form
+  // postStudent(axios, telefoneTransformed, alturaTransformed, pesoTransformed, formattedDate);
+
+  if (props.cpfCnpjList.includes(cpfCnpj.value) && !cpfValidator(cpfCnpj.value)) { // check for cpf duplicates
+
+  }
+  if (!cpfValidator(cpfCnpj.value)) {
+    cpfCnpjInvalidMsg.value = 'O cpf digitado não é válido!';
+  } else {
+    cpfCnpjInvalidMsg.value = 'O cpf digitado já foi cadastrado!';
+  }
+  console.error(!cpfValidator(cpfCnpj.value) ? 'Cpf inválido' : 'ERRO: ESTE CPF JÁ EXISTE NO BANCO DE DADOS!');
+  input_cpfCnpj.value = 'input--invalid';
+
+};
 
 // Watches
-
-// capitalize first letter of each word in the name
 watch(nmPessoa, (newValue) => {
+  if (input_nmPessoa.value === 'input--invalid') {  // validator
+    input_nmPessoa.value = 'input--valid';
+    delete invalidInputs.nmPessoa;
+  } else if (input_nmPessoa.value === 'input--valid' && newValue === '') {
+    input_nmPessoa.value = 'input--invalid';
+    invalidInputs['nmPessoa'] = true;
+  }
+  // capitalize first letter of each word in the name
   const cleannedValue = newValue.replace(/\b\w/g, (match) => match.toUpperCase());
   nmPessoa.value = cleannedValue;
-})
+});
 
 watch(cpfCnpj, (newValue) => {
+  if (cpfCnpj.value.length === 11 && input_cpfCnpj.value === 'input--invalid') {  // validator
+    input_cpfCnpj.value = 'input--valid';
+    delete invalidInputs.cpfCnpj;
+  } else if (input_cpfCnpj.value !== 'input--null' && cpfCnpj.value.length < 11) {
+    input_cpfCnpj.value = 'input--invalid';
+    invalidInputs['cpfCnpj'] = true;
+    cpfCnpjMsg.value = 'O CPF precisa ter pelo menos 11 números.';
+  }
+  // only numbers and maxlength 11
   const cleanedValue = newValue.replace(/[^0-9]/g, '');
   const restrictedValue = cleanedValue.substring(0, 11);
   cpfCnpj.value = restrictedValue;
 });
 
 watch(rg, (newValue) => {
+  // validators rg-uf
+  if ((ufRG.value !== '' && input_rg.value === 'input--valid') && rg.value === '') {
+    input_rg.value = 'input--invalid';
+    invalidInputs['rg'] = true;
+    rgMsg.value = 'O RG não pode ser nulo.';
+  }
+  if (input_rg.value === 'input--invalid' && rg.value !== '') {
+    input_rg.value = 'input--valid';
+    delete invalidInputs.rg;
+  }
+  if (input_rg.value === 'input--null' && input_ufRG.value === 'input--invalid') {
+    input_ufRG.value = 'input--null';
+    delete invalidInputs.ufRG;
+  }
+  if (input_ufRG.value === 'input--null' && (rg.value === '' && input_rg.value === 'input--valid')) {
+    input_rg.value = 'input--null';
+  }
+  // only numbers and maxlength 20
   const cleanedValue = newValue.replace(/[^0-9]/g, '');
   const restrictedValue = cleanedValue.substring(0, 20);
   rg.value = restrictedValue;
 });
 
-watch(ufRG, (newValue) => {
-  const cleanedValue = newValue.replace(/[^A-Za-z]/g, ''); // only allow letters (uppercase and lowercase)
-  const restrictedValue = cleanedValue.substring(0, 2).toUpperCase(); // restrict to the first two characters and convert to uppercase
-  ufRG.value = restrictedValue;
+watch(ufRG, (oldValue, newValue) => {
+  // validators uf-rg
+  if (ufRG.value !== '' && input_ufRG.value === 'input--invalid') {
+    input_ufRG.value = 'input--valid';
+    delete invalidInputs.ufRG;
+  }
+  if (ufRG.value === '' && input_rg.value === 'input--invalid') {
+    input_rg.value = 'input--null';
+    delete invalidInputs.rg;
+  }
+  if ((ufRG.value === '' && input_ufRG.value === 'input--valid') && (input_rg.value === 'input--valid' || input_rg.value === 'input--null')) {
+    input_ufRG.value = 'input--null';
+  }
+  if (newValue !== oldValue && input_rg.value === 'input--invalid') {
+    input_rg.value = 'input--valid';
+    delete invalidInputs.rg;
+  }
 });
 
 watch(telefone, (newValue) => {
@@ -67,7 +269,35 @@ watch(telefone, (newValue) => {
   telefone.value = formattedValue;
 });
 
+watch(dsEmail, () => {
+  const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+  if (input_dsEmail.value === 'input--invalid') {
+    if (!emailRegex.test(dsEmail.value)) {
+      invalidInputs['dsEmail'] = true;
+      input_dsEmail.value = 'input--invalid';
+    } else {
+      delete invalidInputs.dsEmail;
+      input_dsEmail.value = 'input--valid';
+    }
+  }
+});
+
+watch(sexo, () => {
+  if (input_sexo.value === 'input--invalid') {  // validator
+    input_sexo.value = 'input--valid';
+    delete invalidInputs.sexo;
+  }
+});
+
 watch(altura, (newValue) => {
+  if (input_altura.value === 'input--invalid') {  // validator
+    input_altura.value = 'input--valid';
+    delete invalidInputs.altura;
+  } else if (input_altura.value === 'input--valid' && newValue === '') {
+    input_altura.value = 'input--invalid';
+    invalidInputs['altura'] = true;
+  }
+  // only numbers and maxlength 3 + format altura
   const cleannedValue = newValue.replace(/[^0-9]/g, '');
   const restrictedValue = cleannedValue.substring(0, 3);
   const formattedValue = formatAltura(restrictedValue);
@@ -103,71 +333,6 @@ watch(peso, (newValue) => { // transform peso in 0-3 int numbers and 0-2 decimal
 //   peso.value = restrictedValue;
 // });
 
-// Functions
-// close the create tab
-function closeCreate() {
-  // emit('isCreateStudentActive', false);
-  // bodyElement.value.style.overflow = 'auto';
-  location.reload();
-};
-
-// create a new student
-function createStudent() {
-  // transform the values that can break the db
-  let telefoneTransformed = null;
-  let alturaTransformed = null;
-  let pesoTransformed = null;
-  if (telefone.value !== null) {
-    const cleannedTelefone = telefone.value.replace(/\D/g, '');
-    telefoneTransformed = cleannedTelefone; // telefone only digits
-  }
-  if (altura.value !== null) {
-    const cleannedAltura = altura.value.replace(/\D/g, '');
-    const alturaInteger = parseInt(cleannedAltura, 10);
-    alturaTransformed = alturaInteger; // altura as INT
-  }
-  if (peso.value !== null) {
-    const cleannedPeso = peso.value.replace(/[^\d.]/g, '');
-    const pesoFloat = parseFloat(cleannedPeso);
-    pesoTransformed = pesoFloat; // peso as FLOAT
-  }
-
-  // get the current date and time
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString();
-
-  // axios post the form
-  console.log('CRIANDO ALUNO...');
-  if (!props.cpfCnpjList.includes(cpfCnpj.value) && cpfValidator(cpfCnpj.value)) { // check for cpf duplicates
-    axios.post('/student', {
-      "nmPessoa": nmPessoa.value,
-      "ativo": true, // default: true
-      "ser": "AL", // default: Aluno (AL)
-      "tipoPessoa": "F", // default: Pessoa Física (F)
-      "cpfCnpj": cpfCnpj.value,
-      "rg": rg.value,
-      "ufRG": ufRG.value,
-      "dtNascimento": dtNascimento.value,
-      "dsObs": dsObs.value,
-      "dsEmail": dsEmail.value,
-      "telefone": telefoneTransformed,
-      "altura": alturaTransformed,
-      "sexo": sexo.value,
-      "fotoAluno": null,
-      "peso": pesoTransformed,
-      "dtData": formattedDate // current date and time
-    }).then((res) => {
-      alert(res.data);
-      console.log('ALUNO CRIADO COM SUCESSO..');
-      location.reload();
-    }).catch((err) => {
-      console.error(err);
-    });
-  } else {
-    console.error(!cpfValidator(cpfCnpj.value) ? 'Cpf inválido' : 'ERRO: ESTE CPF JÁ EXISTE NO BANCO DE DADOS!');
-  }
-};
-
 // DOM Mount
 onMounted(() => {
   bodyElement.value = document.body;
@@ -197,54 +362,72 @@ onMounted(() => {
         <!-- Início do cadastro -->
         <div class="form__container__nmPessoa">
           <label for="nmPessoa">Nome completo <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
-          <input v-model="nmPessoa" type="text" id="nmPessoa" maxlength="60" placeholder="Digite o nome do aluno"
-            required>
+          <input v-model="nmPessoa" :class="input_nmPessoa" type="text" id="nmPessoa" maxlength="60"
+            placeholder="Digite o nome do aluno">
+          <p v-show="input_nmPessoa === 'input--invalid'" class="invalid--msg">{{ nmPessoaMsg }}</p>
         </div>
 
 
-        <div class="form__container__cpf-rg">
-          <div class="form__container__cpf-rg__cpfCnpj">
+        <div class="form__container__cpf-rg-uf">
+          <div class="form__container__cpf-rg-uf__cpfCnpj">
             <label for="cpfCnpj">CPF <abbr title="VALOR NECESSÁRIO | Apenas números" class="required">*</abbr> </label>
-            <input v-model="cpfCnpj" type="text" id="cpfCnpj" minlength="11" placeholder="Digite o CPF do aluno" required>
+            <input v-model="cpfCnpj" :class="input_cpfCnpj" type="text" id="cpfCnpj" placeholder="Digite o CPF do aluno">
+            <p v-show="input_cpfCnpj === 'input--invalid'" class="invalid--msg">{{ cpfCnpjMsg }}</p>
           </div>
-          <div class="form__container__cpf-rg__rg">
-            <label for="rg">RG</label>
-            <input v-model="rg" type="text" id="rg" placeholder="Digite o RG do aluno">
+          <div class="form__container__cpf-rg-uf__rg-uf">
+            <div class="form__container__cpf-rg-uf__rg-uf__rg">
+              <label for="rg">RG</label>
+              <input v-model="rg" :class="input_rg" type="text" id="rg" placeholder="Digite o RG do aluno">
+              <p v-show="input_rg === 'input--invalid'" class="invalid--msg">{{ rgMsg }}</p>
+            </div>
+
+            <div class="form__container__cpf-rg-uf__rg-uf__ufRG">
+              <label for="ufRG">UF</label>
+              <select v-model="ufRG" :class="input_ufRG" id="ufRG">
+                <option v-for="uf in ufList" :value="uf">{{ uf }}</option>
+              </select>
+              <p v-show="input_ufRG === 'input--invalid'" class="invalid--msg">{{ ufMsg }}</p>
+            </div>
           </div>
         </div>
 
         <div class="form__container__tel-email">
           <div class="form__container__tel-email__telefone">
             <label for="telefone">Telefone</label>
-            <input v-model="telefone" type="tel" id="telefone" minlength="11" maxlength="11" placeholder="(79)99999-9999">
+            <input v-model="telefone" :class="input_telefone" type="tel" id="telefone" maxlength="11"
+              placeholder="(79)99999-9999">
+            <p v-show="input_telefone === 'input--invalid'" class="invalid--msg">{{ telefoneMsg }}</p>
           </div>
 
           <div class="form__container__tel-email__dsEmail">
-            <label for="dsEmail">E-mail</label>
-            <input v-model="dsEmail" type="email" id="dsEmail" maxlength="80" placeholder="Digite o Email do aluno">
+            <label for="dsEmail">E-mail <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
+            <input v-model="dsEmail" :class="input_dsEmail" type="text" id="dsEmail" maxlength="80"
+              placeholder="Digite o Email do aluno">
+            <p v-show="input_dsEmail === 'input--invalid'" class="invalid--msg">{{ dsEmailMsg }}</p>
           </div>
         </div>
 
-        <div class="form__container__uf-data-sexo">
-          <div class="form__container__uf-data-sexo__ufRG">
-            <label for="ufRG">UF</label>
-            <!-- <input v-model="ufRG" type="text" id="ufRG" minlength="2" placeholder="SE"> -->
-            <select v-model="ufRG" id="ufRG">
-              <option v-for="uf in ufList" :value="uf">{{ uf }}</option>
-            </select>
-          </div>
-
-          <div class="form__container__uf-data-sexo__dtNascimento">
+        <div class="form__container__data-sexo-camisa">
+          <div class="form__container__data-sexo-camisa__dtNascimento">
             <label for="dtNascimento">Data Nascimento</label>
-            <input v-model="dtNascimento" type="date" id="dtNascimento">
+            <input v-model="dtNascimento" :class="input_dtNascimento" type="date" id="dtNascimento">
           </div>
 
-          <div class="form__container__uf-data-sexo__sexo">
+          <div class="form__container__data-sexo-camisa__sexo">
             <label for="sexo">Sexo Biológico <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
-            <select v-model="sexo" id="sexo" required>
+            <select v-model="sexo" :class="input_sexo" id="sexo">
               <option value="Masculino">Masculino</option>
               <option value="Feminino">Feminino</option>
             </select>
+            <p v-show="input_sexo === 'input--invalid'" class="invalid--msg">{{ sexoMsg }}</p>
+          </div>
+
+          <div class="form__container__data-sexo-camisa__nCamisa">
+            <label for="nCamisa">Nº Camisa <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
+            <select v-model="nCamisa" :class="input_camisa" id="nCamisa">
+              <option v-for="nCamisa in nCamisaList" :value="nCamisa">{{ nCamisa }}</option>
+            </select>
+            <p v-show="input_camisa === 'input--invalid'" class="invalid--msg">{{ camisaMsg }}</p>
           </div>
         </div>
 
@@ -253,18 +436,34 @@ onMounted(() => {
             <label for="altura">Altura(cm) <abbr
                 title="VALOR NECESSÁRIO | Digite pelo menos 3 números. A altura será representada em centímetros"
                 class="required">*</abbr> </label>
-            <input v-model="altura" type="text" id="altura" minlength="3" placeholder="180cm" required>
+            <input v-model="altura" :class="input_altura" type="text" id="altura" minlength="3" placeholder="180cm">
+            <p v-show="input_altura === 'input--invalid'" class="invalid--msg">{{ alturaMsg }}</p>
           </div>
 
           <div class="form__container__altura-peso__peso">
             <label for="peso">Peso(kg)</label>
-            <input v-model="peso" type="text" id="peso" placeholder="90.30kg">
+            <input v-model="peso" :class="input_peso" type="text" id="peso" placeholder="90.30kg">
+          </div>
+        </div>
+
+        <div class="form__container__freqCardio">
+          <div class="form__container__freqCardio__maxima">
+            <label for="fcMaxima">Freq. C. Máxima</label>
+            <input v-model="fcMaxima" :class="input_fcMaxima" type="text" id="fcRepouso"
+              placeholder="Frequência Cardíaca">
+          </div>
+
+          <div class="form__container__freqCardio__repouso">
+            <label for="fcRepouso">Freq. C. Repouso</label>
+            <input v-model="fcRepouso" :class="input_fcRepouso" type="text" id="fcRepouso"
+              placeholder="Frequência Cardíaca">
           </div>
         </div>
 
         <div class="form__container__dsObs">
           <label for="dsObs">Observação</label>
-          <textarea v-model="dsObs" id="dsObs" placeholder="Digite aqui se tiver alguma observação"></textarea>
+          <textarea v-model="dsObs" :class="input_dsObs" id="dsObs"
+            placeholder="Digite aqui se tiver alguma observação"></textarea>
         </div>
 
         <!-- SUBMIT -->
@@ -332,7 +531,7 @@ onMounted(() => {
       color: $txt-aside;
 
       @include mq(l) {
-        width: 500px;
+        width: 600px;
       }
 
       @include mq(s) {
@@ -391,42 +590,45 @@ onMounted(() => {
 
       &__nmPessoa {
         @include inputContainers();
-
-        input {
-          @include createInput();
-        }
       }
 
-      &__cpf-rg {
+      &__cpf-rg-uf {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
 
-        @include mq(xs-s) {
+        @include mq(s) {
           display: flex;
           flex-direction: column;
         }
 
         &__cpfCnpj {
           @include inputContainers();
-
-          input {
-            @include createInput();
-          }
         }
 
-        &__rg {
-          @include inputContainers();
+        &__rg-uf {
+          display: grid;
+          grid-template-columns: 1fr 80px;
+          gap: 20px;
 
-          input {
-            @include createInput();
+          @include mq(xs-s) {
+            display: flex;
+            flex-direction: column;
+          }
+
+          &__rg {
+            @include inputContainers();
+          }
+
+          &__ufRG {
+            @include inputContainers();
           }
         }
       }
 
       &__tel-email {
         display: grid;
-        grid-template-columns: 200px 1fr;
+        grid-template-columns: 200px 400px;
         gap: 20px;
 
         @include mq(l) {
@@ -440,28 +642,20 @@ onMounted(() => {
 
         &__telefone {
           @include inputContainers();
-
-          input {
-            @include createInput();
-          }
         }
 
         &__dsEmail {
           @include inputContainers();
-
-          input {
-            @include createInput();
-          }
         }
       }
 
-      &__uf-data-sexo {
+      &__data-sexo-camisa {
         display: grid;
-        grid-template-columns: 80px 150px 200px;
+        grid-template-columns: 150px 200px 80px;
         gap: 20px;
 
-        @include mq(l) {
-          grid-template-columns: 80px 1fr 1fr
+        @include mq(s) {
+          grid-template-columns: 150px 150px 80px;
         }
 
         @include mq(xs-s) {
@@ -469,28 +663,16 @@ onMounted(() => {
           flex-direction: column;
         }
 
-        &__ufRG {
-          @include inputContainers();
-
-          select {
-            @include createInput();
-          }
-        }
-
         &__dtNascimento {
           @include inputContainers();
-
-          input {
-            @include createInput();
-          }
         }
 
         &__sexo {
           @include inputContainers();
+        }
 
-          select {
-            @include createInput();
-          }
+        &__nCamisa {
+          @include inputContainers();
         }
       }
 
@@ -499,20 +681,36 @@ onMounted(() => {
         grid-template-columns: 200px 200px;
         gap: 20px;
 
+        @include mq(xs-s) {
+          display: flex;
+          flex-direction: column;
+        }
+
         &__altura {
           @include inputContainers();
-
-          input {
-            @include createInput();
-          }
         }
 
         &__peso {
           @include inputContainers();
+        }
+      }
 
-          input {
-            @include createInput();
-          }
+      &__freqCardio {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+
+        @include mq(xs-s) {
+          display: flex;
+          flex-direction: column;
+        }
+
+        &__maxima {
+          @include inputContainers();
+        }
+
+        &__repouso {
+          @include inputContainers();
         }
       }
 
@@ -529,6 +727,8 @@ onMounted(() => {
       &__submit {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
 
         input {
           @include submitButtons($validation, white);
@@ -557,5 +757,26 @@ onMounted(() => {
   font-size: 1.2rem;
   margin-left: 5px;
   text-decoration: none;
+}
+
+.input--valid {
+  border: 1px solid green;
+}
+
+.input--invalid {
+  border: 1px solid #F06548;
+}
+
+.input--null {
+  border: 1px solid $input-border;
+
+  &:focus {
+    border: 1px solid #7a85ac;
+  }
+}
+
+.invalid--msg {
+  color: #F06548;
+  font-size: .75rem;
 }
 </style>

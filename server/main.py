@@ -268,6 +268,18 @@ async def list_cpfCnpj():  # list all cpf and cnpj in database
     return cpfCnpj.serialize()
 
 
+# ------------------------------------------------------------------------------
+# cpfCnpj
+@app.get('/rg/{ufRG}')
+async def list_rg(ufRG):  # list all RG of specific UF in database
+    rg = di["db"].table('tbl_Pessoa as tp') \
+                 .select('tp.rg') \
+                 .where_not_null('tp.rg') \
+                 .where('tp.ufRG', '=', ufRG) \
+                 .lists('rg')
+    return rg.serialize()
+
+
 # @app.put('/person/{person_id}')
 # async def find_person(person_id, data: NewPerson):
 #     person = Person.find(person_id)

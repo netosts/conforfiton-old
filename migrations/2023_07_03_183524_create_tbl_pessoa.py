@@ -22,8 +22,8 @@ class CreateTblPessoa(Migration):
             table.boolean('isentoIE').nullable()
             table.date('dtNascimento').nullable()
             table.text('dsObs').nullable()
-            table.string('dsEmail', 80).nullable()
-            table.string('telefone', 11).nullable()
+            table.string('dsEmail', 80).nullable().unique()
+            table.string('telefone', 11).nullable().unique()
             table.timestamps()
             table.soft_deletes()
 

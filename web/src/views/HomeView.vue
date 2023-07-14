@@ -1,6 +1,7 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
 import StudentDetails from '../components/StudentDetails.vue';
+import { formatAge, formatTelefone } from '../assets/js/formatFunctions';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 
@@ -8,7 +9,6 @@ import axios from 'axios';
 // Variables
 const bodyElement = ref(null);
 const students = ref([]);
-const studentsCpfCnpj = ref([]);
 const isCreateStudentActive = ref(false);
 const studentDetails = ref(null);
 const studentsFilter = ref('ativos');
@@ -20,7 +20,6 @@ const inputFilter = ref('inputName');
 const handleCreate = (emittedValue) => {
   return isCreateStudentActive.value = emittedValue;
 };
-
 const handleDetails = (emittedValue) => {
   return isStudentDetailsActive.value = emittedValue;
 }
@@ -70,15 +69,6 @@ function getAllStudents(value) {
   });
 };
 
-// get all cpf/cnpj in database
-function getCpfCnpj() {
-  axios.get(`/cpfCnpj`).then((res) => {
-    studentsCpfCnpj.value = res.data;
-  }).catch((err) => {
-    console.error(err);
-  });
-};
-
 // get student by id from database
 function getStudent(ID_Pessoa) {
   axios.get(`/student/${ID_Pessoa}`).then((res) => {
@@ -90,62 +80,8 @@ function getStudent(ID_Pessoa) {
   });
 };
 
-// format functions
-function formatTelefone(phoneNumber) {
-  const tel = phoneNumber;
-
-  // extract the different parts of the phone number
-  const ddd = tel.slice(0, 2);
-  const firstPart = tel.slice(2, 7);
-  const secondPart = tel.slice(7, 11);
-
-  // create the formatted phone number string
-  const formattedPhoneNumber = `(${ddd})${firstPart}-${secondPart}`;
-
-  return formattedPhoneNumber;
-};
-
-function formatCpf(cpf) {
-
-  // extract the different parts of the cpf number
-  const firstPart = cpf.slice(0, 3);
-  const secondPart = cpf.slice(3, 6);
-  const thirdPart = cpf.slice(6, 9);
-  const lastPart = cpf.slice(9, 11);
-
-  // create the formatted cpf number string
-  const formattedCpfNumber = `${firstPart}.${secondPart}.${thirdPart}-${lastPart}`;
-
-  return formattedCpfNumber;
-};
-
-// transform dtNascimento YYYY-MM-DD into person's age
-function formatAge(value) {
-  const birthdate = value;
-  const today = new Date();
-
-  // extract the birthdate parts
-  const birthdateParts = birthdate.split('-');
-  const birthYear = parseInt(birthdateParts[0]);
-  const birthMonth = parseInt(birthdateParts[1]);
-  const birthDay = parseInt(birthdateParts[2]);
-
-  // calculate the person's age
-  let age = today.getFullYear() - birthYear;
-
-  // check if the current month and day are before the birth month and day
-  if (
-    today.getMonth() < birthMonth - 1 ||
-    (today.getMonth() === birthMonth - 1 && today.getDate() < birthDay)
-  ) {
-    age--;
-  }
-
-  return age;
-};
-
 // Watch
-function filterNget() {
+function filterNget() {  // show students based on filter
   if (studentsFilter.value === 'ativos') {
     getActiveStudents('%');
   } else if (studentsFilter.value === 'desativados') {
@@ -155,7 +91,7 @@ function filterNget() {
   }
 };
 
-watch(inputBar, (newValue) => {
+watch(inputBar, (newValue) => {  // show students based on input bar + filter
   if (studentsFilter.value === 'ativos') {
     getActiveStudents(newValue);
   } else if (studentsFilter.value === 'desativados') {
@@ -168,14 +104,13 @@ watch(inputBar, (newValue) => {
 // DOM Mounted
 onMounted(() => {
   getActiveStudents();
-  getCpfCnpj();
   bodyElement.value = document.body;
 });
 </script>
 
 <template>
   <main>
-    <CreateStudent :cpfCnpjList="studentsCpfCnpj" @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
+    <CreateStudent @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
 
     <div class="searchbox">
       <div class="searchbox__title">

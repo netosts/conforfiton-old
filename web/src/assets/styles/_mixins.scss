@@ -33,25 +33,27 @@
 }
 
 // CreateStudent.vue
-@mixin inputContainers() {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
 @mixin createInput() {
   padding: 8px 16px;
-  border: 1px solid $input-border;
   border-radius: $border-radius;
   outline: none;
   transition: 0.35s;
 
-  &:focus {
-    border: 1px solid #7a85ac;
-  }
-
   &::placeholder {
     color: $placeholder;
+  }
+}
+
+@mixin inputContainers() {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  input {
+    @include createInput();
+  }
+  select {
+    @include createInput();
   }
 }
 
