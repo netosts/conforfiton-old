@@ -1,6 +1,7 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
 import StudentDetails from '../components/StudentDetails.vue';
+import { getStudent } from '../services/students/index';
 import { formatAge, formatTelefone } from '../assets/js/formatFunctions';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
@@ -33,11 +34,11 @@ function toggleCreate() {
 
 // axios functions
 // get students from database
-function getActiveStudents(value) {
+function getActiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/students/active/${inputFilter.value}/${value}`).then((res) => {
+  axios.get(`/students/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
   }).catch((err) => {
@@ -45,11 +46,11 @@ function getActiveStudents(value) {
   });
 };
 
-function getInactiveStudents(value) {
+function getInactiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/students/inactive/${inputFilter.value}/${value}`).then((res) => {
+  axios.get(`/students/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
   }).catch((err) => {
@@ -57,24 +58,13 @@ function getInactiveStudents(value) {
   });
 };
 
-function getAllStudents(value) {
+function getAllStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/students/${inputFilter.value}/${value}`).then((res) => {
+  axios.get(`/students/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
     studentDetails.value = students.value[0];
-  }).catch((err) => {
-    console.error(err);
-  });
-};
-
-// get student by id from database
-function getStudent(ID_Pessoa) {
-  axios.get(`/student/${ID_Pessoa}`).then((res) => {
-    studentDetails.value = res.data;
-    isStudentDetailsActive.value = true;
-    bodyElement.value.style.overflow = isStudentDetailsActive.value ? 'hidden' : 'auto';
   }).catch((err) => {
     console.error(err);
   });
@@ -83,27 +73,35 @@ function getStudent(ID_Pessoa) {
 // Watch
 function filterNget() {  // show students based on filter
   if (studentsFilter.value === 'ativos') {
-    getActiveStudents('%');
+    getActiveStudents('%', 5);
   } else if (studentsFilter.value === 'desativados') {
-    getInactiveStudents('%');
+    getInactiveStudents('%', 5);
   } else if (studentsFilter.value === 'todos') {
-    getAllStudents('%');
+    getAllStudents('%', 5);
   }
 };
 
 watch(inputBar, (newValue) => {  // show students based on input bar + filter
-  if (studentsFilter.value === 'ativos') {
-    getActiveStudents(newValue);
-  } else if (studentsFilter.value === 'desativados') {
-    getInactiveStudents(newValue)
-  } else if (studentsFilter.value === 'todos') {
-    getAllStudents(newValue);
+  if (studentsFilter.value === 'ativos' && newValue !== '') {
+    getActiveStudents(newValue, 100);
+  } else if (studentsFilter.value === 'ativos' && newValue === '') {
+    getActiveStudents('%', 5);
+  }
+  if (studentsFilter.value === 'desativados' && newValue !== '') {
+    getInactiveStudents(newValue, 100);
+  } else if (studentsFilter.value === 'desativados' && newValue === '') {
+    getInactiveStudents('%', 5);
+  }
+  if (studentsFilter.value === 'todos' && newValue !== '') {
+    getAllStudents(newValue, 100);
+  } else if (studentsFilter.value === 'todos' && newValue === '') {
+    getAllStudents('%', 5);
   }
 });
 
 // DOM Mounted
 onMounted(() => {
-  getActiveStudents();
+  getActiveStudents('%', 5);
   bodyElement.value = document.body;
 });
 </script>
@@ -193,7 +191,9 @@ onMounted(() => {
                   <font-awesome-icon icon="fa-solid fa-envelope" />
                   {{ student.dsEmail }}
                 </p>
-                <button @click="getStudent(student.ID_Pessoa)">Mais Detalhes</button>
+                <RouterLink :to="'/student/' + student.ID_Pessoa">
+                  <button>Mais Detalhes</button>
+                </RouterLink>
               </div>
             </div>
           </div>

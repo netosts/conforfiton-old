@@ -1,7 +1,6 @@
 export function postStudent(axios, telefoneTransformed, alturaTransformed, pesoTransformed, formattedDate) {
   axios.post('/student', {
     "nmPessoa": nmPessoa.value,
-    "ativo": true, // default: true
     "ser": "AL", // default: Aluno (AL)
     "tipoPessoa": "F", // default: Pessoa Física (F)
     "cpfCnpj": cpfCnpj.value,
