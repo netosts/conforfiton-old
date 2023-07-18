@@ -99,3 +99,21 @@ export function cpfValidator(value) {
 
   return true;
 };
+
+// date of birth validator
+export function dateValidator(dateOfBirth) {
+  // check if the date is in correct format
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(dateOfBirth)) {
+    return false;
+  }
+  // check if the date is in the past
+  const now = new Date();
+  const birthDate = new Date(dateOfBirth);
+  if (birthDate > now) {
+    return false;
+  }
+
+  // the date is valid
+  return true;
+};

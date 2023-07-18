@@ -87,30 +87,12 @@ async def home():
 
 # ------------------------------------------------------------------------------
 # Students
-@app.get('/students/{inputFilter}/{inputBar}')  # list all students
-async def list_students(inputFilter, inputBar):
+@app.get('/students/active/{inputFilter}/{inputBar}/{limit}')  # get active students with input bar value
+async def inputbar_active_students(inputFilter, inputBar, limit):
     # tp = pessoa
     # tp2 = peso
     # ta = aluno
-    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
-
-    students = di["db"].table('tbl_Pessoa as tp') \
-                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
-                       .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
-                       .order_by('tp.created_at', 'desc') \
-                       .limit(5) \
-                       .get()
-    
-    return students.serialize()
-
-
-@app.get('/students/active/{inputFilter}/{inputBar}')  # get active students with input bar value
-async def inputbar_active_students(inputFilter, inputBar):
-    # tp = pessoa
-    # tp2 = peso
-    # ta = aluno
+    limit = int(limit)
     max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
     students = di["db"].table('tbl_Pessoa as tp') \
@@ -120,27 +102,48 @@ async def inputbar_active_students(inputFilter, inputBar):
                        .where_null('tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
-                       .limit(5) \
+                       .limit(limit) \
                        .get()
     
     return students.serialize()
 
 
-@app.get('/students/inactive/{inputFilter}/{inputBar}')  # get active students with input bar value
-async def inputbar_active_students(inputFilter, inputBar):
+@app.get('/students/inactive/{inputFilter}/{inputBar}/{limit}')  # get active students with input bar value
+async def inputbar_active_students(inputFilter, inputBar, limit):
     # tp = pessoa
     # tp2 = peso
     # ta = aluno
+    limit = int(limit)
     max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
     students = di["db"].table('tbl_Pessoa as tp') \
                        .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
                        .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
+                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
                        .where_not_null('tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
-                       .limit(5) \
+                       .limit(limit) \
+                       .get()
+    
+    return students.serialize()
+
+
+@app.get('/students/{inputFilter}/{inputBar}/{limit}')  # list all students
+async def list_students(inputFilter, inputBar, limit):
+    # tp = pessoa
+    # tp2 = peso
+    # ta = aluno
+    limit = int(limit)
+    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
+
+    students = di["db"].table('tbl_Pessoa as tp') \
+                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
+                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
+                       .order_by('tp.created_at', 'desc') \
+                       .limit(limit) \
                        .get()
     
     return students.serialize()

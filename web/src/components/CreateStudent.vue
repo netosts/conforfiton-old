@@ -1,8 +1,8 @@
 <script setup>
-import { formatTelefone, formatAltura, cpfValidator } from '../assets/js/formatFunctions';
+import { formatTelefone, formatAltura, cpfValidator, dateValidator } from '../assets/js/formatFunctions';
 import { getCpfCnpj, getRgUF } from '../assets/js/axiosGets';
 import { postStudent } from '../assets/js/axiosPost';
-import { ref, watch, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
 import axios from 'axios';
 
 
@@ -10,6 +10,22 @@ import axios from 'axios';
 const bodyElement = ref(null);
 const submitted = ref(false);
 // form variables
+const form = reactive({
+  nmPessoa: '',
+  cpfCnpj: '',
+  rg: '',
+  ufRG: '',
+  telefone: '',
+  dsEmail: '',
+  dtNascimento: '',
+  sexo: '',
+  nCamisa: '',
+  altura: '',
+  peso: '',
+  fcMaxima: '',
+  fcRepouso: '',
+  dsObs: '',
+});
 const nmPessoa = ref('');
 const cpfCnpj = ref('');
 const rg = ref('');
@@ -26,6 +42,22 @@ const fcRepouso = ref('');
 const dsObs = ref('');
 // form classess
 const invalidInputs = {};
+const input = ref({
+  nmPessoa: { classInput: 'input--null', msg: '' },
+  cpfCnpj: { classInput: 'input--null', msg: '' },
+  rg: { classInput: 'input--null', msg: '' },
+  ufRG: { classInput: 'input--null', msg: '' },
+  telefone: { classInput: 'input--null', msg: '' },
+  dsEmail: { classInput: 'input--null', msg: '' },
+  dtNascimento: { classInput: 'input--null', msg: '' },
+  sexo: { classInput: 'input--null', msg: '' },
+  nCamisa: { classInput: 'input--null', msg: '' },
+  altura: { classInput: 'input--null', msg: '' },
+  peso: { classInput: 'input--null', msg: '' },
+  fcMaxima: { classInput: 'input--null', msg: '' },
+  fcRepouso: { classInput: 'input--null', msg: '' },
+  dsObs: { classInput: 'input--null', msg: '' },
+});
 const input_nmPessoa = ref('input--null');
 const input_cpfCnpj = ref('input--null');
 const input_rg = ref('input--null');
@@ -47,6 +79,7 @@ const rgMsg = ref(null);
 const ufMsg = ref(null);
 const telefoneMsg = ref(null);
 const dsEmailMsg = ref(null);
+const dtNascimentoMsg = ref(null);
 const sexoMsg = ref(null);
 const nCamisaMsg = ref(null);
 const alturaMsg = ref(null);
@@ -75,11 +108,13 @@ function closeCreate() {
 
 // create a new student
 async function createStudent() {
+  console.log(form);
+  console.log(form.nmPessoa);
   submitted.value = true;
   console.log('CRIANDO ALUNO...');
   // validators
   // name
-  if (nmPessoa.value === '') { // required
+  if (form.nmPessoa === '') { // required
     input_nmPessoa.value = 'input--invalid';
     invalidInputs['nmPessoa'] = true;
     nmPessoaMsg.value = 'Por favor digite o nome do aluno.';
@@ -132,6 +167,12 @@ async function createStudent() {
     invalidInputs['dsEmail'] = true;
     dsEmailMsg.value = 'Por favor digite o Email do aluno.';
   }
+  // data nascimento
+  if (dtNascimento.value !== '' && !dateValidator(dtNascimento.value)) {  // nullable + validate
+    input_dtNascimento.value = 'input--invalid';
+    invalidInputs['dtNascimento'] = true;
+    dtNascimentoMsg.value = 'Data inválida.';
+  }
   // sexo
   if (sexo.value === '') {  // required
     input_sexo.value = 'input--invalid';
@@ -173,6 +214,7 @@ async function createStudent() {
   if (telefone.value !== '') {
     const cleannedTelefone = telefone.value.replace(/\D/g, '');
     telefoneTransformed = cleannedTelefone; // telefone only digits
+    form.telefone = telefoneTransformed;
   }
 
   const cleannedAltura = altura.value.replace(/\D/g, '');
@@ -188,7 +230,7 @@ async function createStudent() {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString();
   // axios post the form
-  // postStudent(axios, telefoneTransformed, alturaTransformed, pesoTransformed, formattedDate);
+  postStudent(axios, telefoneTransformed, alturaTransformed, pesoTransformed, formattedDate);
 };
 
 // Watches
@@ -294,6 +336,18 @@ watch(dsEmail, () => {  // validate dsEmail input
   }
 });
 
+watch(dtNascimento, () => {  // validate date of birth
+  if (input_dtNascimento.value === 'input--invalid' && dateValidator(dtNascimento.value)) {
+    input_dtNascimento.value = 'input--valid';
+    delete invalidInputs.dtNascimento;
+  } else if (input_dtNascimento.value === 'input--invalid' && dtNascimento.value === '') {
+    input_dtNascimento.value = 'input--null';
+    delete invalidInputs.dtNascimento;
+  } else if (input_dtNascimento.value === 'input--valid' && dtNascimento.value === '') {
+    input_dtNascimento.value = 'input--null';
+  }
+});
+
 watch(sexo, () => {  // validate sexo input
   if (input_sexo.value === 'input--invalid') {
     input_sexo.value = 'input--valid';
@@ -366,6 +420,9 @@ watch(peso, (newValue) => {  // validate peso input
 //   peso.value = restrictedValue;
 // });
 
+// Functions
+// function validate
+
 // DOM Mount
 onMounted(() => {
   bodyElement.value = document.body;
@@ -395,31 +452,32 @@ onMounted(() => {
         <!-- Início do cadastro -->
         <div class="form__container__nmPessoa">
           <label for="nmPessoa">Nome completo <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
-          <input v-model="nmPessoa" :class="input_nmPessoa" type="text" id="nmPessoa" maxlength="60"
+          <!-- <input v-model="form.nmPessoa" :class="input_nmPessoa" type="text" id="nmPessoa" maxlength="60"
             placeholder="Digite o nome do aluno">
-          <p v-show="input_nmPessoa === 'input--invalid'" class="invalid--msg">{{ nmPessoaMsg }}</p>
+          <span v-show="input_nmPessoa === 'input--invalid'" class="invalid--msg">{{ nmPessoaMsg }}</span> -->
         </div>
 
 
         <div class="form__container__cpf-rg-uf">
           <div class="form__container__cpf-rg-uf__cpfCnpj">
             <label for="cpfCnpj">CPF <abbr title="VALOR NECESSÁRIO | Apenas números" class="required">*</abbr> </label>
-            <input v-model="cpfCnpj" :class="input_cpfCnpj" type="text" id="cpfCnpj" placeholder="Digite o CPF do aluno">
-            <p v-show="input_cpfCnpj === 'input--invalid'" class="invalid--msg">{{ cpfCnpjMsg }}</p>
+            <input v-model.number="form.cpfCnpj" :class="input_cpfCnpj" type="text" id="cpfCnpj"
+              placeholder="Digite o CPF do aluno">
+            <span v-show="input_cpfCnpj === 'input--invalid'" class="invalid--msg">{{ cpfCnpjMsg }}</span>
           </div>
           <div class="form__container__cpf-rg-uf__rg-uf">
             <div class="form__container__cpf-rg-uf__rg-uf__rg">
               <label for="rg">RG</label>
-              <input v-model="rg" :class="input_rg" type="text" id="rg" placeholder="Digite o RG do aluno">
-              <p v-show="input_rg === 'input--invalid'" class="invalid--msg">{{ rgMsg }}</p>
+              <input v-model="form.rg" :class="input_rg" type="text" id="rg" placeholder="Digite o RG do aluno">
+              <span v-show="input_rg === 'input--invalid'" class="invalid--msg">{{ rgMsg }}</span>
             </div>
 
             <div class="form__container__cpf-rg-uf__rg-uf__ufRG">
               <label for="ufRG">UF</label>
-              <select v-model="ufRG" :class="input_ufRG" id="ufRG">
+              <select v-model="form.ufRG" :class="input_ufRG" id="ufRG">
                 <option v-for="uf in ufList" :value="uf">{{ uf }}</option>
               </select>
-              <p v-show="input_ufRG === 'input--invalid'" class="invalid--msg">{{ ufMsg }}</p>
+              <span v-show="input_ufRG === 'input--invalid'" class="invalid--msg">{{ ufMsg }}</span>
             </div>
           </div>
         </div>
@@ -427,40 +485,41 @@ onMounted(() => {
         <div class="form__container__tel-email">
           <div class="form__container__tel-email__telefone">
             <label for="telefone">Telefone</label>
-            <input v-model="telefone" :class="input_telefone" type="tel" id="telefone" maxlength="11"
+            <input v-model="form.telefone" :class="input_telefone" type="tel" id="telefone" maxlength="11"
               placeholder="(79)99999-9999">
-            <p v-show="input_telefone === 'input--invalid'" class="invalid--msg">{{ telefoneMsg }}</p>
+            <span v-show="input_telefone === 'input--invalid'" class="invalid--msg">{{ telefoneMsg }}</span>
           </div>
 
           <div class="form__container__tel-email__dsEmail">
             <label for="dsEmail">E-mail <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
-            <input v-model="dsEmail" :class="input_dsEmail" type="text" id="dsEmail" maxlength="80"
+            <input v-model="form.dsEmail" :class="input_dsEmail" type="text" id="dsEmail" maxlength="80"
               placeholder="Digite o Email do aluno">
-            <p v-show="input_dsEmail === 'input--invalid'" class="invalid--msg">{{ dsEmailMsg }}</p>
+            <span v-show="input_dsEmail === 'input--invalid'" class="invalid--msg">{{ dsEmailMsg }}</span>
           </div>
         </div>
 
         <div class="form__container__data-sexo-camisa">
           <div class="form__container__data-sexo-camisa__dtNascimento">
             <label for="dtNascimento">Data Nascimento</label>
-            <input v-model="dtNascimento" :class="input_dtNascimento" type="date" id="dtNascimento">
+            <input v-model="form.dtNascimento" :class="input_dtNascimento" type="date" id="dtNascimento">
+            <span v-show="input_dtNascimento === 'input--invalid'" class="invalid--msg">{{ dtNascimentoMsg }}</span>
           </div>
 
           <div class="form__container__data-sexo-camisa__sexo">
             <label for="sexo">Sexo Biológico <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
-            <select v-model="sexo" :class="input_sexo" id="sexo">
+            <select v-model="form.sexo" :class="input_sexo" id="sexo">
               <option value="Masculino">Masculino</option>
               <option value="Feminino">Feminino</option>
             </select>
-            <p v-show="input_sexo === 'input--invalid'" class="invalid--msg">{{ sexoMsg }}</p>
+            <span v-show="input_sexo === 'input--invalid'" class="invalid--msg">{{ sexoMsg }}</span>
           </div>
 
           <div class="form__container__data-sexo-camisa__nCamisa">
             <label for="nCamisa">Nº Camisa <abbr title="VALOR NECESSÁRIO" class="required">*</abbr> </label>
-            <select v-model="nCamisa" :class="input_nCamisa" id="nCamisa">
+            <select v-model="form.nCamisa" :class="input_nCamisa" id="nCamisa">
               <option v-for="nCamisa in nCamisaList" :value="nCamisa">{{ nCamisa }}</option>
             </select>
-            <p v-show="input_nCamisa === 'input--invalid'" class="invalid--msg">{{ nCamisaMsg }}</p>
+            <span v-show="input_nCamisa === 'input--invalid'" class="invalid--msg">{{ nCamisaMsg }}</span>
           </div>
         </div>
 
@@ -469,13 +528,13 @@ onMounted(() => {
             <label for="altura">Altura(cm) <abbr
                 title="VALOR NECESSÁRIO | Digite pelo menos 3 números. A altura será representada em centímetros"
                 class="required">*</abbr> </label>
-            <input v-model="altura" :class="input_altura" type="text" id="altura" placeholder="180cm">
+            <input v-model="form.altura" :class="input_altura" type="text" id="altura" placeholder="180cm">
             <p v-show="input_altura === 'input--invalid'" class="invalid--msg">{{ alturaMsg }}</p>
           </div>
 
           <div class="form__container__altura-peso__peso">
             <label for="peso">Peso(kg)</label>
-            <input v-model="peso" :class="input_peso" type="text" id="peso" placeholder="90.30kg">
+            <input v-model="form.peso" :class="input_peso" type="text" id="peso" placeholder="90.30kg">
             <p v-show="input_peso === 'input--invalid'" class="invalid--msg">{{ pesoMsg }}</p>
           </div>
         </div>
@@ -483,20 +542,20 @@ onMounted(() => {
         <div class="form__container__freqCardio">
           <div class="form__container__freqCardio__maxima">
             <label for="fcMaxima">Freq. C. Máxima</label>
-            <input v-model="fcMaxima" :class="input_fcMaxima" type="text" id="fcRepouso"
+            <input v-model="form.fcMaxima" :class="input_fcMaxima" type="text" id="fcRepouso"
               placeholder="Frequência Cardíaca">
           </div>
 
           <div class="form__container__freqCardio__repouso">
             <label for="fcRepouso">Freq. C. Repouso</label>
-            <input v-model="fcRepouso" :class="input_fcRepouso" type="text" id="fcRepouso"
+            <input v-model="form.fcRepouso" :class="input_fcRepouso" type="text" id="fcRepouso"
               placeholder="Frequência Cardíaca">
           </div>
         </div>
 
         <div class="form__container__dsObs">
           <label for="dsObs">Observação</label>
-          <textarea v-model="dsObs" :class="input_dsObs" id="dsObs"
+          <textarea v-model="form.dsObs" :class="input_dsObs" id="dsObs"
             placeholder="Digite aqui se tiver alguma observação"></textarea>
         </div>
 
