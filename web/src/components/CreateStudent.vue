@@ -6,11 +6,6 @@ import { ref, reactive, watch, onMounted } from 'vue';
 import axios from 'axios';
 
 
-const model = ref('')
-const reset = () => {
-  model.value = '';
-}
-
 // Variables
 const bodyElement = ref(null);
 const submitted = ref(false);
