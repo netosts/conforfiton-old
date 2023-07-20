@@ -1,8 +1,6 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
-import StudentDetails from '../components/StudentDetails.vue';
-import { getStudent } from '../services/students/index';
-import { formatAge, formatTelefone } from '../assets/js/formatFunctions';
+import { formatAge, formatTelefone } from '../services/validators/formats';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 
@@ -11,9 +9,7 @@ import axios from 'axios';
 const bodyElement = ref(null);
 const students = ref([]);
 const isCreateStudentActive = ref(false);
-const studentDetails = ref(null);
 const studentsFilter = ref('ativos');
-const isStudentDetailsActive = ref(false);
 const inputBar = ref('');
 const inputFilter = ref('inputName');
 
@@ -21,9 +17,6 @@ const inputFilter = ref('inputName');
 const handleCreate = (emittedValue) => {
   return isCreateStudentActive.value = emittedValue;
 };
-const handleDetails = (emittedValue) => {
-  return isStudentDetailsActive.value = emittedValue;
-}
 
 // Functions
 // toggle the create student form
@@ -40,7 +33,6 @@ function getActiveStudents(value, limit) {
   }
   axios.get(`/students/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
-    studentDetails.value = students.value[0];
   }).catch((err) => {
     console.error(err);
   });
@@ -52,7 +44,6 @@ function getInactiveStudents(value, limit) {
   }
   axios.get(`/students/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
-    studentDetails.value = students.value[0];
   }).catch((err) => {
     console.error(err);
   });
@@ -64,7 +55,6 @@ function getAllStudents(value, limit) {
   }
   axios.get(`/students/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
-    studentDetails.value = students.value[0];
   }).catch((err) => {
     console.error(err);
   });
@@ -199,9 +189,6 @@ onMounted(() => {
           </div>
         </section>
       </div>
-
-      <StudentDetails :studentDetails="studentDetails" @isStudentDetailsActive="handleDetails"
-        v-show="isStudentDetailsActive" />
     </div>
   </main>
 </template>
@@ -314,10 +301,6 @@ main {
       border-radius: $border-radius;
       cursor: pointer;
       color: $txt-title;
-
-      @include mq(m) {
-        width: 100%;
-      }
     }
   }
 
@@ -395,6 +378,7 @@ main {
 
             &__info {
               display: flex;
+              flex-wrap: wrap;
               gap: 5px;
               font-size: .9rem;
               color: $txt-aside;

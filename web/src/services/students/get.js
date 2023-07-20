@@ -1,3 +1,13 @@
+// get specific student by id
+export function getStudent(axios, ID_Pessoa) {
+  return axios.get(`/student/${ID_Pessoa}`)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error(err);
+    throw err;
+  });
+};
+
 // get all cpf/cnpj in database
 export function getCpfCnpj(axios) {
   return axios.get(`/cpfCnpj`)

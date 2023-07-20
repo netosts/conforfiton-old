@@ -8,11 +8,16 @@ class CreateTblAluno(Migration):
         Run the migrations.
         """
         with self.schema.create('tbl_Aluno') as table:
-            table.integer('ID_Pessoa').unsigned()
-            table.foreign('ID_Pessoa').references('ID_Pessoa').on('tbl_Pessoa').unique()
-            table.integer('altura')
+            table.integer('ID_Pessoa').unsigned().unique()
+            table.foreign('ID_Pessoa').references('ID_Pessoa').on('tbl_Pessoa')
+            table.small_integer('altura')  # limite 3
             table.string('sexo', 15)
-            table.json('fotoAluno').nullable()
+            table.string('tmCamisa', 3).nullable()
+            table.text('fotoAluno').nullable()
+            table.integer('ID_Empresa').unsigned()
+            table.foreign('ID_Empresa').references('ID_Pessoa').on('tbl_Pessoa')
+            table.integer('ID_Personal').unsigned()
+            table.foreign('ID_Personal').references('ID_Pessoa').on('tbl_Pessoa')
     
 
     def down(self):

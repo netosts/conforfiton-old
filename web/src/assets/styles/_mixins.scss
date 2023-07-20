@@ -38,6 +38,11 @@
   border-radius: $border-radius;
   outline: none;
   transition: 0.35s;
+  border: 1px solid $input-border;
+
+  &:focus {
+    border: 1px solid #7a85ac;
+  }
 
   &::placeholder {
     color: $placeholder;
@@ -47,11 +52,9 @@
 @mixin inputContainers() {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 
-  input {
-    @include createInput();
-  }
+  input,
   select {
     @include createInput();
   }
