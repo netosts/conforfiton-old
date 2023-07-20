@@ -18,4 +18,4 @@ class CreateTblPeso(Migration):
         """
         Revert the migrations.
         """
-        self.schema.drop('tbl_Peso')
+        self.schema.drop('tbl_peso')

@@ -1,29 +1,32 @@
 <script setup>
-import { useRoute } from 'vue-router';
-import { onMounted } from 'vue';
 import axios from 'axios';
+import { getStudent } from '../services/students/get';
 
+import { useRoute } from 'vue-router';
+import { onMounted, ref } from 'vue';
+
+// Variables
 const route = useRoute();
+const student = ref({});
 
-function getStudent() {
-  axios.get(`/student/${route.params.id}`).then((res) => {
-    // studentDetails.value = res.data;
-    // isStudentDetailsActive.value = true;
-    // bodyElement.value.style.overflow = isStudentDetailsActive.value ? 'hidden' : 'auto';
-    console.log(res.data);
-  }).catch((err) => {
-    console.error(err);
-  });
-};
+// Functions
+async function initStudent() {
+  student.value = await getStudent(axios, route.params.id);
+}
 
+// DOM Mount
 onMounted(() => {
-  getStudent();
+  initStudent();
 })
 </script>
 
 <template>
   <main>
-    <button @click="getStudent">{{ route.params.id }}</button>
+    <RouterLink to="/">
+      <p>home</p>
+    </RouterLink>
+    <p>aluno: {{ student.nmPessoa }}</p>
+    <p>cpf: {{ student.cpfCnpj }}</p>
   </main>
 </template>
 
