@@ -10,6 +10,7 @@ bootstrap()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from models.person import Person
 from models.student import Student
@@ -227,6 +228,32 @@ async def find_student(ID_Pessoa):
 
 @app.post('/student')  # create a new student
 async def new_student(data: NewStudent):
+    # look for CPF duplicate
+    cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
+    if cpf > 0:
+        error_message = {
+            "error": "Duplicate CPF",
+            "message": "The provided CPF is already registered in the database."
+        }
+        return JSONResponse(content=error_message, status_code=409)
+    
+    # look for RG of specified UF duplicate
+    rg = Person.where('rg', data.rg).where('ufRG', data.ufRG).count()
+    if rg > 0:
+        error_message = {
+            "error": "Duplicate RG in specified UF",
+            "message": "The provided RG and UF are already registered in the database."
+        }
+        return JSONResponse(content=error_message, status_code=409)
+    
+    # only accept RG and UF together
+    if (data.rg != None and data.ufRG == None) or (data.rg == None and data.ufRG != None):
+        error_message = {
+            "error": "RG and UF must be together",
+            "message": "The RG and UF can't be registered alone in the database."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+
     person = Person()
     person.nmPessoa = data.nmPessoa
     person.ser = data.ser
@@ -398,19 +425,15 @@ async def new_address(data: NewAddress):
 
 # ------------------------------------------------------------------------------
 # CPF-CNPJ
-@app.get('/cpfCnpj')
-async def list_cpfCnpj():  # list all cpf and cnpj in database
-    cpfCnpj = di["db"].table('tbl_Pessoa').lists('cpfCnpj')
-    return cpfCnpj.serialize()
+@app.get('/cpfCnpj/{cpf}')
+async def count_cpf(cpf):  # how many of the specified CPF value are in the database
+    cpf = Person.where('cpfCnpj', cpf).count()
+    return cpf
 
 
 # ------------------------------------------------------------------------------
 # RG-UF
-@app.get('/rg/{ufRG}')
-async def list_rg(ufRG):  # list all RG of specific UF in database
-    rg = di["db"].table('tbl_Pessoa as tp') \
-                 .select('tp.rg') \
-                 .where_not_null('tp.rg') \
-                 .where('tp.ufRG', '=', ufRG) \
-                 .lists('rg')
-    return rg.serialize()
+@app.get('/rg/{rg}/{ufRG}')
+async def list_rg(rg, ufRG):  # how many of the specified RG in UF value are in the database
+    rg = Person.where('rg', rg).where('ufRG', ufRG).count()
+    return rg

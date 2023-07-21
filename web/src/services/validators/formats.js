@@ -1,4 +1,3 @@
-// function to format the cpf number
 export function formatCpf(cpf) {
 
   // extract the different parts of the cpf number
@@ -13,7 +12,7 @@ export function formatCpf(cpf) {
   return formattedCpfNumber;
 };
 
-// function to format the telefone number
+
 export function formatTelefone(value) {
   const match = value.match(/^(\d{2})(\d{5})(\d{4})$/);
   if (match) {
@@ -22,7 +21,7 @@ export function formatTelefone(value) {
   return value;
 };
 
-// function to format the altura value
+
 export function formatAltura(value) {
   const match = value.match(/^(\d{3})$/)
   if (match) {
@@ -31,7 +30,8 @@ export function formatAltura(value) {
   return value;
 }
 
-// transform dtNascimento YYYY-MM-DD into person's age
+
+// transform date YYYY-MM-DD into person's age
 export function formatAge(value) {
   const birthdate = value;
   const today = new Date();

@@ -1,10 +1,9 @@
 export function postStudent(axios, form) {
   axios.post('/student', form).then((res) => {
-    alert(res.data);
     console.log('ALUNO CRIADO COM SUCESSO..');
-    location.reload();
+    alert(res.data);
   }).catch((err) => {
-    console.error(err);
+    console.error(err.response.data);
     throw err;
   });
 };

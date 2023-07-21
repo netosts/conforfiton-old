@@ -1,5 +1,12 @@
 // cpf validator
 export function cpfValidator(value) {
+  // only accept digits [^]=negates
+  value = value.replace(/[^\d]/g, '');
+
+  if (value.length > 11) {
+    return false;
+  }
+
   var sum = 0;
   var rest;
   var duplicate = 0;

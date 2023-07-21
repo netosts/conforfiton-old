@@ -8,9 +8,9 @@ export function getStudent(axios, ID_Pessoa) {
   });
 };
 
-// get all cpf/cnpj in database
-export function getCpfCnpj(axios) {
-  return axios.get(`/cpfCnpj`)
+// this function will return how many of the specified CPF are in the database
+export function countCpfDuplicate(axios, cpf) {
+  return axios.get(`/cpfCnpj/${cpf}`)
   .then((res) => res.data)
   .catch((err) => {
     console.error(err);
@@ -18,9 +18,9 @@ export function getCpfCnpj(axios) {
   });
 };
 
-// get all rg from specific uf in database
-export function getRgUF(axios, ufRG) {
-  return axios.get(`/rg/${ufRG}`)
+// this function will return how many of the specified RG in UF are in the database
+export function countRgUfDuplicate(axios, rg, ufRG) {
+  return axios.get(`/rg/${rg}/${ufRG}`)
   .then((res) => res.data)
   .catch((err) => {
     console.error(err);

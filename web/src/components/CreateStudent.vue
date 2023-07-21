@@ -1,33 +1,20 @@
 <script setup>
 import axios from 'axios';
-import { getCpfCnpj, getRgUF } from '../services/students/get';
+import { countCpfDuplicate, countRgUfDuplicate } from '../services/students/get';
 import { postStudent } from '../services/students/post';
 
 import { formatTelefone, formatAltura } from '../services/validators/formats';
-import { cpfValidator, dateValidator } from '../services/validators/validators';
 
 import { ref, reactive, watch, onMounted } from 'vue';
 
 import RegisterField from './RegisterField.vue';
-import * as yup from 'yup';
 import { Form } from 'vee-validate';
 
-const schema = yup.object({
-  name: yup.string().required('Por favor digite o nome do aluno.'),
-  cpf: yup.string().required('Por favor digite o CPF do aluno.')
-    .matches(/^[0-9]{11}$/, 'O CPF precisa ter 11 números.')
-    .test('cpf-validation', 'O CPF não é válido.', cpfValidator)
-    .test('cpf-unique', 'O CPF já foi cadastrado.', async function (value) {
-      const studentsCpfCnpj = await getCpfCnpj(axios);
-      return !studentsCpfCnpj.includes(value);
-    }),
 
-});
-
-// Variables
+// VARIABLES
 const bodyElement = ref(null);
 const submitted = ref(false);
-// form variables
+// Form Variables
 const form = reactive({
   nmPessoa: '',
   ser: 'Aluno',
@@ -66,12 +53,12 @@ const bpmMaximo = ref('');
 const bpmRepouso = ref('');
 const dsObs = ref('');
 
-// emits
+// Emits
 const emit = defineEmits(['isCreateStudentActive']);
 
 // Lists
 const ufList = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
+  '', 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
   'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
   'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
@@ -82,15 +69,46 @@ const tmCamisaList = [
   'PP', 'P', 'M', 'G', 'GG', 'XG'
 ];
 
-// Functions
-// close the create tab
+// Validation Schema
+const schema = {
+  name: 'required',
+  cpf: 'required|cpf',
+  email: 'required',
+  sexo: 'required',
+  camisa: 'required',
+  altura: 'required',
+};
+
+// FUNCTIONS
+// Close the create tab
 function closeCreate() {
   location.reload();
 };
 
-// create a new student
-async function onSubmit(values) {
-  // get the current date and time
+// Create a new student
+async function onSubmit(values, actions) {
+  // CPF Duplicate validation
+  form.cpfCnpj = form.cpfCnpj.replace(/[^\d]/g, '');
+  const countedCpf = await countCpfDuplicate(axios, form.cpfCnpj);
+  if (countedCpf > 0) {
+    actions.setFieldError('cpf', 'O CPF já foi cadastrado.');
+  }
+
+  // RG and UF must be together
+  if ((form.rg !== '' && form.ufRG === '') || (form.ufRG !== '' && form.rg === '')) {
+    actions.setFieldError('rg', 'O RG e UF precisam ser cadastrados juntos.');
+  } else if (form.rg !== '' && form.ufRG !== '') { // RG in UF Duplicate validation
+    const countedRgUf = await countRgUfDuplicate(axios, form.rg, form.ufRG);
+    if (countedRgUf > 0) {
+      actions.setFieldError('rg', `O RG já foi cadastrado em ${form.ufRG}.`);
+    }
+  }
+
+  if (countedCpf > 0 || countedRgUf > 0) {
+    return;
+  }
+
+  // Get the current date and time
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString();
   form.dtData = formattedDate;
@@ -98,27 +116,9 @@ async function onSubmit(values) {
   console.log(form)
   submitted.value = true;
   console.log('CRIANDO ALUNO...');
-  postStudent(axios, form);
+
+  // postStudent(axios, form);
   // validators
-  // rg/uf
-  if (rg.value !== '' || ufRG.value !== '') {
-    if (ufRG.value === '') {
-      input_ufRG.value = 'input--invalid';
-      invalidInputs['ufRG'] = true;
-      ufMsg.value = 'Não nulo.';
-    } else if (rg.value === '') {
-      input_rg.value = 'input--invalid';
-      invalidInputs['rg'] = true;
-      rgMsg.value = 'O RG não pode ser nulo.';
-    } else {  // look if rg is duplicated based on UF
-      const studentsRgUFs = await getRgUF(axios, ufRG.value);
-      if (studentsRgUFs.includes(rg.value)) {
-        input_rg.value = 'input--invalid';
-        invalidInputs['rg'] = true;
-        rgMsg.value = `O RG já foi cadastrado em ${ufRG.value}.`;
-      }
-    }
-  }
   // telefone
   if (telefone.value !== '' && telefone.value.length < 11) {  // nullable + minlength 11
     input_telefone.value = 'input--invalid';
@@ -130,12 +130,6 @@ async function onSubmit(values) {
     input_dsEmail.value = 'input--invalid';
     invalidInputs['dsEmail'] = true;
     dsEmailMsg.value = 'Por favor digite o Email do aluno.';
-  }
-  // data nascimento
-  if (dtNascimento.value !== '' && !dateValidator(dtNascimento.value)) {  // nullable + validate
-    input_dtNascimento.value = 'input--invalid';
-    invalidInputs['dtNascimento'] = true;
-    dtNascimentoMsg.value = 'Data inválida.';
   }
   // sexo
   if (sexo.value === '') {  // required
@@ -164,50 +158,6 @@ async function onSubmit(values) {
 };
 
 // Watches
-
-watch(rg, (newValue) => {  // validate rg input
-  // validators rg-uf
-  if ((ufRG.value !== '' && input_rg.value === 'input--valid') && rg.value === '') {
-    input_rg.value = 'input--invalid';
-    invalidInputs['rg'] = true;
-    rgMsg.value = 'O RG não pode ser nulo.';
-  }
-  if (input_rg.value === 'input--invalid' && rg.value !== '') {
-    input_rg.value = 'input--valid';
-    delete invalidInputs.rg;
-  }
-  if (input_rg.value === 'input--null' && input_ufRG.value === 'input--invalid') {
-    input_ufRG.value = 'input--null';
-    delete invalidInputs.ufRG;
-  }
-  if (input_ufRG.value === 'input--null' && (rg.value === '' && input_rg.value === 'input--valid')) {
-    input_rg.value = 'input--null';
-  }
-  // only numbers and maxlength 20
-  const cleanedValue = newValue.replace(/[^0-9]/g, '');
-  const restrictedValue = cleanedValue.substring(0, 20);
-  rg.value = restrictedValue;
-});
-
-watch(ufRG, (oldValue, newValue) => {  // validate ufRG input
-  // validators uf-rg
-  if (ufRG.value !== '' && input_ufRG.value === 'input--invalid') {
-    input_ufRG.value = 'input--valid';
-    delete invalidInputs.ufRG;
-  }
-  if (ufRG.value === '' && input_rg.value === 'input--invalid') {
-    input_rg.value = 'input--null';
-    delete invalidInputs.rg;
-  }
-  if ((ufRG.value === '' && input_ufRG.value === 'input--valid') && (input_rg.value === 'input--valid' || input_rg.value === 'input--null')) {
-    input_ufRG.value = 'input--null';
-  }
-  if (newValue !== oldValue && input_rg.value === 'input--invalid') {
-    input_rg.value = 'input--valid';
-    delete invalidInputs.rg;
-  }
-});
-
 watch(telefone, (newValue) => {  // validate telefone input
   if (telefone.value.length === 14 && input_telefone.value === 'input--invalid') {
     input_telefone.value = 'input--valid';
@@ -236,18 +186,6 @@ watch(dsEmail, () => {  // validate dsEmail input
       delete invalidInputs.dsEmail;
       input_dsEmail.value = 'input--valid';
     }
-  }
-});
-
-watch(dtNascimento, () => {  // validate date of birth
-  if (input_dtNascimento.value === 'input--invalid' && dateValidator(dtNascimento.value)) {
-    input_dtNascimento.value = 'input--valid';
-    delete invalidInputs.dtNascimento;
-  } else if (input_dtNascimento.value === 'input--invalid' && dtNascimento.value === '') {
-    input_dtNascimento.value = 'input--null';
-    delete invalidInputs.dtNascimento;
-  } else if (input_dtNascimento.value === 'input--valid' && dtNascimento.value === '') {
-    input_dtNascimento.value = 'input--null';
   }
 });
 
@@ -334,7 +272,7 @@ onMounted(() => {
 
 <template>
   <aside>
-    <Form @submit="onSubmit" v-slot="{ meta }" class="form" v-motion-slide-visible-top>
+    <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ meta }" class="form" v-motion-slide-visible-top>
       <div class="form__bg"></div>
 
       <div class="form__container">
@@ -353,12 +291,13 @@ onMounted(() => {
         </div>
 
         <!-- Início do cadastro -->
-        <RegisterField v-model="form.nmPessoa" :meta="meta" rules="required" name="nome" type="text" label="Nome completo"
-          required="*" placeholder="Digite o nome do aluno" />
+        <RegisterField v-model="form.nmPessoa" :meta="meta" name="name" type="text" label="Nome completo" required="*"
+          placeholder="Digite o nome do aluno" />
 
         <div class="form__container__cpf-rg-uf">
-          <RegisterField v-model="form.cpfCnpj" :meta="meta" rules="required" name="cpf" type="text" label="CPF"
-            required="*" placeholder="Digite o CPF do aluno" />
+          <RegisterField v-model="form.cpfCnpj" :meta="meta" name="cpf" type="text" label="CPF" required="*"
+            placeholder="Digite o CPF do aluno" />
+
           <div class="form__container__cpf-rg-uf__rg-uf">
             <RegisterField v-model="form.rg" :meta="meta" name="rg" type="text" label="RG"
               placeholder="Digite o RG do aluno" />
@@ -371,8 +310,8 @@ onMounted(() => {
           <RegisterField v-model="form.telefone" :meta="meta" name="telefone" type="text" label="Telefone"
             placeholder="(00)00000-0000" />
 
-          <RegisterField v-model="form.dsEmail" :meta="meta" rules="required|email" name="email" type="text"
-            label="E-mail" required="*" placeholder="Digite o Email do aluno" />
+          <RegisterField v-model="form.dsEmail" :meta="meta" name="email" type="text" label="E-mail" required="*"
+            placeholder="Digite o Email do aluno" />
         </div>
 
         <div class="form__container__data-sexo-camisa">
@@ -381,16 +320,16 @@ onMounted(() => {
             <input v-model="form.dtNascimento" type="date" id="date">
           </div>
 
-          <RegisterField v-model="form.sexo" :meta="meta" rules="required" name="sexo" type="select"
-            label="Sexo Biológico" required="*" :options="sexoList" />
+          <RegisterField v-model="form.sexo" :meta="meta" name="sexo" type="select" label="Sexo Biológico" required="*"
+            :options="sexoList" />
 
-          <RegisterField v-model="form.tmCamisa" :meta="meta" rules="required" name="camisa" type="select" label="Camisa"
-            required="*" :options="tmCamisaList" />
+          <RegisterField v-model="form.tmCamisa" :meta="meta" name="camisa" type="select" label="Camisa" required="*"
+            :options="tmCamisaList" />
         </div>
 
         <div class="form__container__altura-peso">
-          <RegisterField v-model="form.altura" :meta="meta" rules="required" name="altura" type="number"
-            label="Altura(cm)" required="*" placeholder="180cm" />
+          <RegisterField v-model="form.altura" :meta="meta" name="altura" type="number" label="Altura(cm)" required="*"
+            placeholder="180cm" />
 
           <RegisterField v-model="form.peso" :meta="meta" name="peso" type="number" label="Peso(kg)"
             placeholder="90.30kg" />
