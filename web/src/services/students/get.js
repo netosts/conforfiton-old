@@ -27,3 +27,13 @@ export function countRgUfDuplicate(axios, rg, ufRG) {
     throw err;
   });
 };
+
+// Return how many of the specified Email are in the database
+export function countEmailDuplicate(axios, dsEmail) {
+  return axios.get(`/dsEmail/${dsEmail}`)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error(err);
+    throw err;
+  });
+};

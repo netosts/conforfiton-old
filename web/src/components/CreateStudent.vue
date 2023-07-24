@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { countCpfDuplicate, countRgUfDuplicate } from '../services/students/get';
+import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/students/get';
 import { postStudent } from '../services/students/post';
 
 import { ref, reactive, onMounted } from 'vue';
@@ -68,8 +68,6 @@ const schema = {
   dsObs: 'maxLength:300'
 };
 
-
-
 // FUNCTIONS
 // Close the create tab
 function closeCreate() {
@@ -79,26 +77,38 @@ function closeCreate() {
 // Create a new student
 async function onSubmit(values, { setFieldError, setErrors }) {
   console.log('CRIANDO ALUNO...');
+
+  let errors = 0;  // track errors
+
   // CPF Duplicate validation
   form.cpfCnpj = form.cpfCnpj.replace(/\D/g, '');  // only digits
   const countedCpf = await countCpfDuplicate(axios, form.cpfCnpj);
   if (countedCpf > 0) {
     setFieldError('cpf', 'O CPF já foi cadastrado.');
+    errors++;
   }
 
   // RG and UF must be together
-  let countedRgUf = 0;
-  let together = 0;  // track together errors
   if ((form.rg !== '' && form.ufRG === '') || (form.ufRG !== '' && form.rg === '')) {
-    setFieldError('rg', 'O RG e UF precisam ser cadastrados juntos.');
-    setFieldError('uf', ' ');
-    together++;
+    setErrors({
+      rg: 'O RG e UF precisam ser cadastrados juntos.',
+      uf: ' ',
+    });
+    errors++;
   } else if (form.rg !== '' && form.ufRG !== '') {
     // RG in UF Duplicate validation
-    countedRgUf = await countRgUfDuplicate(axios, form.rg, form.ufRG);
+    const countedRgUf = await countRgUfDuplicate(axios, form.rg, form.ufRG);
     if (countedRgUf > 0) {
       setFieldError('rg', `O RG já foi cadastrado em ${form.ufRG}.`);
+      errors++;
     }
+  }
+
+  // Email duplicate validation
+  const countedEmail = await countEmailDuplicate(axios, form.dsEmail);
+  if (countedEmail > 0) {
+    setFieldError('email', 'Este email já foi cadastrado.')
+    errors++;
   }
 
   // BPM Maximo and Repouso must be together
@@ -107,21 +117,23 @@ async function onSubmit(values, { setFieldError, setErrors }) {
       bpmMaximo: 'As frequências cardíacas precisam ser cadastradas juntas.',
       bpmRepouso: 'As frequências cardíacas precisam ser cadastradas juntas.'
     });
-    together++;
+    errors++;
   }
 
-  // Format problematic values
+  if (errors > 0) {  // only proceed without errors
+    return;
+  }
+
   // Get the current date and time and use as dtData
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString();
-
+  // Format problematic values before posting
   form.dtData = formattedDate;
   form.rg = form.rg.replace(/\D/g, '');  // only digits
   form.telefone = form.telefone.replace(/\D/g, '');  // only digits
 
-  if (countedCpf == 0 && countedRgUf == 0 && together == 0) {
-    postStudent(axios, form);
-  }
+  // Post new student
+  postStudent(axios, form);
 };
 
 // DOM Mounted

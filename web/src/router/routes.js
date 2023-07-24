@@ -6,9 +6,17 @@ const routes = [
     component: () => import('../views/HomeView.vue')
   },
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/LoginView.vue')
+  },
+  {
     path: '/student/:id/',
     name: 'student',
-    component: () => import('../views/StudentView.vue')
+    component: () => import('../views/StudentView.vue'),
+    beforeEnter(to, from) {
+
+    },
   }
 ]
 

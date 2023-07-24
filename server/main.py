@@ -223,10 +223,7 @@ async def find_student(ID_Pessoa):
                         .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
                         .first()
     
-    if student:
-        return student.serialize()
-    else:
-        return "Aluno não encontrado."
+    return student.serialize()
 
 
 @app.post('/student')  # create a new student
@@ -306,6 +303,15 @@ async def new_student(data: NewStudent):
             "message": "Email must be a valid email address."
         }
         return JSONResponse(content=error_message, status_code=422)
+    
+    # email duplicate validation
+    email = Person.where('dsEmail', data.dsEmail).count()
+    if email > 0:
+        error_message = {
+            "error": "Duplicate Email",
+            "message": "The provided Email is already registered in the database."
+        }
+        return JSONResponse(content=error_message, status_code=409)
     
     # altura can't be negative or higher than 250cm
     if data.altura < 0 or data.altura > 250:
@@ -641,3 +647,11 @@ async def count_cpf(cpf):  # how many of the specified CPF value are in the data
 async def count_rg(rg, ufRG):  # how many of the specified RG in UF value are in the database
     rg = Person.where('rg', rg).where('ufRG', ufRG).count()
     return rg
+
+
+# ------------------------------------------------------------------------------
+# CPF-CNPJ
+@app.get('/dsEmail/{dsEmail}')
+async def count_email(dsEmail):  # how many of the specified CPF value are in the database
+    email = Person.where('dsEmail', dsEmail).count()
+    return email
