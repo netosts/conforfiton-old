@@ -3,9 +3,7 @@ import axios from 'axios';
 import { countCpfDuplicate, countRgUfDuplicate } from '../services/students/get';
 import { postStudent } from '../services/students/post';
 
-import { formatTelefone, formatAltura } from '../services/validators/formats';
-
-import { ref, reactive, watch, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 
 import RegisterField from './RegisterField.vue';
 import { Form } from 'vee-validate';
@@ -13,7 +11,7 @@ import { Form } from 'vee-validate';
 
 // VARIABLES
 const bodyElement = ref(null);
-const submitted = ref(false);
+
 // Form Variables
 const form = reactive({
   nmPessoa: '',
@@ -38,20 +36,6 @@ const form = reactive({
   bpmRepouso: '',
   bpmMaximo: '',
 });
-const nmPessoa = ref('');
-const cpfCnpj = ref('');
-const rg = ref('');
-const ufRG = ref('');
-const telefone = ref('');
-const dsEmail = ref('');
-const dtNascimento = ref('');
-const sexo = ref('');
-const tmCamisa = ref('');
-const altura = ref('');
-const peso = ref('');
-const bpmMaximo = ref('');
-const bpmRepouso = ref('');
-const dsObs = ref('');
 
 // Emits
 const emit = defineEmits(['isCreateStudentActive']);
@@ -69,15 +53,22 @@ const tmCamisaList = [
   'PP', 'P', 'M', 'G', 'GG', 'XG'
 ];
 
-// Validation Schema
+// Form-level Validation Schema
 const schema = {
-  name: 'required',
-  cpf: 'required|cpf',
-  email: 'required',
+  name: 'required|maxLength:60',
+  cpf: 'required|cpf|maxLength:11',
+  rg: 'maxLength:20',
+  telefone: 'minLength:11|maxLength:11',
+  email: 'required|email|maxLength:80',
   sexo: 'required',
-  camisa: 'required',
-  altura: 'required',
+  altura: 'required|between:0,250|maxDecimal:1',
+  peso: 'between:0,600|maxDecimal:2',
+  bpmMaximo: 'between:0,220',
+  bpmRepouso: 'between:0,220',
+  dsObs: 'maxLength:300'
 };
+
+
 
 // FUNCTIONS
 // Close the create tab
@@ -86,185 +77,54 @@ function closeCreate() {
 };
 
 // Create a new student
-async function onSubmit(values, actions) {
+async function onSubmit(values, { setFieldError, setErrors }) {
+  console.log('CRIANDO ALUNO...');
   // CPF Duplicate validation
-  form.cpfCnpj = form.cpfCnpj.replace(/[^\d]/g, '');
+  form.cpfCnpj = form.cpfCnpj.replace(/\D/g, '');  // only digits
   const countedCpf = await countCpfDuplicate(axios, form.cpfCnpj);
   if (countedCpf > 0) {
-    actions.setFieldError('cpf', 'O CPF já foi cadastrado.');
+    setFieldError('cpf', 'O CPF já foi cadastrado.');
   }
 
   // RG and UF must be together
+  let countedRgUf = 0;
+  let together = 0;  // track together errors
   if ((form.rg !== '' && form.ufRG === '') || (form.ufRG !== '' && form.rg === '')) {
-    actions.setFieldError('rg', 'O RG e UF precisam ser cadastrados juntos.');
-  } else if (form.rg !== '' && form.ufRG !== '') { // RG in UF Duplicate validation
-    const countedRgUf = await countRgUfDuplicate(axios, form.rg, form.ufRG);
+    setFieldError('rg', 'O RG e UF precisam ser cadastrados juntos.');
+    setFieldError('uf', ' ');
+    together++;
+  } else if (form.rg !== '' && form.ufRG !== '') {
+    // RG in UF Duplicate validation
+    countedRgUf = await countRgUfDuplicate(axios, form.rg, form.ufRG);
     if (countedRgUf > 0) {
-      actions.setFieldError('rg', `O RG já foi cadastrado em ${form.ufRG}.`);
+      setFieldError('rg', `O RG já foi cadastrado em ${form.ufRG}.`);
     }
   }
 
-  if (countedCpf > 0 || countedRgUf > 0) {
-    return;
+  // BPM Maximo and Repouso must be together
+  if ((form.bpmMaximo !== '' && form.bpmRepouso === '') || (form.bpmMaximo === '' && form.bpmRepouso !== '')) {
+    setErrors({
+      bpmMaximo: 'As frequências cardíacas precisam ser cadastradas juntas.',
+      bpmRepouso: 'As frequências cardíacas precisam ser cadastradas juntas.'
+    });
+    together++;
   }
 
-  // Get the current date and time
+  // Format problematic values
+  // Get the current date and time and use as dtData
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString();
-  form.dtData = formattedDate;
-  console.log(values)
-  console.log(form)
-  submitted.value = true;
-  console.log('CRIANDO ALUNO...');
 
-  // postStudent(axios, form);
-  // validators
-  // telefone
-  if (telefone.value !== '' && telefone.value.length < 11) {  // nullable + minlength 11
-    input_telefone.value = 'input--invalid';
-    invalidInputs['telefone'] = true;
-    telefoneMsg.value = 'O telefone está incompleto.';
-  }
-  // email
-  if (dsEmail.value === '') { // required
-    input_dsEmail.value = 'input--invalid';
-    invalidInputs['dsEmail'] = true;
-    dsEmailMsg.value = 'Por favor digite o Email do aluno.';
-  }
-  // sexo
-  if (sexo.value === '') {  // required
-    input_sexo.value = 'input--invalid';
-    invalidInputs['sexo'] = true;
-    sexoMsg.value = 'Por favor informe um sexo.';
-  }
-  // camisa
-  if (tmCamisa.value === '') {  // required
-    input_tmCamisa.value = 'input--invalid';
-    invalidInputs['tmCamisa'] = true;
-    tmCamisaMsg.value = 'Não nulo.';
-  }
-  // altura
-  if (altura.value.length < 3) {  // required
-    input_altura.value = 'input--invalid';
-    invalidInputs['altura'] = true;
-    alturaMsg.value = 'Por favor informe uma altura.';
-  }
-  // peso
-  if (peso.value !== '' && peso.value.length < 2) {  // nullable + minlength 11
-    input_peso.value = 'input--invalid';
-    invalidInputs['peso'] = true;
-    pesoMsg.value = 'O peso está incompleto.';
+  form.dtData = formattedDate;
+  form.rg = form.rg.replace(/\D/g, '');  // only digits
+  form.telefone = form.telefone.replace(/\D/g, '');  // only digits
+
+  if (countedCpf == 0 && countedRgUf == 0 && together == 0) {
+    postStudent(axios, form);
   }
 };
 
-// Watches
-watch(telefone, (newValue) => {  // validate telefone input
-  if (telefone.value.length === 14 && input_telefone.value === 'input--invalid') {
-    input_telefone.value = 'input--valid';
-    delete invalidInputs.telefone;
-  } else if (input_telefone.value === 'input--valid' && telefone.value !== '') {
-    input_telefone.value = 'input--invalid';
-    invalidInputs['telefone'] = true;
-  } else if (input_telefone.value === 'input--invalid' && newValue === '') {
-    input_telefone.value = 'input--null';
-    delete invalidInputs.telefone;
-  }
-  // only numbers + format ()-
-  const cleannedValue = newValue.replace(/\D/g, '');
-  const formattedValue = formatTelefone(cleannedValue);
-  telefone.value = formattedValue;
-});
-
-watch(dsEmail, () => {  // validate dsEmail input
-  const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-  if (submitted.value) {
-    if (!emailRegex.test(dsEmail.value) && dsEmail.value !== '') {
-      invalidInputs['dsEmail'] = true;
-      input_dsEmail.value = 'input--invalid';
-      dsEmailMsg.value = 'Email digitado incorretamente.'
-    } else {
-      delete invalidInputs.dsEmail;
-      input_dsEmail.value = 'input--valid';
-    }
-  }
-});
-
-watch(sexo, () => {  // validate sexo input
-  if (input_sexo.value === 'input--invalid') {
-    input_sexo.value = 'input--valid';
-    delete invalidInputs.sexo;
-  }
-});
-
-watch(tmCamisa, () => {  // validate tmCamisa input
-  if (input_tmCamisa.value === 'input--invalid') {
-    input_tmCamisa.value = 'input--valid';
-    delete invalidInputs.tmCamisa;
-  }
-});
-
-watch(altura, (newValue) => {  // validate altura input
-  if (input_altura.value === 'input--invalid' && altura.value.length === 3) {
-    input_altura.value = 'input--valid';
-    delete invalidInputs.altura;
-  } else if (input_altura.value === 'input--valid' && altura.value.length < 3) {
-    input_altura.value = 'input--invalid';
-    invalidInputs['altura'] = true;
-  }
-  // only numbers and maxlength 3 + format altura
-  const cleannedValue = newValue.replace(/[^0-9]/g, '');
-  const restrictedValue = cleannedValue.substring(0, 3);
-  const formattedValue = formatAltura(restrictedValue);
-  altura.value = formattedValue;
-});
-
-watch(peso, (newValue) => {  // validate peso input
-  if (input_peso.value === 'input--invalid' && peso.value.length > 1) {
-    input_peso.value = 'input--valid';
-    delete invalidInputs.peso;
-  } else if (input_peso.value === 'input--valid' && peso.value.length === 1) {
-    input_peso.value = 'input--invalid';
-    invalidInputs['peso'] = true;
-  }
-  if (peso.value === '') {
-    if (input_peso.value === 'input--invalid') {
-      delete invalidInputs.peso;
-    }
-    input_peso.value = 'input--null';
-  }
-  // transform peso in 0-3 int numbers and 0-2 decimals
-  const cleanedValue = newValue.replace(/[^0-9.]/g, '');
-  const parts = cleanedValue.split('.');
-
-  parts[0] = parts[0].substring(0, 3);
-
-  if (parts.length > 1) {
-    parts[1] = parts[1].substring(0, 2);
-    peso.value = `${parts.join('.')}kg`;  // add kg at the end when it has decimals
-  } else {
-    peso.value = parts.join('.');
-  }
-});
-
-// !NO KG AT THE END!
-// watch(peso, (newValue) => {
-//   const cleanedValue = newValue.replace(/[^0-9.]/g, '');
-//   const parts = cleanedValue.split('.');
-
-//   parts[0] = parts[0].substring(0, 3);
-
-//   if (parts.length > 1) {
-//     parts[1] = parts[1].substring(0, 2);
-//   }
-
-//   const restrictedValue = parts.join('.');
-//   peso.value = restrictedValue;
-// });
-
-// Functions
-// function validate
-
-// DOM Mount
+// DOM Mounted
 onMounted(() => {
   bodyElement.value = document.body;
 });
@@ -323,16 +183,16 @@ onMounted(() => {
           <RegisterField v-model="form.sexo" :meta="meta" name="sexo" type="select" label="Sexo Biológico" required="*"
             :options="sexoList" />
 
-          <RegisterField v-model="form.tmCamisa" :meta="meta" name="camisa" type="select" label="Camisa" required="*"
+          <RegisterField v-model="form.tmCamisa" :meta="meta" name="camisa" type="select" label="Camisa"
             :options="tmCamisaList" />
         </div>
 
         <div class="form__container__altura-peso">
           <RegisterField v-model="form.altura" :meta="meta" name="altura" type="number" label="Altura(cm)" required="*"
-            placeholder="180cm" />
+            placeholder="Ex: 180" />
 
           <RegisterField v-model="form.peso" :meta="meta" name="peso" type="number" label="Peso(kg)"
-            placeholder="90.30kg" />
+            placeholder="Ex: 90,30" />
         </div>
 
         <div class="form__container__freqCardio">
@@ -343,7 +203,7 @@ onMounted(() => {
             placeholder="BPM" />
         </div>
 
-        <RegisterField v-model="form.dsObs" :meta="meta" name="obs" type="textarea" label="Observação"
+        <RegisterField v-model="form.dsObs" :meta="meta" name="dsObs" type="textarea" label="Observação"
           placeholder="Digite aqui se tiver alguma observação" />
 
         <!-- SUBMIT -->

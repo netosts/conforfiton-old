@@ -1,9 +1,9 @@
-// cpf validator
+// CPF Validator
 export function cpfValidator(value) {
-  // only accept digits [^]=negates
+  // Only accept digits [^]=negates
   value = value.replace(/[^\d]/g, '');
 
-  if (value.length > 11) {
+  if (value.length > 11) {  // Don't accept over length
     return false;
   }
 
@@ -11,7 +11,7 @@ export function cpfValidator(value) {
   var rest;
   var duplicate = 0;
 
-  for (let i = 1; i < value.length; i++) {
+  for (let i = 1; i < value.length; i++) {  // Ex: 111.111.111-11 return false
     if (value[i] == value[i - 1]) {
       duplicate++;
     }
@@ -20,6 +20,7 @@ export function cpfValidator(value) {
     }
   }
 
+  // Start validation
   for (let i = 1; i <= 9; i++) {
     sum += parseInt(value.substring(i - 1, i)) * (11 - i);
   }
@@ -49,20 +50,20 @@ export function cpfValidator(value) {
   return true;
 };
 
-// date of birth validator
+// Date of birth validator
 export function dateValidator(dateOfBirth) {
-  // check if the date is in correct format
+  // Check if the date is in correct format
   const regex = /^\d{4}-\d{2}-\d{2}$/;
   if (!regex.test(dateOfBirth)) {
     return false;
   }
-  // check if the date is in the past
+  // Check if the date is in the past
   const now = new Date();
   const birthDate = new Date(dateOfBirth);
   if (birthDate > now) {
     return false;
   }
 
-  // the date is valid
+  // The date is valid
   return true;
 };

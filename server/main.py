@@ -1,4 +1,6 @@
 # pylint: skip-file
+import re
+from decimal import Decimal
 from datetime import datetime
 from pydantic import BaseModel, validator
 
@@ -126,6 +128,7 @@ class NewPerson(BaseModel):
         return v
     
 
+# FUNCTIONS
 # Variables for query
 def type_search(inputFilter):
         if inputFilter == 'inputName':
@@ -137,7 +140,7 @@ def type_search(inputFilter):
 # home
 @app.get('/')
 async def home():
-    return "hello world"
+    return "Conforfit Database"
 
 
 # ------------------------------------------------------------------------------
@@ -164,7 +167,7 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
 
 
 @app.get('/students/inactive/{inputFilter}/{inputBar}/{limit}')  # get active students with input bar value
-async def inputbar_active_students(inputFilter, inputBar, limit):
+async def inputbar_inactive_students(inputFilter, inputBar, limit):
     # tp = pessoa
     # tp2 = peso
     # ta = aluno
@@ -185,7 +188,7 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
 
 
 @app.get('/students/{inputFilter}/{inputBar}/{limit}')  # list all students
-async def list_students(inputFilter, inputBar, limit):
+async def inputbar_all_students(inputFilter, inputBar, limit):
     # tp = pessoa
     # tp2 = peso
     # ta = aluno
@@ -228,6 +231,22 @@ async def find_student(ID_Pessoa):
 
 @app.post('/student')  # create a new student
 async def new_student(data: NewStudent):
+    # name max length of 60
+    if len(data.nmPessoa) > 60:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Name can't be more than 60 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # cpf max length of 11
+    if len(data.cpfCnpj) > 11:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Cpf can't be more than 11 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+
     # look for CPF duplicate
     cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
     if cpf > 0:
@@ -237,20 +256,119 @@ async def new_student(data: NewStudent):
         }
         return JSONResponse(content=error_message, status_code=409)
     
-    # look for RG of specified UF duplicate
-    rg = Person.where('rg', data.rg).where('ufRG', data.ufRG).count()
-    if rg > 0:
-        error_message = {
-            "error": "Duplicate RG in specified UF",
-            "message": "The provided RG and UF are already registered in the database."
+    # rg max length of 20
+    if data.rg != None and len(data.rg) > 20:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Rg can't be more than 20 characters."
         }
-        return JSONResponse(content=error_message, status_code=409)
+        return JSONResponse(content=error_message, status_code=422)
     
-    # only accept RG and UF together
+    # RG and UF must be together
     if (data.rg != None and data.ufRG == None) or (data.rg == None and data.ufRG != None):
         error_message = {
             "error": "RG and UF must be together",
             "message": "The RG and UF can't be registered alone in the database."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # look for RG of specified UF duplicate
+    if data.rg != None and data.ufRG != None:
+        rg = Person.where('rg', data.rg).where('ufRG', data.ufRG).count()
+        if rg > 0:
+            error_message = {
+                "error": "Duplicate RG in specified UF",
+                "message": "The provided RG and UF are already registered in the database."
+            }
+            return JSONResponse(content=error_message, status_code=409)
+        
+    # telefone max length of 11
+    if data.telefone != None and len(data.telefone) > 11:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Telefone can't be more than 11 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # email max length of 80
+    if len(data.dsEmail) > 80:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Email can't be more than 80 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # email validation
+    regex = r'(?:[a-z0-9+!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
+    if not re.match(regex, data.dsEmail, re.IGNORECASE):
+        error_message= {
+            "error": "Email invaid",
+            "message": "Email must be a valid email address."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # altura can't be negative or higher than 250cm
+    if data.altura < 0 or data.altura > 250:
+        error_message= {
+            "error": "Altura invalid",
+            "message": "Altura must be between 0cm and 250cm."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    altura_decimal = Decimal(str(data.altura))  # convert to decimal
+    if altura_decimal.as_tuple().exponent < -1:  # check if altura has more than 1 decimal number
+        error_message = {
+            "error": "Altura invalid",
+            "message": "Altura must have up to 1 decimal number."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+
+    # peso can't be negative or higher than 600kg
+    if data.peso != None:
+        if data.peso < 0 or data.peso > 600:
+            error_message= {
+                "error": "Peso invalid",
+                "message": "Peso must be between 0kg and 600kg."
+            }
+            return JSONResponse(content=error_message, status_code=422)
+        
+        peso_decimal = Decimal(str(data.peso))  # convert to decimal
+        if peso_decimal.as_tuple().exponent < -2:  # check if peso has more than 2 decimal numbers
+            error_message = {
+                "error": "Peso invalid",
+                "message": "Peso must have up to 2 decimal numbers."
+            }
+            return JSONResponse(content=error_message, status_code=422)
+        
+    # bpmMaximo and bpmRepouso must be together
+    if (data.bpmMaximo != None and data.bpmRepouso == None) or (data.bpmMaximo == None and data.bpmRepouso != None):
+        error_message = {
+            "error": "BPM Maximo and BPM Repouso must be together",
+            "message": "The BPM Maximo and BPM Repouso can't be registered alone in the database."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+        
+    # bpm maximo/repouso can't be negative or higher than 220
+    if data.bpmMaximo != None and data.bpmRepouso != None:
+        if data.bpmMaximo < 0 or data.bpmMaximo > 220:
+            error_message= {
+                "error": "BPM Maximo invalid",
+                "message": "BPM Maximo must be between 0bpm and 220bpm."
+            }
+            return JSONResponse(content=error_message, status_code=422)
+        
+        if data.bpmRepouso < 0 or data.bpmRepouso > 220:
+            error_message= {
+                "error": "BPM Repouso invalid",
+                "message": "BPM Repouso must be between 0bpm and 220bpm."
+            }
+            return JSONResponse(content=error_message, status_code=422)
+        
+    # dsObs max length of 300
+    if data.dsObs != None and len(data.dsObs) > 300:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "dsObs can't be more than 300 characters."
         }
         return JSONResponse(content=error_message, status_code=422)
 
@@ -277,19 +395,21 @@ async def new_student(data: NewStudent):
         student.ID_Empresa = data.ID_Empresa
         student.ID_Personal = data.ID_Personal
         student.save()
+
         if student.save():
-            peso = Peso()
-            peso.ID_Pessoa = person.ID_Pessoa
-            peso.peso = data.peso
-            peso.dtData = data.dtData
-            if peso.peso != None:
+            if data.peso != None:
+                peso = Peso()
+                peso.ID_Pessoa = person.ID_Pessoa
+                peso.peso = data.peso
+                peso.dtData = data.dtData
                 peso.save()
-            cardio = fqCardio()
-            cardio.ID_Pessoa = person.ID_Pessoa
-            cardio.bpmRepouso = data.bpmRepouso
-            cardio.bpmMaximo = data.bpmMaximo
-            cardio.dtData = data.dtData
-            if cardio.bpmRepouso and cardio.bpmMaximo != None:
+
+            if data.bpmRepouso and data.bpmMaximo != None:
+                cardio = fqCardio()
+                cardio.ID_Pessoa = person.ID_Pessoa
+                cardio.bpmRepouso = data.bpmRepouso
+                cardio.bpmMaximo = data.bpmMaximo
+                cardio.dtData = data.dtData
                 cardio.save()
 
     return f"{person.nmPessoa} foi cadastrado(a) com sucesso!"
@@ -339,6 +459,90 @@ async def delete_student(ID_Pessoa):
 # Person
 @app.post('/person')  # create a new person
 async def new_person(data: NewPerson):
+    # name max length of 60
+    if len(data.nmPessoa) > 60:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Name can't be more than 60 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # cpf max length of 11
+    if len(data.cpfCnpj) > 11:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Cpf can't be more than 11 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+
+    # look for CPF duplicate
+    cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
+    if cpf > 0:
+        error_message = {
+            "error": "Duplicate CPF",
+            "message": "The provided CPF is already registered in the database."
+        }
+        return JSONResponse(content=error_message, status_code=409)
+    
+    # rg max length of 20
+    if data.rg != None and len(data.rg) > 20:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Rg can't be more than 20 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # RG and UF must be together
+    if (data.rg != None and data.ufRG == None) or (data.rg == None and data.ufRG != None):
+        error_message = {
+            "error": "RG and UF must be together",
+            "message": "The RG and UF can't be registered alone in the database."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # look for RG of specified UF duplicate
+    if data.rg != None and data.ufRG != None:
+        rg = Person.where('rg', data.rg).where('ufRG', data.ufRG).count()
+        if rg > 0:
+            error_message = {
+                "error": "Duplicate RG in specified UF",
+                "message": "The provided RG and UF are already registered in the database."
+            }
+            return JSONResponse(content=error_message, status_code=409)
+        
+    # telefone max length of 11
+    if data.telefone != None and len(data.telefone) > 11:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Telefone can't be more than 11 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # email max length of 80
+    if len(data.dsEmail) > 80:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "Email can't be more than 80 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # email validation
+    regex = r'(?:[a-z0-9+!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
+    if not re.match(regex, data.dsEmail, re.IGNORECASE):
+        error_message= {
+            "error": "Email invaid",
+            "message": "Email must be a valid email address."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+    
+    # dsObs max length of 300
+    if data.dsObs != None and len(data.dsObs) > 300:
+        error_message= {
+            "error": "Maximum length exceeded",
+            "message": "dsObs can't be more than 300 characters."
+        }
+        return JSONResponse(content=error_message, status_code=422)
+
     person = Person()
     person.nmPessoa = data.nmPessoa
     person.ser = data.ser
@@ -434,6 +638,6 @@ async def count_cpf(cpf):  # how many of the specified CPF value are in the data
 # ------------------------------------------------------------------------------
 # RG-UF
 @app.get('/rg/{rg}/{ufRG}')
-async def list_rg(rg, ufRG):  # how many of the specified RG in UF value are in the database
+async def count_rg(rg, ufRG):  # how many of the specified RG in UF value are in the database
     rg = Person.where('rg', rg).where('ufRG', ufRG).count()
     return rg

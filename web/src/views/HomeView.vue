@@ -1,11 +1,12 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
+
 import { formatAge, formatTelefone } from '../services/validators/formats';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 
 
-// Variables
+// VARIABLES
 const bodyElement = ref(null);
 const students = ref([]);
 const isCreateStudentActive = ref(false);
@@ -13,20 +14,20 @@ const studentsFilter = ref('ativos');
 const inputBar = ref('');
 const inputFilter = ref('inputName');
 
-// Handle emits
+// Handle Emits
 const handleCreate = (emittedValue) => {
   return isCreateStudentActive.value = emittedValue;
 };
 
-// Functions
-// toggle the create student form
+// FUNCTIONS
+// Toggle the create student form
 function toggleCreate() {
   isCreateStudentActive.value = !isCreateStudentActive.value;
   bodyElement.value.style.overflow = isCreateStudentActive.value ? 'hidden' : 'auto';
 };
 
-// axios functions
-// get students from database
+// Axios Functions
+// Get students from database
 function getActiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
@@ -60,8 +61,8 @@ function getAllStudents(value, limit) {
   });
 };
 
-// Watch
-function filterNget() {  // show students based on filter
+// WATCHES
+function filterNget() {  // Show students based on filter
   if (studentsFilter.value === 'ativos') {
     getActiveStudents('%', 5);
   } else if (studentsFilter.value === 'desativados') {
@@ -71,7 +72,7 @@ function filterNget() {  // show students based on filter
   }
 };
 
-watch(inputBar, (newValue) => {  // show students based on input bar + filter
+watch(inputBar, (newValue) => {  // Show students based on input bar + filter
   if (studentsFilter.value === 'ativos' && newValue !== '') {
     getActiveStudents(newValue, 100);
   } else if (studentsFilter.value === 'ativos' && newValue === '') {

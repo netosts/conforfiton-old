@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, toRef } from 'vue';
 import { ErrorMessage, Field, useField } from 'vee-validate';
-import { maskCpf, maskRg } from '../services/validators/masks';
+import { maskName, maskCpf, maskRg, maskTelefone } from '../services/validators/masks';
 
 
 const props = defineProps({
@@ -31,10 +31,14 @@ const value = ref(props.modelValue);
 watch(value, (newValue) => {
   emit('update:modelValue', newValue);
 
-  if (props.name === 'cpf') {
+  if (props.name === 'name') {
+    handleChange(maskName(newValue));
+  } else if (props.name === 'cpf') {
     handleChange(maskCpf(newValue));
   } else if (props.name === 'rg') {
     handleChange(maskRg(newValue));
+  } else if (props.name === 'telefone') {
+    handleChange(maskTelefone(newValue));
   } else {
     handleChange(newValue);
   }
@@ -102,13 +106,17 @@ textarea {
 .register-field.has-error {
 
   input,
-  select {
+  select,
+  textarea {
     border-color: $error-msg;
   }
 }
 
 .register-field.success {
-  input {
+
+  input,
+  select,
+  textarea {
     border-color: $validation;
   }
 

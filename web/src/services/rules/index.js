@@ -8,6 +8,7 @@ export function required(value) {
   return true;
 }
 
+
 export function cpf(value) {
   value = value.replace(/[^\d]/g, '');
 
@@ -18,5 +19,75 @@ export function cpf(value) {
   if (!cpfValidator(value)) {
     return 'O CPF não é válido.';
   }
+  return true;
+}
+
+export function email(value) {
+  if (!value || !value.length) {
+    return true;
+  }
+
+  const emailRegex = /(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i;
+  if (!emailRegex.test(value)) {
+    return 'O endereço de email não é válido.';
+  }
+
+  return true;
+}
+
+
+export function minLength(value, limit) {
+  if (!value || !value.length) {
+    return true;
+  }
+
+  value = value.replace(/[^a-zA-Z0-9]/g, '');
+
+  if (value.length < limit) {
+    return `Mínimo de ${limit} caracteres.`;
+  }
+
+  return true;
+}
+
+
+export function maxLength(value, limit) {
+  if (!value || !value.length) {
+    return true;
+  }
+
+  value = value.replace(/[^a-zA-Z0-9]/g, '');
+
+  if (value.length > limit) {
+    return `Máximo de ${limit} caracteres.`;
+  }
+
+  return true;
+}
+
+
+export function between(value, min, max) {
+  const numericValue = Number(value);
+  if (numericValue < min) {
+    return `O valor precisa ser maior que ${min}.`;
+  }
+  if (numericValue > max) {
+    return `O valor precisa ser menor que ${max}.`;
+  }
+  return true;
+};
+
+
+export function maxDecimal(value, limit) {
+  if (!value) {
+    return true;
+  }
+  
+  const decimalRegex = new RegExp(`^\\d+(\\.\\d{1,${limit}})?$`);
+
+  if (!decimalRegex.test(value)) {
+    return `Máximo de ${limit} casas decimais.`
+  }
+
   return true;
 }

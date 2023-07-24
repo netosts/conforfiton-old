@@ -5,11 +5,11 @@ import { getStudent } from '../services/students/get';
 import { useRoute } from 'vue-router';
 import { onMounted, ref } from 'vue';
 
-// Variables
+// VARIABLES
 const route = useRoute();
 const student = ref({});
 
-// Functions
+// FUNCTIONS
 async function initStudent() {
   student.value = await getStudent(axios, route.params.id);
 }
