@@ -3,7 +3,7 @@ export function getStudent(axios, ID_Pessoa) {
   return axios.get(`/student/${ID_Pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
-    console.error(err);
+    console.error(`{Error: ${err.response.data}} {Status: ${err.response.status}}`);
     throw err;
   });
 };

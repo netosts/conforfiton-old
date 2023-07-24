@@ -14,9 +14,12 @@ const routes = [
     path: '/student/:id/',
     name: 'student',
     component: () => import('../views/StudentView.vue'),
-    beforeEnter(to, from) {
-
-    },
+    meta: { isStudent: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFoundView.vue')
   }
 ]
 

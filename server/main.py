@@ -223,7 +223,10 @@ async def find_student(ID_Pessoa):
                         .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
                         .first()
     
-    return student.serialize()
+    if student:
+        return student.serialize()
+    else:
+        return JSONResponse("Student not found", 404)
 
 
 @app.post('/student')  # create a new student

@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
-import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/students/get';
-import { postStudent } from '../services/students/post';
+import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/axios/get';
+import { postStudent } from '../services/axios/post';
 
 import { ref, reactive, onMounted } from 'vue';
 
