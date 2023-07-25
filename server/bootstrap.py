@@ -1,10 +1,13 @@
 import yaml
 from kink import di
 from orator import DatabaseManager
+import os.path as opath
 
 
 def bootstrap():
-    with open('../etc/config.yaml', 'r', encoding='UTF-8') as folder:
+    file = opath.join('etc', 'config.yaml')
+
+    with open(f"{file}", 'r', encoding="UTF-8") as folder:
         config = yaml.safe_load(folder)  # safe_load because load is deprecated
         di["config"] = config
 

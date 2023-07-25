@@ -55,7 +55,7 @@ const {
 
 <template>
   <div class="register-field"
-    :class="{ 'has-error': !!errorMessage, success: !errorMessage && meta.touched && value !== '' }">
+    :class="{ 'has-error': !!errorMessage && meta.touched, success: !errorMessage && meta.touched && value !== '' }">
     <div class="label-span">
       <label :for="name">{{ label }} </label>
       <span class="required">{{ required }}</span>
@@ -72,7 +72,7 @@ const {
     <Field v-else :name="name" :id="name" :type="type" :rules="rules" :placeholder="placeholder"
       @update:model-value="value = $event" />
 
-    <ErrorMessage :name="name" as="p" class="error-msg" />
+    <ErrorMessage :name="name" as="p" class="error-msg" v-show="meta.touched" />
   </div>
 </template>
 

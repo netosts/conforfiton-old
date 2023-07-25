@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { getStudent } from '../services/students/get';
+import { getStudent } from '../services/axios/get';
 
 import { useRoute } from 'vue-router';
 import { onMounted, ref } from 'vue';

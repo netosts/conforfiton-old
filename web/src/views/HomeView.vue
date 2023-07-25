@@ -32,7 +32,7 @@ function getActiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/students/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
+  axios.get(`/student/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -43,7 +43,7 @@ function getInactiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/students/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
+  axios.get(`/student/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -54,7 +54,7 @@ function getAllStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/students/${inputFilter.value}/${value}/${limit}`).then((res) => {
+  axios.get(`/student/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);

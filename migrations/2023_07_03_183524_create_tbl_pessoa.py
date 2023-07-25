@@ -22,7 +22,7 @@ class CreateTblPessoa(Migration):
             table.boolean('empPersonal')
             table.date('dtNascimento').nullable()
             table.text('dsObs').nullable()
-            table.string('dsEmail', 80)
+            table.string('dsEmail', 80).unique()
             table.string('telefone', 11).nullable()
             table.timestamps()
             table.soft_deletes()
