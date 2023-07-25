@@ -18,7 +18,11 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/LoginView.vue')
+    component: () => import('../views/LoginView.vue'),
+    beforeEnter: () => {
+      const isAuthenticated = false
+      if (isAuthenticated) return { name: 'home' }
+    }
   },
   {
     path: '/:pathMatch(.*)*',

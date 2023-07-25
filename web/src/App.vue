@@ -10,9 +10,9 @@ import { ref, watch } from 'vue';
 const route = useRoute();
 const logging = ref(false);
 
-// get emit
+// Get Emits
 const sidebarIsActive = ref(null);
-// handle emits
+// Handle Emits
 const handleSidebar = (emittedValue) => {
   return sidebarIsActive.value = emittedValue;
 };
@@ -27,7 +27,7 @@ watch(route, () => {
 <template>
   <SideBar v-show="!logging" @sidebarIsActive="handleSidebar" />
   <TopBar v-show="!logging" :class="sidebarIsActive ? 'header__sidebar-active' : null" />
-  <RouterView :class="sidebarIsActive ? 'main__sidebar-active' : null" />
+  <RouterView :class="{ 'main__sidebar-active': sidebarIsActive && !logging }" />
 </template>
 
 <style lang="scss" scoped>

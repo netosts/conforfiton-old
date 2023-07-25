@@ -11,10 +11,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-  const isAuthenticated = false
+  const isAuthenticated = true
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuthenticated) return '/login'
+    if (!isAuthenticated) return { name: 'login' }
   }
 })
 

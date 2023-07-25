@@ -3,8 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class NewFqCardio(BaseModel):
-    ID_Pessoa: int
+class NewCardio(BaseModel):
     bpmRepouso: int
     bpmMaximo: int
     dtData: datetime
