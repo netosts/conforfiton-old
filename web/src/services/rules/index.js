@@ -22,6 +22,7 @@ export function cpf(value) {
   return true;
 }
 
+
 export function email(value) {
   if (!value || !value.length) {
     return true;
@@ -89,5 +90,32 @@ export function maxDecimal(value, limit) {
     return `Máximo de ${limit} casas decimais.`
   }
 
+  return true;
+}
+
+
+export function password(value) {
+  // Check individual requirements and return corresponding error messages
+  if (value.length < 8) {
+      return "A senha deve ter pelo menos 8 caracteres.";
+  }
+  
+  if (!/\d/.test(value)) {
+      return "A senha deve ter pelo menos 1 número.";
+  }
+  
+  if (!/[a-z]/.test(value)) {
+      return "A senha deve ter pelo menos 1 letra minúscula.";
+  }
+  
+  if (!/[A-Z]/.test(value)) {
+      return "A senha deve ter pelo menos 1 letra maiúscula.";
+  }
+  
+  if (!/[!@#$%^&*]/.test(value)) {
+      return "A senha deve ter pelo menos 1 símbolo especial (!@#$%^&*).";
+  }
+  
+  // If all requirements are met, return a success message
   return true;
 }

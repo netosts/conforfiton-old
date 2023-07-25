@@ -1,9 +1,14 @@
 <script setup>
 import SideBar from './components/SideBar.vue';
 import TopBar from './components/TopBar.vue';
-import { RouterView } from 'vue-router';
-import { ref } from 'vue';
 
+import { useRoute } from 'vue-router';
+import { ref, watch } from 'vue';
+
+
+// VARIABLES
+const route = useRoute();
+const logging = ref(false);
 
 // get emit
 const sidebarIsActive = ref(null);
@@ -11,11 +16,17 @@ const sidebarIsActive = ref(null);
 const handleSidebar = (emittedValue) => {
   return sidebarIsActive.value = emittedValue;
 };
+
+watch(route, () => {
+  if (route.path === '/login') {
+    logging.value = true;
+  }
+})
 </script>
 
 <template>
-  <SideBar @sidebarIsActive="handleSidebar" />
-  <TopBar :class="sidebarIsActive ? 'header__sidebar-active' : null" />
+  <SideBar v-show="!logging" @sidebarIsActive="handleSidebar" />
+  <TopBar v-show="!logging" :class="sidebarIsActive ? 'header__sidebar-active' : null" />
   <RouterView :class="sidebarIsActive ? 'main__sidebar-active' : null" />
 </template>
 

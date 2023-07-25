@@ -10,6 +10,14 @@ const router = createRouter({
   routes,
 })
 
+router.beforeEach((to, from) => {
+  const isAuthenticated = false
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!isAuthenticated) return '/login'
+  }
+})
+
 router.beforeResolve(async (to, from) => {
   if (to.meta.isStudent) {
     try {

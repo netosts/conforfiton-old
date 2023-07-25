@@ -1,9 +1,4 @@
 # pylint: skip-file
-import re
-from decimal import Decimal
-from datetime import datetime
-from pydantic import BaseModel, validator
-
 from kink import di
 
 # bootstrap the config and db inside di[]
@@ -19,117 +14,34 @@ from models.student import Student
 from models.peso import Peso
 from models.fqCardio import fqCardio
 from models.address import Address
+from models.auth import User
+
+from schemas.student import NewStudent
+from schemas.peso import NewPeso
+from schemas.cardio import NewFqCardio
+from schemas.address import NewAddress
+from schemas.person import NewPerson
+from schemas.user import NewUser
+
+from decouple import config
+
 
 app = FastAPI()
 
 # CORS Middleware validation
 # who has access to the backend ↓
-origins = [
-    "http://localhost:5173"
-]
+ORIGINS = config('ORIGINS')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# Base Models
-# base model for students
-class NewStudent(BaseModel):
-    # tbl_Pessoa
-    nmPessoa: str
-    ser: str
-    tipoPessoa: str
-    cpfCnpj: str
-    rg: str = None
-    ufRG: str = None
-    empPersonal: bool
-    dtNascimento: str = None
-    dsObs: str = None
-    dsEmail: str
-    telefone: str = None
-    # tbl_Aluno
-    altura: int
-    sexo: str
-    tmCamisa: str = None
-    fotoAluno: str = None
-    ID_Empresa: int
-    ID_Personal: int
-    # tbl_peso
-    peso: float = None
-    dtData: datetime
-    #tbl_fqCardio
-    bpmRepouso: int = None
-    bpmMaximo: int = None
-
-    @validator("*", pre=True, always=True)
-    def check_none(cls, v):
-        if v == "string" or v == "":
-            return None
-        return v
-
-
-# base model for pesos
-class NewPeso(BaseModel):
-    ID_Pessoa: int
-    peso: float
-    dtData: datetime
-
-
-# base model for fqCario
-class NewFqCardio(BaseModel):
-    ID_Pessoa: int
-    bpmRepouso: int
-    bpmMaximo: int
-    dtData: datetime
-
-
-# base model for address
-class NewAddress(BaseModel):
-    ID_Pessoa: int
-    rua: str
-    numero: int
-    complemento: str = None
-    bairro: str
-    cidade: str
-    estado: str
-    CEP: str
-    pais: str
-
-    @validator("*", pre=True, always=True)
-    def check_none(cls, v):
-        if v == "string" or v == "":
-            return None
-        return v
-    
-
-# base model for person
-class NewPerson(BaseModel):
-    nmPessoa: str
-    ser: str
-    tipoPessoa: str
-    cpfCnpj: str
-    rg: str = None
-    ufRG: str = None
-    empPersonal: bool
-    dtNascimento: str = None
-    dsObs: str = None
-    dsEmail: str
-    telefone: str = None
-
-    @validator("*", pre=True, always=True)
-    def check_none(cls, v):
-        if v == "string" or v == "":
-            return None
-        return v
-    
-
 # FUNCTIONS
-# Variables for query
 def type_search(inputFilter):
         if inputFilter == 'inputName':
             return "nmPessoa"
@@ -141,6 +53,50 @@ def type_search(inputFilter):
 @app.get('/')
 async def home():
     return "Conforfit Database"
+
+
+# ------------------------------------------------------------------------------
+# Authentication
+@app.post('/register')
+async def new_user(data: NewUser):
+    user = User()
+    user.ID_Pessoa = data.ID_Pessoa
+    user.username = data.username
+    user.password = data.password
+    user.save()
+
+    return f'{user.username} foi cadastrado(a) com sucesso.'
+
+
+@app.get('/test')
+async def test():
+    user = User.where('username', 'admin777').first()
+    return user.password
+
+
+@app.post("/token", response_model=Token)
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=30)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/users/current/", response_model=NewUser)
+async def read_users_current(
+    current_user: Annotated[NewUser, Depends(get_current_user)]
+):
+    return current_user
 
 
 # ------------------------------------------------------------------------------
@@ -231,22 +187,6 @@ async def find_student(ID_Pessoa):
 
 @app.post('/student')  # create a new student
 async def new_student(data: NewStudent):
-    # name max length of 60
-    if len(data.nmPessoa) > 60:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Name can't be more than 60 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # cpf max length of 11
-    if len(data.cpfCnpj) > 11:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Cpf can't be more than 11 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-
     # look for CPF duplicate
     cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
     if cpf > 0:
@@ -255,22 +195,6 @@ async def new_student(data: NewStudent):
             "message": "The provided CPF is already registered in the database."
         }
         return JSONResponse(content=error_message, status_code=409)
-    
-    # rg max length of 20
-    if data.rg != None and len(data.rg) > 20:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Rg can't be more than 20 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # RG and UF must be together
-    if (data.rg != None and data.ufRG == None) or (data.rg == None and data.ufRG != None):
-        error_message = {
-            "error": "RG and UF must be together",
-            "message": "The RG and UF can't be registered alone in the database."
-        }
-        return JSONResponse(content=error_message, status_code=422)
     
     # look for RG of specified UF duplicate
     if data.rg != None and data.ufRG != None:
@@ -281,31 +205,6 @@ async def new_student(data: NewStudent):
                 "message": "The provided RG and UF are already registered in the database."
             }
             return JSONResponse(content=error_message, status_code=409)
-        
-    # telefone max length of 11
-    if data.telefone != None and len(data.telefone) > 11:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Telefone can't be more than 11 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # email max length of 80
-    if len(data.dsEmail) > 80:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Email can't be more than 80 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # email validation
-    regex = r'(?:[a-z0-9+!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
-    if not re.match(regex, data.dsEmail, re.IGNORECASE):
-        error_message= {
-            "error": "Email invaid",
-            "message": "Email must be a valid email address."
-        }
-        return JSONResponse(content=error_message, status_code=422)
     
     # email duplicate validation
     email = Person.where('dsEmail', data.dsEmail).count()
@@ -315,71 +214,6 @@ async def new_student(data: NewStudent):
             "message": "The provided Email is already registered in the database."
         }
         return JSONResponse(content=error_message, status_code=409)
-    
-    # altura can't be negative or higher than 250cm
-    if data.altura < 0 or data.altura > 250:
-        error_message= {
-            "error": "Altura invalid",
-            "message": "Altura must be between 0cm and 250cm."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    altura_decimal = Decimal(str(data.altura))  # convert to decimal
-    if altura_decimal.as_tuple().exponent < -1:  # check if altura has more than 1 decimal number
-        error_message = {
-            "error": "Altura invalid",
-            "message": "Altura must have up to 1 decimal number."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-
-    # peso can't be negative or higher than 600kg
-    if data.peso != None:
-        if data.peso < 0 or data.peso > 600:
-            error_message= {
-                "error": "Peso invalid",
-                "message": "Peso must be between 0kg and 600kg."
-            }
-            return JSONResponse(content=error_message, status_code=422)
-        
-        peso_decimal = Decimal(str(data.peso))  # convert to decimal
-        if peso_decimal.as_tuple().exponent < -2:  # check if peso has more than 2 decimal numbers
-            error_message = {
-                "error": "Peso invalid",
-                "message": "Peso must have up to 2 decimal numbers."
-            }
-            return JSONResponse(content=error_message, status_code=422)
-        
-    # bpmMaximo and bpmRepouso must be together
-    if (data.bpmMaximo != None and data.bpmRepouso == None) or (data.bpmMaximo == None and data.bpmRepouso != None):
-        error_message = {
-            "error": "BPM Maximo and BPM Repouso must be together",
-            "message": "The BPM Maximo and BPM Repouso can't be registered alone in the database."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-        
-    # bpm maximo/repouso can't be negative or higher than 220
-    if data.bpmMaximo != None and data.bpmRepouso != None:
-        if data.bpmMaximo < 0 or data.bpmMaximo > 220:
-            error_message= {
-                "error": "BPM Maximo invalid",
-                "message": "BPM Maximo must be between 0bpm and 220bpm."
-            }
-            return JSONResponse(content=error_message, status_code=422)
-        
-        if data.bpmRepouso < 0 or data.bpmRepouso > 220:
-            error_message= {
-                "error": "BPM Repouso invalid",
-                "message": "BPM Repouso must be between 0bpm and 220bpm."
-            }
-            return JSONResponse(content=error_message, status_code=422)
-        
-    # dsObs max length of 300
-    if data.dsObs != None and len(data.dsObs) > 300:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "dsObs can't be more than 300 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
 
     person = Person()
     person.nmPessoa = data.nmPessoa
@@ -468,22 +302,6 @@ async def delete_student(ID_Pessoa):
 # Person
 @app.post('/person')  # create a new person
 async def new_person(data: NewPerson):
-    # name max length of 60
-    if len(data.nmPessoa) > 60:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Name can't be more than 60 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # cpf max length of 11
-    if len(data.cpfCnpj) > 11:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Cpf can't be more than 11 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-
     # look for CPF duplicate
     cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
     if cpf > 0:
@@ -492,22 +310,6 @@ async def new_person(data: NewPerson):
             "message": "The provided CPF is already registered in the database."
         }
         return JSONResponse(content=error_message, status_code=409)
-    
-    # rg max length of 20
-    if data.rg != None and len(data.rg) > 20:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Rg can't be more than 20 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # RG and UF must be together
-    if (data.rg != None and data.ufRG == None) or (data.rg == None and data.ufRG != None):
-        error_message = {
-            "error": "RG and UF must be together",
-            "message": "The RG and UF can't be registered alone in the database."
-        }
-        return JSONResponse(content=error_message, status_code=422)
     
     # look for RG of specified UF duplicate
     if data.rg != None and data.ufRG != None:
@@ -519,38 +321,14 @@ async def new_person(data: NewPerson):
             }
             return JSONResponse(content=error_message, status_code=409)
         
-    # telefone max length of 11
-    if data.telefone != None and len(data.telefone) > 11:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Telefone can't be more than 11 characters."
+    # email duplicate validation
+    email = Person.where('dsEmail', data.dsEmail).count()
+    if email > 0:
+        error_message = {
+            "error": "Duplicate Email",
+            "message": "The provided Email is already registered in the database."
         }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # email max length of 80
-    if len(data.dsEmail) > 80:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "Email can't be more than 80 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # email validation
-    regex = r'(?:[a-z0-9+!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
-    if not re.match(regex, data.dsEmail, re.IGNORECASE):
-        error_message= {
-            "error": "Email invaid",
-            "message": "Email must be a valid email address."
-        }
-        return JSONResponse(content=error_message, status_code=422)
-    
-    # dsObs max length of 300
-    if data.dsObs != None and len(data.dsObs) > 300:
-        error_message= {
-            "error": "Maximum length exceeded",
-            "message": "dsObs can't be more than 300 characters."
-        }
-        return JSONResponse(content=error_message, status_code=422)
+        return JSONResponse(content=error_message, status_code=409)
 
     person = Person()
     person.nmPessoa = data.nmPessoa
@@ -653,7 +431,7 @@ async def count_rg(rg, ufRG):  # how many of the specified RG in UF value are in
 
 
 # ------------------------------------------------------------------------------
-# CPF-CNPJ
+# EMAIL
 @app.get('/dsEmail/{dsEmail}')
 async def count_email(dsEmail):  # how many of the specified CPF value are in the database
     email = Person.where('dsEmail', dsEmail).count()
