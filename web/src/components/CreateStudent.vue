@@ -143,7 +143,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <aside>
+  <aside @click.self="closeCreate">
     <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ meta }" class="form" v-motion-slide-visible-top>
       <div class="form__bg"></div>
 

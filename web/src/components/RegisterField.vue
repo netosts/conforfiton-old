@@ -77,10 +77,10 @@ const {
     <Field v-else-if="type === 'textarea'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
       :rows="rows" @update:model-value="value = $event" :tabindex="tabindex" />
 
-    <div v-else-if="type === 'radio'" v-for="radio, index in radios" :key="radio" class="radio-container">
-      <Field :name="name" :type="type" :id="index" :rules="rules" :value="radio.value"
+    <div v-else-if="type === 'radio'" v-for="radio in radios" :key="radio" class="radio-container">
+      <Field :name="name" :type="type" :id="radio.label" :rules="rules" :value="radio.value"
         @update:model-value="value = $event" />
-      <label :for="index">{{ radio.label }}</label>
+      <label :for="radio.label">{{ radio.label }}</label>
     </div>
 
     <Field v-else :name="name" :id="name" :type="type" :rules="rules" :placeholder="placeholder"
@@ -101,15 +101,17 @@ const {
 
   .required {
     height: 1em;
-    color: red;
     font-size: 1.2rem;
+    color: red;
     margin-left: 5px;
   }
 
   .span {
+
     font-size: 0.78rem;
     font-weight: 500;
     color: $txt-subtitle;
+    margin-left: 5px;
   }
 }
 

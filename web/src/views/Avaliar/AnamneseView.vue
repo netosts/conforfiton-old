@@ -6,6 +6,7 @@ import { Form } from 'vee-validate';
 import RegisterField from '../../components/RegisterField.vue';
 
 // VARIABLES
+const route = useRoute();
 const count = ref(0);
 const radioDisabled = ref(false);
 
@@ -41,15 +42,33 @@ const schema = {
   q25: 'required|between:0,10',
   q26: 'required|maxLength:100|asymbol',
   q27: 'required|maxLength:100|asymbol',
+  q28: 'required',
+  q29: 'maxLength:100|asymbol',
+  q30: 'required|maxLength:100|asymbol',
+  q31: 'required|maxLength:100|asymbol',
+  q32: 'required|maxLength:100|asymbol',
+  q33: 'required|maxLength:100|asymbol',
+  q34: 'required|maxLength:100|asymbol',
+  q35: 'maxLength:255|asymbol',
 };
 
 // Lists
 const q3Radio = [{ label: 'Parado', value: 'Parado' }, { label: 'Treinando', value: 'Treinando' }];
+const q28Radio = [{ label: 'Sim', value: 'Sim' }, { label: 'Não', value: 'Não' }];
 const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
 // FUNCTIONS
-function onSubmit() {
-  console.log("form submitted");
+function onSubmit(values, { setFieldError }) {
+  let errors = 0
+  // q29 is required if q28 answer was Yes
+  if (form.q28 === 'Sim' && form.q29 === '') {
+    setFieldError('q29', 'Se sim, este campo precisa ser preenchido.');
+    errors++;
+  }
+
+  if (errors === 0) {
+    console.log("form submitted");
+  }
   console.log(form);
 };
 
@@ -58,8 +77,6 @@ function onReset() {
 };
 
 function plus() {
-  console.log('count', count.value);
-  console.log('form', form.q14);
   if (count.value >= form.q14) {
     count.value = form.q14 - 1;
   } else {
@@ -164,12 +181,37 @@ function isRadioDisabled(q14Value) {
         label="Descreva rapidamente sua rotina alimentar!" />
 
       <RegisterField v-model="form.q25" name="q25" type="text" :meta="meta"
-        label="De 0 a 10 como você classifica seu sono." span="sendo 0 para..." />
+        label="De 0 a 10 como você classifica seu sono." span="(Sendo 0 para péssimo e 10 para excelente)" />
 
       <RegisterField v-model="form.q26" name="q26" type="text" :meta="meta" label="Qual sua profissão?" />
 
       <RegisterField v-model="form.q27" name="q27" type="text" :meta="meta"
         label="Em sua profissão você fica muito tempo sentado(a), em movimento ou realiza trabalho braçal?" />
+
+      <RegisterField v-model="form.q28" name="q28" type="radio" :meta="meta" :radios="q28Radio"
+        label="Você tem algum tipo de dor ou desconforto (muscular ou articular)?" />
+
+      <RegisterField v-model="form.q29" name="q29" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
+        label="Se sim, onde? Leve ou aguda? Esporádica ou crônica? Qual a intensidade dessa(s) dor(es) de 0 a 10?" />
+
+      <RegisterField v-model="form.q30" name="q30" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
+        label="Alguma patologia (doença) diagnosticada por algum médico?"
+        span="(Hipertensão; doenças cardíacas; diabetes; etc)" />
+
+      <RegisterField v-model="form.q31" name="q31" type="text" :meta="meta"
+        label="Faz uso de medicamentos de forma rotineira? Se sim, quais?" />
+
+      <RegisterField v-model="form.q32" name="q32" type="text" :meta="meta"
+        label="Seu médico já mencionou alguma vez que você tem alguma condição cardíaca e que você só deve realizar atividade física recomendada por um médico?" />
+
+      <RegisterField v-model="form.q33" name="q33" type="text" :meta="meta"
+        label="Seu médico sabe que você está ingressando em um programa de treinamento físico?" />
+
+      <RegisterField v-model="form.q34" name="q34" type="text" :meta="meta" label="Você tem alguma meta para atingir?"
+        span="Ex: uma data; uma festa ou evento; uma roupa; etc." />
+
+      <RegisterField v-model="form.q35" name="q35" type="textarea" :meta="meta"
+        label="Existe algo que você acredita ser relevante me contar para personalizar ainda mais o seu treino? Essa é a hora!!! Vamos que vamos, pois juntos e com compromisso somos mais fortes! Obrigado pela confiança." />
 
       <div class="form__submit">
         <div class="submit" :class="{ 'submit--disabled': !meta.valid }">

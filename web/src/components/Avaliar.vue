@@ -9,46 +9,56 @@ const emit = defineEmits(['isAvaliarActive']);
 
 // Props
 const props = defineProps({
-  studentId: Number
-})
+  studentId: Number,
+  studentName: String,
+});
 
 function closeAvaliar() {
   emit('isAvaliarActive', false);
   bodyElement.value.style.overflow = 'auto';
-  console.log(props.studentId)
+};
+
+function autoScroll() {
+  bodyElement.value.style.overflow = 'auto';
 };
 
 // DOM Mount
 onMounted(() => {
   bodyElement.value = document.body;
-})
+});
 </script>
 
 <template>
-  <aside>
+  <aside @click.self="closeAvaliar">
     <div class="container">
-      <div class="close">
-        <button @click="closeAvaliar">
-          <font-awesome-icon icon="fa-solid fa-xmark" size="xl" />
-        </button>
+      <div class="container__title">
+        <div class="container__title__text">
+          <h1>Avaliar</h1>
+          <strong>{{ studentName }}</strong>
+        </div>
+        <div class="container__title__buttons">
+          <button @click="closeAvaliar">
+            <font-awesome-icon icon="fa-solid fa-xmark" size="xl" />
+          </button>
+        </div>
       </div>
-      <div class="content">
-        <div class="content__item">
-          <RouterLink :to="'/anamnese/' + studentId">
+      <div class="container__content">
+        <div class="container__content__item">
+          <RouterLink :to="'/anamnese/' + studentId" @click="autoScroll">
             <button>Anamnese</button>
           </RouterLink>
         </div>
-        <div class="content__item">
+        <div class="container__content__item">
           <RouterLink to="/neuromuscular">
             <button>Neuromuscular</button>
           </RouterLink>
         </div>
-        <div class="content__item">
+        <div class="container__content__item">
           <RouterLink to="/antropometria">
             <button>Antropometria</button>
           </RouterLink>
         </div>
-        <div class="content__item">
+        <div class="container__content__item">
           <RouterLink to="/cardio">
             <button>Cardio</button>
           </RouterLink>
@@ -75,36 +85,98 @@ aside {
   z-index: 888;
   overflow: auto;
   padding: 30px;
+  background-color: rgba(79, 79, 79, 0.442);
 
   @include mq(s) {
     padding: 10px;
   }
 
   .container {
+    border-radius: $border-radius;
+    background-color: rgb(245, 245, 245);
 
-    .close {
+    &__title {
       display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid $input-border;
 
-      button {
-        margin-right: -40px;
-        width: 40px;
-        height: 40px;
-        border: none;
-        border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.267);
-        color: white;
-        cursor: pointer;
+      &__text {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px;
+
+        h1 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: $txt-title;
+        }
+
+        strong {
+          font-size: 1.2rem;
+          font-weight: 800;
+          color: $logo-color;
+        }
+      }
+
+      &__buttons {
+        button {
+          margin-right: 10px;
+          width: 40px;
+          height: 40px;
+          border: none;
+          border-radius: 50%;
+          background-color: transparent;
+          color: rgba(85, 85, 85, 0.588);
+          cursor: pointer;
+          transition: .2s;
+
+          &:hover {
+            background-color: rgba(133, 133, 133, 0.267);
+          }
+        }
       }
     }
 
-    .content {
+    &__content {
       display: flex;
-      gap: 20px;
-      padding: 10px;
-      background-color: $validation;
-      border-radius: $border-radius;
+      gap: 25px;
+      padding: 20px;
+
+      @include mq(s-m) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        text-align: center;
+        gap: 15px;
+        padding: 20px 15px;
+      }
+
+      &__item {
+        &:nth-child(1) {
+          button {
+            @include submitButtons($validation, white);
+          }
+        }
+
+        &:nth-child(2) {
+          button {
+            @include submitButtons($validation, white);
+          }
+        }
+
+        &:nth-child(3) {
+          button {
+            @include submitButtons($validation, white);
+          }
+        }
+
+        &:nth-child(4) {
+          button {
+            @include submitButtons($validation, white);
+          }
+        }
+      }
     }
   }
 }
