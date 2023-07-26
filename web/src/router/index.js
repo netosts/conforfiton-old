@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
-import routes from './routes'
 
 import { getStudent } from '../services/axios/get';
 import axios from 'axios';
@@ -8,6 +7,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
+
 
 router.beforeEach((to, from) => {
   const isAuthenticated = true
