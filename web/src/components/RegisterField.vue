@@ -15,13 +15,20 @@ const props = defineProps({
   },
   label: {
     type: String,
-    required: true,
+    required: false,
   },
   required: String,
+  span: String,
   placeholder: String,
   meta: Object,
   rules: [String, Object, Array],
   options: Array,
+  radios: Array,
+  rows: {
+    type: String,
+    default: '3',
+  },
+  tabindex: String,
   modelValue: [String, Number],
 });
 
@@ -58,19 +65,26 @@ const {
     :class="{ 'has-error': !!errorMessage && meta.touched, success: !errorMessage && meta.touched && value !== '' }">
     <div class="label-span">
       <label :for="name">{{ label }} </label>
-      <span class="required">{{ required }}</span>
+      <span class="required" v-show="!!required">{{ required }}</span>
+      <span class="span" v-show="!!span">{{ span }}</span>
     </div>
 
     <Field v-if="type === 'select'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
-      @update:model-value="value = $event">
+      @update:model-value="value = $event" :tabindex="tabindex">
       <option v-for="option, index in options" :key="index" :value="option">{{ option }}</option>
     </Field>
 
     <Field v-else-if="type === 'textarea'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
-      rows="3" @update:model-value="value = $event" />
+      :rows="rows" @update:model-value="value = $event" :tabindex="tabindex" />
+
+    <div v-else-if="type === 'radio'" v-for="radio, index in radios" :key="radio" class="radio-container">
+      <Field :name="name" :type="type" :id="index" :rules="rules" :value="radio.value"
+        @update:model-value="value = $event" />
+      <label :for="index">{{ radio.label }}</label>
+    </div>
 
     <Field v-else :name="name" :id="name" :type="type" :rules="rules" :placeholder="placeholder"
-      @update:model-value="value = $event" />
+      @update:model-value="value = $event" :tabindex="tabindex" />
 
     <ErrorMessage :name="name" as="p" class="error-msg" v-show="meta.touched" />
   </div>
@@ -83,6 +97,20 @@ const {
 .label-span {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+
+  .required {
+    height: 1em;
+    color: red;
+    font-size: 1.2rem;
+    margin-left: 5px;
+  }
+
+  .span {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: $txt-subtitle;
+  }
 }
 
 .register-field {
@@ -90,6 +118,18 @@ const {
 
   p {
     color: $error-msg;
+  }
+
+  .radio-container {
+    display: flex;
+    gap: 5px;
+    padding: 0 10px;
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $txt-aside;
+    }
   }
 }
 
@@ -123,12 +163,5 @@ textarea {
   .error-msg {
     color: $validation;
   }
-}
-
-.required {
-  height: 1em;
-  color: red;
-  font-size: 1.2rem;
-  margin-left: 5px;
 }
 </style>

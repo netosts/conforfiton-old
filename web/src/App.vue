@@ -72,9 +72,18 @@ main {
   ;
   transition: .2s;
 
+  @include mq(m) {
+    margin: {
+      top: 15px;
+      right: calc(15px + 75px);
+      bottom: calc(15px + 69px);
+      left: 15px;
+    }
+  }
+
   @include mq(s) {
     left: 0;
-    margin-right: 25px;
+    margin-right: 15px;
     transition: none;
   }
 }
@@ -82,6 +91,10 @@ main {
 .main__sidebar-active {
   left: 250px;
   margin-right: calc(25px + 250px);
+
+  @include mq(m) {
+    margin-right: calc(15px + 250px);
+  }
 
   @include mq(s) {
     left: 0;

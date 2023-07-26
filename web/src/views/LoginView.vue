@@ -58,6 +58,10 @@ aside {
   overflow: auto;
   padding: 30px;
 
+  @include mq(s) {
+    padding: 10px;
+  }
+
   .login {
     position: relative;
     z-index: 999;

@@ -1,5 +1,6 @@
 <script setup>
 import CreateStudent from '../components/CreateStudent.vue';
+import Avaliar from '../components/Avaliar.vue';
 
 import { formatAge, formatTelefone } from '../services/validators/formats';
 import { ref, onMounted, watch } from 'vue';
@@ -10,13 +11,15 @@ import axios from 'axios';
 const bodyElement = ref(null);
 const students = ref([]);
 const isCreateStudentActive = ref(false);
+const isAvaliarActive = ref(false);
+const studentId = ref(null);
 const studentsFilter = ref('ativos');
 const inputBar = ref('');
 const inputFilter = ref('inputName');
 
 // Handle Emits
-const handleCreate = (emittedValue) => {
-  return isCreateStudentActive.value = emittedValue;
+const handleAvaliar = (emittedValue) => {
+  return isAvaliarActive.value = emittedValue;
 };
 
 // FUNCTIONS
@@ -24,6 +27,12 @@ const handleCreate = (emittedValue) => {
 function toggleCreate() {
   isCreateStudentActive.value = !isCreateStudentActive.value;
   bodyElement.value.style.overflow = isCreateStudentActive.value ? 'hidden' : 'auto';
+};
+
+function toggleAvaliar(ID_Pessoa) {
+  isAvaliarActive.value = !isAvaliarActive.value;
+  bodyElement.value.style.overflow = isAvaliarActive.value ? 'hidden' : 'auto';
+  studentId.value = ID_Pessoa;
 };
 
 // Axios Functions
@@ -99,7 +108,8 @@ onMounted(() => {
 
 <template>
   <main>
-    <CreateStudent @isCreateStudentActive="handleCreate" v-show="isCreateStudentActive" />
+    <CreateStudent v-show="isCreateStudentActive" />
+    <Avaliar :studentId="studentId" @isAvaliarActive="handleAvaliar" v-show="isAvaliarActive" />
 
     <div class="searchbox">
       <div class="searchbox__title">
@@ -147,7 +157,7 @@ onMounted(() => {
                   </div>
                 </div>
                 <div class="student__if__container1__identity__button">
-                  <button>Avaliar</button>
+                  <button @click="toggleAvaliar(student.ID_Pessoa)">Avaliar</button>
                 </div>
               </div>
               <div class="student__if__container1__info">
@@ -212,7 +222,7 @@ main {
     padding: 16px;
     border-radius: $border-radius;
     background: white;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
+    box-shadow: $box-shadow;
 
     &__title {
       display: flex;
@@ -324,7 +334,7 @@ main {
         flex-direction: column;
         width: 100%;
         border-radius: $border-radius;
-        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
+        box-shadow: $box-shadow;
         background-color: white;
 
         &__if {

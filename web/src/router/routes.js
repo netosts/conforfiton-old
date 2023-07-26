@@ -6,14 +6,18 @@ const routes = [
     name: 'home',
     component: Home,
     meta: { requiresAuth: true }, // This route requires authentication
-    children: [
-      {
-        path: '/student/:id/',
-        name: 'student',
-        component: () => import('../views/StudentView.vue'),
-        meta: { isStudent: true },
-      }
-    ]
+  },
+  {
+    path: '/student/:id/',
+    name: 'student',
+    component: () => import('../views/StudentView.vue'),
+    meta: { requiresAuth: true, isStudent: true },
+  },
+  {
+    path: '/anamnese/:id/',
+    name: 'anamnese',
+    component: () => import('../views/Avaliar/AnamneseView.vue'),
+    meta: { requiresAuth: true, isStudent: true }
   },
   {
     path: '/login',

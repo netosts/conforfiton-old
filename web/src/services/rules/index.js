@@ -119,3 +119,17 @@ export function password(value) {
   // If all requirements are met, return a success message
   return true;
 }
+
+
+export function asymbol(value) {
+  if (!value) {
+    return true;
+  }
+
+  const regex = /^[A-Za-z0-9.,;ãáàâéèêíïóôõöúüç\s'"\(\)]+$/u;
+  if (!regex.test(value)) {
+    return "Por favor digite apenas letras e números.";
+  }
+
+  return true;
+}
