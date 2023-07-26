@@ -12,8 +12,6 @@ definePage({
 
 // VARIABLES
 const route = useRoute();
-const count = ref(0);
-const radioDisabled = ref(false);
 
 // Form variables
 const form = ref({ peso: null })
@@ -59,7 +57,7 @@ const schema = {
 
 // Lists
 const q3Radio = [{ label: 'Parado', value: 'Parado' }, { label: 'Treinando', value: 'Treinando' }];
-const q28Radio = [{ label: 'Sim', value: 'Sim' }, { label: 'Não', value: 'Não' }];
+const q22Radio = [{ label: 'Sim', value: 'Sim' }, { label: 'Não', value: 'Não' }];
 const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 // FUNCTIONS
@@ -81,7 +79,7 @@ function onReset() {
   location.reload();
 };
 
-function plus(value) {
+function pushToForm(value) {
   const formQ = form.value.q15;
   if (!formQ.length) {
     formQ.push({ day: value.day, periods: [value.value] });
@@ -104,13 +102,12 @@ function plus(value) {
   }
 };
 
-function isRadioDisabled(q14Value) {
-  if (q14Value !== '' && count.value >= q14Value) {
-    radioDisabled.value = true;
+function disableCheckbox(value) {
+  console.log('Big O Alert!');
+  const formQ = form.value.q15;
+  const hasDay = formQ.some(item => item.day === value);
+  if (formQ.length >= form.value.q14 && !hasDay) {
     return true;
-  } else {
-    radioDisabled.value = false;
-    return false;
   }
 };
 </script>
@@ -164,8 +161,7 @@ function isRadioDisabled(q14Value) {
         label="Quantos dias da semana você tem disponibilidade para treinar?" />
 
       <!-- :class="{ 'input--disabled': !form.q14 }" -->
-      <pre>{{ form.q15 }}</pre>
-      <table>
+      <table :class="{ 'input--disabled': !form.q14 }">
         <thead>
           <tr>
             <th></th>
@@ -178,16 +174,16 @@ function isRadioDisabled(q14Value) {
           <tr v-for="day in days" :key="day">
             <td>{{ day }}</td>
             <td>
-              <input :name="`${day}`" :value="{ day, value: 1 }" type="checkbox" @change="plus({ day, value: 1 })"
-                :disabled="isRadioDisabled(form.q14)" :tabindex="!form.q14 ? '-1' : null" />
+              <input :name="`${day}`" :value="{ day, value: 1 }" type="checkbox" @change="pushToForm({ day, value: 1 })"
+                :disabled="disableCheckbox(day)" :tabindex="!form.q14 ? '-1' : null" />
             </td>
             <td>
-              <input :name="`${day}`" :value="{ day, value: 2 }" type="checkbox" @change="plus({ day, value: 2 })"
-                :disabled="isRadioDisabled(form.q14)" :tabindex="!form.q14 ? '-1' : null" />
+              <input :name="`${day}`" :value="{ day, value: 2 }" type="checkbox" @change="pushToForm({ day, value: 2 })"
+                :disabled="disableCheckbox(day)" :tabindex="!form.q14 ? '-1' : null" />
             </td>
             <td>
-              <input :name="`${day}`" :value="{ day, value: 3 }" type="checkbox" @change="plus({ day, value: 3 })"
-                :disabled="isRadioDisabled(form.q14)" :tabindex="!form.q14 ? '-1' : null" />
+              <input :name="`${day}`" :value="{ day, value: 3 }" type="checkbox" @change="pushToForm({ day, value: 3 })"
+                :disabled="disableCheckbox(day)" :tabindex="!form.q14 ? '-1' : null" />
             </td>
           </tr>
         </tbody>
@@ -210,13 +206,13 @@ function isRadioDisabled(q14Value) {
       <TextField v-model="form.q21" name="q21" type="text" :meta="meta"
         label="Em sua profissão você fica muito tempo sentado(a), em movimento ou realiza trabalho braçal?" />
 
-      <TextField v-model="form.q22" name="q22" type="radio" :meta="meta" :radios="q28Radio"
+      <TextField v-model="form.q22" name="q22" type="radio" :meta="meta" :radios="q22Radio"
         label="Você tem algum tipo de dor ou desconforto (muscular ou articular)?" />
 
-      <TextField v-model="form.q23" name="q23" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
+      <TextField v-model="form.q23" name="q23" type="text" :meta="meta" rows="2" v-show="form.q22 === 'Sim'"
         label="Se sim, onde? Leve ou aguda? Esporádica ou crônica? Qual a intensidade dessa(s) dor(es) de 0 a 10?" />
 
-      <TextField v-model="form.q24" name="q24" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
+      <TextField v-model="form.q24" name="q24" type="text" :meta="meta" rows="2"
         label="Alguma patologia (doença) diagnosticada por algum médico?"
         span="(Hipertensão; doenças cardíacas; diabetes; etc)" />
 
