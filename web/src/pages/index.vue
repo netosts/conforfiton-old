@@ -1,10 +1,17 @@
 <script setup>
+import axios from 'axios';
 import CreateStudent from '../components/CreateStudent.vue';
 import Avaliar from '../components/Avaliar.vue';
 
-import { formatAge, formatTelefone } from '../services/validators/formats';
+import { definePage } from 'vue-router/auto'
 import { ref, onMounted, watch } from 'vue';
-import axios from 'axios';
+
+import { formatAge, formatTelefone } from '../services/validators/formats';
+
+
+definePage({
+  meta: { requiresAuth: true },
+});
 
 
 // VARIABLES
@@ -197,7 +204,7 @@ onMounted(() => {
                   <font-awesome-icon icon="fa-solid fa-envelope" />
                   {{ student.dsEmail }}
                 </p>
-                <RouterLink :to="'/student/' + student.ID_Pessoa">
+                <RouterLink :to="'/student'">
                   <button>Mais Detalhes</button>
                 </RouterLink>
               </div>

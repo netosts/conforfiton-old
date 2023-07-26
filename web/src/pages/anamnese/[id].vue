@@ -1,9 +1,14 @@
 <script setup>
-import { useRoute } from 'vue-router';
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
+import { useRoute, definePage } from 'vue-router/auto'
 
 import { Form } from 'vee-validate';
-import RegisterField from '../../components/RegisterField.vue';
+import TextField from '../../components/TextField.vue';
+
+
+definePage({
+  meta: { isStudent: true },
+});
 
 // VARIABLES
 const route = useRoute();
@@ -11,13 +16,13 @@ const count = ref(0);
 const radioDisabled = ref(false);
 
 // Form variables
-const form = reactive({
-  peso: '', q1: '', q2: '', q3: '', q4: '', q5: '', q6: '', q7: '',
-  q8: '', q9: '', q10: '', q11: '', q12: '', q13: '', q14: '', q15: '',
-  q16: '', q17: '', q18: '', q19: '', q20: '', q21: '', q22: '',
-  q23: '', q24: '', q25: '', q26: '', q27: '', q28: '', q29: '',
-  q30: '', q31: '', q32: '', q33: '', q34: '', q35: ''
-});
+const form = ref({ peso: null })
+for (let i = 1; i < 30; i++) {
+  Object.defineProperty(form.value, `q${i}`, {
+    value: i === 15 ? [] : undefined,
+    writable: true,
+  });
+};
 
 // Validation schema
 const schema = {
@@ -36,26 +41,26 @@ const schema = {
   q12: 'required|maxLength:100|asymbol',
   q13: 'required|maxLength:100|asymbol',
   q14: 'required|between:0,7',
-  q22: 'required|maxLength:100|asymbol',
-  q23: 'required|maxLength:100|asymbol',
+  q16: 'required|maxLength:100|asymbol',
+  q17: 'required|maxLength:100|asymbol',
+  q18: 'required|maxLength:100|asymbol',
+  q19: 'required|between:0,10',
+  q20: 'required|maxLength:100|asymbol',
+  q21: 'required|maxLength:100|asymbol',
+  q22: 'required',
+  q23: 'maxLength:100|asymbol',
   q24: 'required|maxLength:100|asymbol',
-  q25: 'required|between:0,10',
+  q25: 'required|maxLength:100|asymbol',
   q26: 'required|maxLength:100|asymbol',
   q27: 'required|maxLength:100|asymbol',
-  q28: 'required',
-  q29: 'maxLength:100|asymbol',
-  q30: 'required|maxLength:100|asymbol',
-  q31: 'required|maxLength:100|asymbol',
-  q32: 'required|maxLength:100|asymbol',
-  q33: 'required|maxLength:100|asymbol',
-  q34: 'required|maxLength:100|asymbol',
-  q35: 'maxLength:255|asymbol',
+  q28: 'required|maxLength:100|asymbol',
+  q29: 'maxLength:255|asymbol',
 };
 
 // Lists
 const q3Radio = [{ label: 'Parado', value: 'Parado' }, { label: 'Treinando', value: 'Treinando' }];
 const q28Radio = [{ label: 'Sim', value: 'Sim' }, { label: 'Não', value: 'Não' }];
-const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 // FUNCTIONS
 function onSubmit(values, { setFieldError }) {
@@ -76,11 +81,26 @@ function onReset() {
   location.reload();
 };
 
-function plus() {
-  if (count.value >= form.q14) {
-    count.value = form.q14 - 1;
+function plus(value) {
+  const formQ = form.value.q15;
+  if (!formQ.length) {
+    formQ.push({ day: value.day, periods: [value.value] });
+    return;
+  }
+  const hasDay = formQ.some(item => item.day === value.day)
+  if (hasDay) {
+    const index = formQ.findIndex(item => item.day === value.day)
+    if (formQ[index].periods.some(item => item === value.value)) {
+      const indexValue = formQ[index].periods.findIndex(item => item === value.value)
+      formQ[index].periods.splice(indexValue, 1)
+      if (!formQ[index].periods.length) {
+        formQ.splice(index, 1);
+      }
+    } else {
+      formQ[index].periods.push(value.value)
+    }
   } else {
-    count.value++;
+    formQ.push({ day: value.day, periods: [value.value] });
   }
 };
 
@@ -99,51 +119,53 @@ function isRadioDisabled(q14Value) {
   <main>
     <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ meta }" class="form">
 
-      <RegisterField v-model="form.peso" name="peso" type="number" :meta="meta" label="Qual seu peso?"
+      <TextField v-model="form.peso" name="peso" type="number" :meta="meta" label="Qual seu peso?"
         placeholder="Ex: 90.30" />
 
-      <RegisterField v-model="form.q1" name="q1" type="textarea" :meta="meta" rows="2"
+      <TextField v-model="form.q1" name="q1" type="textarea" :meta="meta" rows="2"
         label="Quais são seus objetivos com o início de um programa de treinamento físico?" />
 
-      <RegisterField v-model="form.q2" name="q2" type="text" :meta="meta" label="Desses, qual o principal?"
+      <TextField v-model="form.q2" name="q2" type="text" :meta="meta" label="Desses, qual o principal?"
         :class="{ 'input--disabled': !form.q1 }" :tabindex="!form.q1 ? '1' : null" />
 
-      <RegisterField v-model="form.q3" name="q3" type="radio" :radios="q3Radio" :meta="meta"
+      <TextField v-model="form.q3" name="q3" type="radio" :radios="q3Radio" :meta="meta"
         label="Você está parado(a) ou treinando?" />
 
-      <RegisterField v-model="form.q4" name="q4" type="text" :meta="meta" label="Há quanto tempo?"
+      <TextField v-model="form.q4" name="q4" type="text" :meta="meta" label="Há quanto tempo?"
         :class="{ 'input--disabled': !form.q3 }" :tabindex="!form.q3 ? '1' : null" />
 
-      <RegisterField v-model="form.q5" name="q5" type="textarea" :meta="meta" rows="2"
+      <TextField v-model="form.q5" name="q5" type="textarea" :meta="meta" rows="2"
         label="Como é ou era o seu último treino" />
 
-      <RegisterField v-model="form.q6" name="q6" type="text" :meta="meta"
+      <TextField v-model="form.q6" name="q6" type="text" :meta="meta"
         label="Existe algum exercício que você não gosta de fazer?" />
 
-      <RegisterField v-model="form.q7" name="q7" type="text" :meta="meta" label="Por que?"
+      <TextField v-model="form.q7" name="q7" type="text" :meta="meta" label="Por que?"
         :class="{ 'input--disabled': !form.q6 }" :tabindex="!form.q6 ? '1' : null" />
 
-      <RegisterField v-model="form.q8" name="q8" type="text" :meta="meta" label="Qual exercício você ama fazer?" />
+      <TextField v-model="form.q8" name="q8" type="text" :meta="meta" label="Qual exercício você ama fazer?" />
 
-      <RegisterField v-model="form.q9" name="q9" type="text" :meta="meta" label="Por que?"
+      <TextField v-model="form.q9" name="q9" type="text" :meta="meta" label="Por que?"
         :class="{ 'input--disabled': !form.q8 }" :tabindex="!form.q8 ? '1' : null" />
 
-      <RegisterField v-model="form.q10" name="q10" type="text" :meta="meta"
+      <TextField v-model="form.q10" name="q10" type="text" :meta="meta"
         label="Em quanto tempo você concluía seu treino?" />
 
-      <RegisterField v-model="form.q11" name="q11" type="text" :meta="meta" label="Tem restrição de tempo para treinar?"
+      <TextField v-model="form.q11" name="q11" type="text" :meta="meta" label="Tem restrição de tempo para treinar?"
         span="Um treino de 30 a 50 minutos seria suficiente!" />
 
-      <RegisterField v-model="form.q12" name="q12" type="text" :meta="meta"
+      <TextField v-model="form.q12" name="q12" type="text" :meta="meta"
         label="Quanto tempo de treino você tem disponível por dia?" />
 
-      <RegisterField v-model="form.q13" name="q13" type="text" :meta="meta" label="Qual será o local de treino?"
+      <TextField v-model="form.q13" name="q13" type="text" :meta="meta" label="Qual será o local de treino?"
         span="(Academia; academia do prédio; casa; parque; etc)" />
 
-      <RegisterField v-model="form.q14" name="q14" type="number" :meta="meta"
+      <TextField v-model="form.q14" name="q14" type="number" :meta="meta"
         label="Quantos dias da semana você tem disponibilidade para treinar?" />
 
-      <table :class="{ 'input--disabled': !form.q14 }">
+      <!-- :class="{ 'input--disabled': !form.q14 }" -->
+      <pre>{{ form.q15 }}</pre>
+      <table>
         <thead>
           <tr>
             <th></th>
@@ -153,64 +175,64 @@ function isRadioDisabled(q14Value) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="day, index in days" :key="day">
+          <tr v-for="day in days" :key="day">
             <td>{{ day }}</td>
             <td>
-              <input v-model="form[`q${index + 15}`]" :name="`q${index + 15}`" value="Manhã" type="radio" @click="plus"
+              <input :name="`${day}`" :value="{ day, value: 1 }" type="checkbox" @change="plus({ day, value: 1 })"
                 :disabled="isRadioDisabled(form.q14)" :tabindex="!form.q14 ? '-1' : null" />
             </td>
             <td>
-              <input v-model="form[`q${index + 15}`]" :name="`q${index + 15}`" value="Tarde" type="radio" @click="plus"
+              <input :name="`${day}`" :value="{ day, value: 2 }" type="checkbox" @change="plus({ day, value: 2 })"
                 :disabled="isRadioDisabled(form.q14)" :tabindex="!form.q14 ? '-1' : null" />
             </td>
             <td>
-              <input v-model="form[`q${index + 15}`]" :name="`q${index + 15}`" value="Noite" type="radio" @click="plus"
+              <input :name="`${day}`" :value="{ day, value: 3 }" type="checkbox" @change="plus({ day, value: 3 })"
                 :disabled="isRadioDisabled(form.q14)" :tabindex="!form.q14 ? '-1' : null" />
             </td>
           </tr>
         </tbody>
       </table>
 
-      <RegisterField v-model="form.q22" name="q22" type="text" :meta="meta"
+      <TextField v-model="form.q16" name="q16" type="text" :meta="meta"
         label="Você está fazendo dieta orientado(a) por nutricionista?" />
 
-      <RegisterField v-model="form.q23" name="q23" type="text" :meta="meta"
+      <TextField v-model="form.q17" name="q17" type="text" :meta="meta"
         label="Está sendo acompanhado(a) por nutrologista ou endocrinologista?" />
 
-      <RegisterField v-model="form.q24" name="q24" type="text" :meta="meta"
+      <TextField v-model="form.q18" name="q18" type="text" :meta="meta"
         label="Descreva rapidamente sua rotina alimentar!" />
 
-      <RegisterField v-model="form.q25" name="q25" type="text" :meta="meta"
-        label="De 0 a 10 como você classifica seu sono." span="(Sendo 0 para péssimo e 10 para excelente)" />
+      <TextField v-model="form.q19" name="q19" type="text" :meta="meta" label="De 0 a 10 como você classifica seu sono."
+        span="(Sendo 0 para péssimo e 10 para excelente)" />
 
-      <RegisterField v-model="form.q26" name="q26" type="text" :meta="meta" label="Qual sua profissão?" />
+      <TextField v-model="form.q20" name="q20" type="text" :meta="meta" label="Qual sua profissão?" />
 
-      <RegisterField v-model="form.q27" name="q27" type="text" :meta="meta"
+      <TextField v-model="form.q21" name="q21" type="text" :meta="meta"
         label="Em sua profissão você fica muito tempo sentado(a), em movimento ou realiza trabalho braçal?" />
 
-      <RegisterField v-model="form.q28" name="q28" type="radio" :meta="meta" :radios="q28Radio"
+      <TextField v-model="form.q22" name="q22" type="radio" :meta="meta" :radios="q28Radio"
         label="Você tem algum tipo de dor ou desconforto (muscular ou articular)?" />
 
-      <RegisterField v-model="form.q29" name="q29" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
+      <TextField v-model="form.q23" name="q23" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
         label="Se sim, onde? Leve ou aguda? Esporádica ou crônica? Qual a intensidade dessa(s) dor(es) de 0 a 10?" />
 
-      <RegisterField v-model="form.q30" name="q30" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
+      <TextField v-model="form.q24" name="q24" type="text" :meta="meta" rows="2" v-show="form.q28 === 'Sim'"
         label="Alguma patologia (doença) diagnosticada por algum médico?"
         span="(Hipertensão; doenças cardíacas; diabetes; etc)" />
 
-      <RegisterField v-model="form.q31" name="q31" type="text" :meta="meta"
+      <TextField v-model="form.q25" name="q25" type="text" :meta="meta"
         label="Faz uso de medicamentos de forma rotineira? Se sim, quais?" />
 
-      <RegisterField v-model="form.q32" name="q32" type="text" :meta="meta"
+      <TextField v-model="form.q26" name="q26" type="text" :meta="meta"
         label="Seu médico já mencionou alguma vez que você tem alguma condição cardíaca e que você só deve realizar atividade física recomendada por um médico?" />
 
-      <RegisterField v-model="form.q33" name="q33" type="text" :meta="meta"
+      <TextField v-model="form.q27" name="q27" type="text" :meta="meta"
         label="Seu médico sabe que você está ingressando em um programa de treinamento físico?" />
 
-      <RegisterField v-model="form.q34" name="q34" type="text" :meta="meta" label="Você tem alguma meta para atingir?"
+      <TextField v-model="form.q28" name="q28" type="text" :meta="meta" label="Você tem alguma meta para atingir?"
         span="Ex: uma data; uma festa ou evento; uma roupa; etc." />
 
-      <RegisterField v-model="form.q35" name="q35" type="textarea" :meta="meta"
+      <TextField v-model="form.q29" name="q29" type="textarea" :meta="meta"
         label="Existe algo que você acredita ser relevante me contar para personalizar ainda mais o seu treino? Essa é a hora!!! Vamos que vamos, pois juntos e com compromisso somos mais fortes! Obrigado pela confiança." />
 
       <div class="form__submit">

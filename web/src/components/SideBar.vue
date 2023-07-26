@@ -1,5 +1,4 @@
 <script setup>
-import { RouterLink } from 'vue-router';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 
 // Get the refs

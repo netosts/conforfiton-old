@@ -1,7 +1,17 @@
 <script setup>
+import { reactive } from 'vue';
+import { definePage } from 'vue-router/auto'
+
 import RegisterField from '../components/RegisterField.vue';
 import { Form } from 'vee-validate';
-import { reactive } from 'vue';
+
+
+definePage({
+  beforeEnter: () => {
+    const isAuthenticated = false;
+    if (isAuthenticated) return { path: '/' };
+  }
+});
 
 
 const login = reactive({

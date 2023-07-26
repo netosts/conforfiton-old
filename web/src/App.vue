@@ -2,8 +2,8 @@
 import SideBar from './components/SideBar.vue';
 import TopBar from './components/TopBar.vue';
 
-import { useRoute } from 'vue-router';
 import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router/auto';
 
 
 // VARIABLES

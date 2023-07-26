@@ -1,9 +1,15 @@
 <script setup>
 import axios from 'axios';
-import { getStudent } from '../services/axios/get';
+import { getStudent } from '../../services/axios/get';
 
-import { useRoute } from 'vue-router';
 import { onMounted, ref } from 'vue';
+import { useRoute, definePage } from 'vue-router/auto'
+
+
+// definePage({
+//   meta: { isStudent: true, },
+// });
+
 
 // VARIABLES
 const route = useRoute();

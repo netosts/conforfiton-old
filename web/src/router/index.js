@@ -13,7 +13,7 @@ router.beforeEach((to, from) => {
   const isAuthenticated = true
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuthenticated) return { name: 'login' }
+    if (!isAuthenticated) return { path: '/login' }
   }
 })
 

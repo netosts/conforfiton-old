@@ -5,7 +5,7 @@ import { postStudent } from '../services/axios/post';
 
 import { ref, reactive, onMounted } from 'vue';
 
-import RegisterField from './RegisterField.vue';
+import TextField from './TextField.vue';
 import { Form } from 'vee-validate';
 
 
@@ -163,26 +163,26 @@ onMounted(() => {
         </div>
 
         <!-- Início do cadastro -->
-        <RegisterField v-model="form.nmPessoa" :meta="meta" name="name" type="text" label="Nome completo" required="*"
+        <TextField v-model="form.nmPessoa" :meta="meta" name="name" type="text" label="Nome completo" required="*"
           placeholder="Digite o nome do aluno" />
 
         <div class="form__container__cpf-rg-uf">
-          <RegisterField v-model="form.cpfCnpj" :meta="meta" name="cpf" type="text" label="CPF" required="*"
+          <TextField v-model="form.cpfCnpj" :meta="meta" name="cpf" type="text" label="CPF" required="*"
             placeholder="Digite o CPF do aluno" />
 
           <div class="form__container__cpf-rg-uf__rg-uf">
-            <RegisterField v-model="form.rg" :meta="meta" name="rg" type="text" label="RG"
+            <TextField v-model="form.rg" :meta="meta" name="rg" type="text" label="RG"
               placeholder="Digite o RG do aluno" />
 
-            <RegisterField v-model="form.ufRG" :meta="meta" name="uf" type="select" label="UF" :options="ufList" />
+            <TextField v-model="form.ufRG" :meta="meta" name="uf" type="select" label="UF" :options="ufList" />
           </div>
         </div>
 
         <div class="form__container__tel-email">
-          <RegisterField v-model="form.telefone" :meta="meta" name="telefone" type="text" label="Telefone"
+          <TextField v-model="form.telefone" :meta="meta" name="telefone" type="text" label="Telefone"
             placeholder="(00)00000-0000" />
 
-          <RegisterField v-model="form.dsEmail" :meta="meta" name="email" type="text" label="E-mail" required="*"
+          <TextField v-model="form.dsEmail" :meta="meta" name="email" type="text" label="E-mail" required="*"
             placeholder="Digite o Email do aluno" />
         </div>
 
@@ -192,30 +192,30 @@ onMounted(() => {
             <input v-model="form.dtNascimento" type="date" id="date">
           </div>
 
-          <RegisterField v-model="form.sexo" :meta="meta" name="sexo" type="select" label="Sexo Biológico" required="*"
+          <TextField v-model="form.sexo" :meta="meta" name="sexo" type="select" label="Sexo Biológico" required="*"
             :options="sexoList" />
 
-          <RegisterField v-model="form.tmCamisa" :meta="meta" name="camisa" type="select" label="Camisa"
+          <TextField v-model="form.tmCamisa" :meta="meta" name="camisa" type="select" label="Camisa"
             :options="tmCamisaList" />
         </div>
 
         <div class="form__container__altura-peso">
-          <RegisterField v-model="form.altura" :meta="meta" name="altura" type="number" label="Altura(cm)" required="*"
+          <TextField v-model="form.altura" :meta="meta" name="altura" type="number" label="Altura(cm)" required="*"
             placeholder="Ex: 180" />
 
-          <RegisterField v-model="form.peso" :meta="meta" name="peso" type="number" label="Peso(kg)"
+          <TextField v-model="form.peso" :meta="meta" name="peso" type="number" label="Peso(kg)"
             placeholder="Ex: 90,30" />
         </div>
 
         <div class="form__container__freqCardio">
-          <RegisterField v-model="form.bpmMaximo" :meta="meta" name="bpmMaximo" type="number" label="Freq. C. Máxima"
+          <TextField v-model="form.bpmMaximo" :meta="meta" name="bpmMaximo" type="number" label="Freq. C. Máxima"
             placeholder="BPM" />
 
-          <RegisterField v-model="form.bpmRepouso" :meta="meta" name="bpmRepouso" type="number" label="Freq. C. Repouso"
+          <TextField v-model="form.bpmRepouso" :meta="meta" name="bpmRepouso" type="number" label="Freq. C. Repouso"
             placeholder="BPM" />
         </div>
 
-        <RegisterField v-model="form.dsObs" :meta="meta" name="dsObs" type="textarea" label="Observação"
+        <TextField v-model="form.dsObs" :meta="meta" name="dsObs" type="textarea" label="Observação"
           placeholder="Digite aqui se tiver alguma observação" />
 
         <!-- SUBMIT -->

@@ -1,5 +1,11 @@
 <script setup>
+import { definePage } from 'vue-router/auto'
 
+definePage({
+  path: '/:pathMatch(.*)*',
+  name: 'NotFound',
+  meta: { requiresAuth: true },
+});
 </script>
 
 <template>
