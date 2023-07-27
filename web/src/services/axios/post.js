@@ -4,7 +4,7 @@ export function postStudent(axios, form) {
     alert(res.data);
     location.reload();
   }).catch((err) => {
-    console.error(`{Error: ${err.response.data}} {Status: ${err.response.status}}`);
+    console.error(err.response.data);
     throw err;
   });
 };

@@ -50,11 +50,9 @@ class NewStudent(BaseModel):
         raise ValueError("Cpf can't be more than 11 characters.")
       return value
     
-    @validator('rg')
-    def validate_rg(cls, value, values):
-      if value is not None and values.get('ufRG') is None:
-        raise ValueError("RG and UF must be together")
-      if value is None and values.get('ufRG') is not None:
+    @validator('rg', 'ufRG')
+    def validate_rg(cls, value):
+      if value is not None:
         raise ValueError("RG and UF must be together")
       if value is not None and len(value) > 20:
         raise ValueError("Rg can't be more than 20 characters.")

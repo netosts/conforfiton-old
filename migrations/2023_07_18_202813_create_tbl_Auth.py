@@ -11,7 +11,7 @@ class CreateTblAuth(Migration):
             table.integer('ID_Pessoa').unsigned().unique()
             table.foreign('ID_Pessoa').references('ID_Pessoa').on('tbl_Pessoa')
             table.string('username', 30).unique()
-            table.string('password', 30)
+            table.string('hashed_password')
             table.timestamps()
             table.soft_deletes()
 

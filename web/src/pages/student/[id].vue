@@ -6,9 +6,9 @@ import { onMounted, ref } from 'vue';
 import { useRoute, definePage } from 'vue-router/auto'
 
 
-// definePage({
-//   meta: { isStudent: true, },
-// });
+definePage({
+  meta: { isStudent: true, requiresAuth: true },
+});
 
 
 // VARIABLES

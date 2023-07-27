@@ -7,7 +7,7 @@ import TextField from '../../components/TextField.vue';
 
 
 definePage({
-  meta: { isStudent: true },
+  meta: { isStudent: true, requiresAuth: true },
 });
 
 // VARIABLES

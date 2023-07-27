@@ -204,7 +204,7 @@ onMounted(() => {
                   <font-awesome-icon icon="fa-solid fa-envelope" />
                   {{ student.dsEmail }}
                 </p>
-                <RouterLink :to="'/student'">
+                <RouterLink :to="`/student/${student.ID_Pessoa}`">
                   <button>Mais Detalhes</button>
                 </RouterLink>
               </div>

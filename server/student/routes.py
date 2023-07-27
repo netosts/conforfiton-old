@@ -108,7 +108,7 @@ async def find_student(ID_Pessoa):
 
 
 # Create a new Student
-@student_router.post('/student')
+@student_router.post('/')
 async def new_student(data: NewStudent):
     # Look for CPF duplicate
     cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
