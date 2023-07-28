@@ -14,7 +14,7 @@ export function getToken(http, payload) {
   return http.post('/user/token', payload)
   .then((res) => res.data)
   .catch((err) => {
-    console.error(err.response.data);
+    console.error(err);
     throw err;
   });
 };

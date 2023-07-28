@@ -8,10 +8,10 @@ const http = axios.create({
 
 http.interceptors.request.use((request)=>{
   const token = getExpToken();
-  if (!token) {
+  const user = localStorage.getItem('user');
+  if (!token && user) {
     localStorage.removeItem('user');
-  } else {
-    request.headers.Authorization = `Bearer ${token}`;
+    location.reload();
   }
   return request;
 });

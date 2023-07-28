@@ -1,8 +1,7 @@
 <script setup>
 import http from '../services/api/http';
 import { getToken } from '../services/api/post';
-
-import { useAuthStore } from '../stores/auth';
+import { setExpToken } from '../services/api/token';
 
 import { definePage } from 'vue-router/auto';
 import { reactive } from 'vue';
@@ -17,8 +16,6 @@ definePage({
     if (logged) return { path: '/' };
   }
 });
-
-const auth = useAuthStore();
 
 const login = reactive({
   username: undefined,
@@ -37,26 +34,25 @@ async function onSubmit(values, { setErrors }) {
     const payload = new FormData()
     payload.append('username', login.username);
     payload.append('password', login.password);
+
     const data = await getToken(http, payload);
-    auth.setExpToken(data.access_token, 60 * 1000);
-    auth.setUser(data.user_id);
+
+    setExpToken(data.access_token, 60 * 60 * 1000); // Set expiry by milliseconds
+    localStorage.setItem('user', data.user_id);
+
     location.reload();
-  } catch {
+  } catch (e) {
+    console.error(e);
     setErrors({
       'username': ' ',
       'password': 'Usuário ou senha inválido.'
     });
   };
 };
-
-function bt() {
-  console.log(auth.user);
-}
 </script>
 
 <template>
   <aside>
-    <pre><button @click="bt"> BT</button></pre>
     <Form @submit="onSubmit" :validation-schema="schema" class="login">
       <div class="login__title">
         <h1>LOGIN</h1>

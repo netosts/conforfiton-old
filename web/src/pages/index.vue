@@ -7,13 +7,10 @@ import { definePage } from 'vue-router/auto'
 import { ref, onMounted, watch } from 'vue';
 import { formatAge, formatTelefone } from '../services/validators/formats';
 
-import { useAuthStore } from '../stores/auth';
 
 definePage({
   meta: { requiresAuth: true },
 });
-
-const auth = useAuthStore();
 
 // VARIABLES
 const bodyElement = ref(null);
@@ -111,10 +108,6 @@ watch(inputBar, (newValue) => {  // Show students based on input bar + filter
   }
 });
 
-function bt() {
-  console.log(auth.user);
-}
-
 // DOM Mounted
 onMounted(() => {
   getActiveStudents('%', 5);
@@ -124,7 +117,6 @@ onMounted(() => {
 
 <template>
   <main>
-    <pre><button @click="bt"> BT</button></pre>
     <CreateStudent v-show="isCreateStudentActive" />
     <Avaliar :studentName="studentName" :studentId="studentId" @isAvaliarActive="handleAvaliar"
       v-show="isAvaliarActive" />
