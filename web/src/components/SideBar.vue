@@ -24,6 +24,11 @@ function windowResizeSidebar() {
   }
 };
 
+function logout() {
+  localStorage.removeItem('user');
+  location.reload();
+};
+
 // DOM Mount Functions
 onMounted(() => {
   window.addEventListener('resize', windowResizeSidebar);
@@ -68,6 +73,12 @@ watch(sidebarIsActive, (newValue) => {
             <li>Visualizar todos</li>
             <li>Avaliar aluno</li>
             <li>Adicionar peso</li>
+            <li>
+              <RouterLink to="/login">Login</RouterLink>
+            </li>
+            <li>
+              <button @click="logout">Logout</button>
+            </li>
           </ul>
         </ul>
       </div>

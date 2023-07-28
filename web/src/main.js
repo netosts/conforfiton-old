@@ -4,7 +4,7 @@ import './assets/styles/_index.scss'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
-import { faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope, faX } from '@fortawesome/free-solid-svg-icons'
+import { faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { faMoon } from '@fortawesome/free-regular-svg-icons'
 
 // Vue Motion plugin
@@ -16,11 +16,11 @@ import { defineRule } from 'vee-validate'
 
 // Vue Application
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'  // PINIA APP
 import App from './App.vue'
 import router from './router'
 
-import axios from 'axios'
-
+const pinia = createPinia()
 const app = createApp(App)
 
 // vee validate rules
@@ -34,14 +34,12 @@ defineRule('maxDecimal', (value, [limit]) => maxDecimal(value, limit))
 defineRule('password', value => password(value))
 defineRule('asymbol', value => asymbol(value))
 
-library.add(faMoon, faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope, faX)
+library.add(faMoon, faExpand, faMagnifyingGlass, faXmark, faCheck, faLocationDot, faPhoneFlip, faEnvelope, faArrowLeft)
 
-axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'http://localhost:8000'
-
-// Use Vue Router and Vue Motion plugins
+// Use Vue Router and Vue Motion plugins and Pinia
 app.use(MotionPlugin)
 app.use(router)
+app.use(pinia)
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 

@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 
-import { getStudent } from '../services/axios/get';
-import axios from 'axios';
+import { getStudentCredentials } from '../services/api/get';
+import http from '../services/api/http';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,17 +11,16 @@ const router = createRouter({
 
 
 router.beforeEach((to, from) => {
-  const isAuthenticated = true
-
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuthenticated) return { path: '/login' }
+  if (to.meta.requiresAuth) {
+    const logged = localStorage.getItem('user')
+    if (!logged) return { path: '/login' }
   }
 })
 
 router.beforeResolve(async (to, from) => {
   if (to.meta.isStudent) {
     try {
-      await getStudent(axios, to.params.id)
+      await getStudentCredentials(http, to.params.id)
     } catch {
       return {
         name: 'NotFound',

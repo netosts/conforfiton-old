@@ -1,6 +1,6 @@
 <script setup>
-import axios from 'axios';
-import { getStudent } from '../../services/axios/get';
+import http from '../../services/api/http';
+import { getStudent } from '../../services/api/get';
 
 import { onMounted, ref } from 'vue';
 import { useRoute, definePage } from 'vue-router/auto'
@@ -17,7 +17,7 @@ const student = ref({});
 
 // FUNCTIONS
 async function initStudent() {
-  student.value = await getStudent(axios, route.params.id);
+  student.value = await getStudent(http, route.params.id);
 }
 
 // DOM Mount

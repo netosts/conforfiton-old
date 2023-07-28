@@ -1,7 +1,7 @@
 <script setup>
-import axios from 'axios';
-import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/axios/get';
-import { postStudent } from '../services/axios/post';
+import http from '../services/api/http';
+import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/api/get';
+import { postStudent } from '../services/api/post';
 
 import { ref, reactive, onMounted } from 'vue';
 
@@ -82,7 +82,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
 
   // CPF Duplicate validation
   form.cpfCnpj = form.cpfCnpj.replace(/\D/g, '');  // only digits
-  const countedCpf = await countCpfDuplicate(axios, form.cpfCnpj);
+  const countedCpf = await countCpfDuplicate(http, form.cpfCnpj);
   if (countedCpf > 0) {
     setFieldError('cpf', 'O CPF já foi cadastrado.');
     errors++;
@@ -97,7 +97,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
     errors++;
   } else if (form.rg !== '' && form.ufRG !== '') {
     // RG in UF Duplicate validation
-    const countedRgUf = await countRgUfDuplicate(axios, form.rg, form.ufRG);
+    const countedRgUf = await countRgUfDuplicate(http, form.rg, form.ufRG);
     if (countedRgUf > 0) {
       setFieldError('rg', `O RG já foi cadastrado em ${form.ufRG}.`);
       errors++;
@@ -105,7 +105,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   }
 
   // Email duplicate validation
-  const countedEmail = await countEmailDuplicate(axios, form.dsEmail);
+  const countedEmail = await countEmailDuplicate(http, form.dsEmail);
   if (countedEmail > 0) {
     setFieldError('email', 'Este email já foi cadastrado.')
     errors++;
@@ -133,7 +133,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   form.telefone = form.telefone.replace(/\D/g, '');  // only digits
 
   // Post new student
-  postStudent(axios, form);
+  postStudent(http, form);
 };
 
 // DOM Mounted

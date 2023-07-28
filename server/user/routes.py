@@ -27,6 +27,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_id: str
 
 
 # Authenticate User FUNCTIONS
@@ -41,8 +42,8 @@ def get_user(username: str):
     return user
 
 
-async def authenticate_user(username: str, password: str):
-    user = await get_user(username)
+def authenticate_user(username: str, password: str):
+    user = get_user(username)
     if not user:
         return False
     if not verify_password(password, user.get("hashed_password")):
@@ -58,34 +59,26 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        user_id: int = payload.get("id")
-        if username is None or user_id is None:
-            raise credentials_exception
-        return {'id': user_id, 'username': username }
-    except JWTError:
-        raise credentials_exception
+# def get_current_user(token: str = Depends(oauth2_scheme)):
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         username: str = payload.get("sub")
+#         user_id: int = payload.get("id")
+#         if username is None or user_id is None:
+#             raise credentials_exception
+#         return {'id': user_id, 'username': username }
+#     except JWTError:
+#         raise credentials_exception
 
 
-@user_router.get('/me')
-async def read_user_me(current_user: NewUser = Depends(get_current_user)):
-    return current_user
-
-
-@user_router.get("/{username}")
-async def get_user(username: str):
-    user = User.where('username', username).first()
-    if user:
-        user = user.serialize()
-    return user
+# @user_router.get('/verify')
+# async def verify_current_user(current_user: NewUser = Depends(get_current_user)):
+#     return current_user
 
 
 @user_router.post('/register')
@@ -109,7 +102,7 @@ async def new_user(data: NewUser):
 
 @user_router.post('/token', response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await authenticate_user(form_data.username, form_data.password)
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -118,4 +111,4 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user.get("username"), "id": user.get("ID_Pessoa")}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.get("ID_Pessoa")}

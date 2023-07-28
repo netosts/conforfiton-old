@@ -1,18 +1,19 @@
 <script setup>
-import axios from 'axios';
+import http from '../services/api/http';
 import CreateStudent from '../components/CreateStudent.vue';
 import Avaliar from '../components/Avaliar.vue';
 
 import { definePage } from 'vue-router/auto'
 import { ref, onMounted, watch } from 'vue';
-
 import { formatAge, formatTelefone } from '../services/validators/formats';
 
+import { useAuthStore } from '../stores/auth';
 
 definePage({
   meta: { requiresAuth: true },
 });
 
+const auth = useAuthStore();
 
 // VARIABLES
 const bodyElement = ref(null);
@@ -52,7 +53,7 @@ function getActiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/student/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
+  http.get(`/student/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -63,7 +64,7 @@ function getInactiveStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/student/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
+  http.get(`/student/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -74,7 +75,7 @@ function getAllStudents(value, limit) {
   if (inputBar.value === '') {
     value = '%';
   }
-  axios.get(`/student/${inputFilter.value}/${value}/${limit}`).then((res) => {
+  http.get(`/student/${inputFilter.value}/${value}/${limit}`).then((res) => {
     students.value = res.data;
   }).catch((err) => {
     console.error(err);
@@ -110,6 +111,10 @@ watch(inputBar, (newValue) => {  // Show students based on input bar + filter
   }
 });
 
+function bt() {
+  console.log(auth.user);
+}
+
 // DOM Mounted
 onMounted(() => {
   getActiveStudents('%', 5);
@@ -119,6 +124,7 @@ onMounted(() => {
 
 <template>
   <main>
+    <pre><button @click="bt"> BT</button></pre>
     <CreateStudent v-show="isCreateStudentActive" />
     <Avaliar :studentName="studentName" :studentId="studentId" @isAvaliarActive="handleAvaliar"
       v-show="isAvaliarActive" />
@@ -189,7 +195,7 @@ onMounted(() => {
                   Ativo
                 </p>
                 <p v-if="student.deleted_at">
-                  <font-awesome-icon icon="fa-solid fa-x" size="sm" />
+                  <font-awesome-icon icon="fa-solid fa-xmark" />
                   Desativado
                 </p>
                 <p v-if="student.ufRG">

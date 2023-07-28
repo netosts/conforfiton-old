@@ -1,5 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import http from '../../services/api/http';
+import { getStudentCredentials } from '../../services/api/get';
+
+import { ref, onMounted } from 'vue';
 import { useRoute, definePage } from 'vue-router/auto'
 
 import { Form } from 'vee-validate';
@@ -12,6 +15,7 @@ definePage({
 
 // VARIABLES
 const route = useRoute();
+const student = ref(null);
 
 // Form variables
 const form = ref({ peso: null })
@@ -110,11 +114,32 @@ function disableCheckbox(value) {
     return true;
   }
 };
+
+async function initStudent() {
+  student.value = await getStudentCredentials(http, route.params.id);
+  console.log(student.value)
+};
+
+// DOM Mount
+onMounted(() => {
+  initStudent();
+});
 </script>
 
 <template>
   <main>
+
+    <RouterLink to="/" class="voltar">
+      <font-awesome-icon icon="fa-solid fa-arrow-left" />
+      voltar
+    </RouterLink>
+
     <Form @submit="onSubmit" :validation-schema="schema" v-slot="{ meta }" class="form">
+
+      <div class="form__title">
+        <h1>Formulário Anamnese</h1>
+        <h2>{{ student ? student.nmPessoa : '' }}</h2>
+      </div>
 
       <TextField v-model="form.peso" name="peso" type="number" :meta="meta" label="Qual seu peso?"
         placeholder="Ex: 90.30" />
@@ -249,15 +274,37 @@ function disableCheckbox(value) {
 main {
   display: flex;
   flex-direction: column;
-  background-color: white;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
+  gap: 16px;
+
+  .voltar {
+    font-weight: 600;
+    text-decoration: none;
+    color: $logo-color;
+  }
 
   .form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
     padding: 16px;
+    background-color: white;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+
+    &__title {
+      padding: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+      border-bottom: 3px dotted $background;
+
+      h1 {
+        color: $buttons;
+      }
+
+      h2 {
+        color: $txt-subtitle;
+      }
+    }
 
     table {
       border-collapse: collapse;

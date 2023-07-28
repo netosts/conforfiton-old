@@ -1,22 +1,28 @@
 <script setup>
-import { reactive } from 'vue';
-import { definePage } from 'vue-router/auto'
+import http from '../services/api/http';
+import { getToken } from '../services/api/post';
 
-import RegisterField from '../components/RegisterField.vue';
+import { useAuthStore } from '../stores/auth';
+
+import { definePage } from 'vue-router/auto';
+import { reactive } from 'vue';
+
+import TextField from '../components/TextField.vue';
 import { Form } from 'vee-validate';
 
 
 definePage({
   beforeEnter: () => {
-    const isAuthenticated = false;
-    if (isAuthenticated) return { path: '/' };
+    const logged = localStorage.getItem('user')
+    if (logged) return { path: '/' };
   }
 });
 
+const auth = useAuthStore();
 
 const login = reactive({
-  username: '',
-  password: '',
+  username: undefined,
+  password: undefined,
 });
 
 const schema = {
@@ -24,24 +30,44 @@ const schema = {
   password: 'required|password|maxLength:30'
 };
 
-function onSubmit() {
-  console.log(login);
+async function onSubmit(values, { setErrors }) {
+  try {
+    // Using OAuth2PasswordRequestForm
+    // data need to be in form_data format
+    const payload = new FormData()
+    payload.append('username', login.username);
+    payload.append('password', login.password);
+    const data = await getToken(http, payload);
+    auth.setExpToken(data.access_token, 60 * 1000);
+    auth.setUser(data.user_id);
+    location.reload();
+  } catch {
+    setErrors({
+      'username': ' ',
+      'password': 'Usuário ou senha inválido.'
+    });
+  };
 };
+
+function bt() {
+  console.log(auth.user);
+}
 </script>
 
 <template>
   <aside>
+    <pre><button @click="bt"> BT</button></pre>
     <Form @submit="onSubmit" :validation-schema="schema" class="login">
       <div class="login__title">
         <h1>LOGIN</h1>
       </div>
       <div class="login__credentials">
         <div class="login__credentials__username">
-          <RegisterField v-model="login.username" name="username" type="text" label="Usuário"
+          <TextField v-model="login.username" name="username" type="text" label="Usuário"
             placeholder="Digite o usuário" />
         </div>
         <div class="login__credentials__password">
-          <RegisterField v-model="login.password" name="password" type="password" label="Senha"
+          <TextField v-model="login.password" name="password" type="password" label="Senha"
             placeholder="Digite a senha" />
         </div>
       </div>

@@ -105,6 +105,17 @@ async def find_student(ID_Pessoa):
         return student.serialize()
     else:
         return JSONResponse("Student not found", 404)
+    
+
+# Get Credentials of Student using his ID
+@student_router.get('/credentials/{ID_Pessoa}')
+async def get_student_credentials(ID_Pessoa):
+    student = Person.where('ID_Pessoa', ID_Pessoa).select('ID_Pessoa', 'nmPessoa').first()
+    
+    if student:
+        return student.serialize()
+    else:
+        return JSONResponse("Student not found", 404)
 
 
 # Create a new Student

@@ -133,7 +133,8 @@ aside {
           transition: .2s;
 
           &:hover {
-            background-color: rgba(133, 133, 133, 0.267);
+            color: $txt-aside;
+            background-color: rgba(186, 186, 186, 0.267);
           }
         }
       }
