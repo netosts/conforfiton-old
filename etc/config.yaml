@@ -6,3 +6,13 @@ databases:
     user: conforfit
     password: wG2LZ1DA9S#6[sx
     prefix: ""
+
+SECRET_KEY: "744c675618b98be17be4d2b5c4daad10efd4d971b374912575d1ab1d219f27f4"
+ALGORITHM: "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES: 10
+
+ORIGINS:
+  - "http://localhost:5173"
+  # - "https://example.com"
+  # - "https://api.example.org"
+  # - "http://test-api.com"
