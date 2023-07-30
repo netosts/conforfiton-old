@@ -1,7 +1,7 @@
 export function postStudent(http, form) {
   http.post('/student', form).then((res) => {
     console.log('ALUNO CRIADO COM SUCESSO..');
-    alert(res.data);
+    alert(res.data.data);
     location.reload();
   }).catch((err) => {
     console.error(err.response.data);

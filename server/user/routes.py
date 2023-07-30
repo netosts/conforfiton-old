@@ -1,26 +1,23 @@
 # pylint: skip-file
+from kink import di
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+from passlib import pwd
+from passlib.hash import pbkdf2_sha256
 from pydantic import BaseModel
 
 from ..person.models import Person
 from .schemas import NewUser
 from .models import User
 
-from decouple import config
-
-SECRET_KEY = config('SECRET_KEY')
-ALGORITHM = config('ALGORITHM')
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 user_router = APIRouter(prefix='/user')
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = pbkdf2_sha256
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
 
 
@@ -37,8 +34,6 @@ def verify_password(plain_password, hashed_password):
 
 def get_user(username: str):
     user = User.where('username', username).first()
-    if user:
-        user = user.serialize()
     return user
 
 
@@ -46,7 +41,7 @@ def authenticate_user(username: str, password: str):
     user = get_user(username)
     if not user:
         return False
-    if not verify_password(password, user.get("hashed_password")):
+    if not verify_password(password+":"+user.salt, user.hash):
         return False
     return user
     
@@ -56,7 +51,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, di["SECRET_KEY"], algorithm=di["ALGORITHM"])
 
 
 # def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -66,7 +61,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
 #         headers={"WWW-Authenticate": "Bearer"},
 #     )
 #     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         payload = jwt.decode(token, di["SECRET_KEY"], algorithms=[di["ALGORITHM"]])
 #         username: str = payload.get("sub")
 #         user_id: int = payload.get("id")
 #         if username is None or user_id is None:
@@ -81,25 +76,36 @@ def create_access_token(data: dict, expires_delta: timedelta):
 #     return current_user
 
 
+# REGISTER
 @user_router.post('/register')
 async def new_user(data: NewUser):
     vl_person = Person.where('ID_Pessoa', data.ID_Pessoa).count()
     if vl_person == 0:
-        error_message = {
-            "error": "Person doesn't exist",
-            "message": "Person with specified ID does not exist."
-        }
-        return JSONResponse(content=error_message, status_code=404)
+        return JSONResponse({
+            "error": True,
+            "data": "Person with specified ID does not exist."
+        }, 404)
 
     user = User()
     user.ID_Pessoa = data.ID_Pessoa
     user.username = data.username
-    user.hashed_password = pwd_context.hash(data.hashed_password)
-    user.save()
+    salt = pwd.genword(entropy=56, charset="ascii_62")
+    user.salt = salt
+    user.hash = pwd_context.hash(data.password+":"+salt)
 
-    return f"{user.username} foi cadastrado(a) com sucesso."
+    if user.save():
+        return JSONResponse({
+            "error": False,
+            "data": f"{user.username} foi cadastrado(a) com sucesso."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Houve um erro e {user.username} não foi cadastrado(a)."
+        }, 422)
 
 
+# LOGIN
 @user_router.post('/token', response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
@@ -109,6 +115,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.get("username"), "id": user.get("ID_Pessoa")}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer", "user_id": user.get("ID_Pessoa")}
+    access_token_expires = timedelta(minutes=di["ACCESS_TOKEN_EXP"])
+    access_token = create_access_token(data={"sub": user.username, "id": user.ID_Pessoa}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.ID_Pessoa}

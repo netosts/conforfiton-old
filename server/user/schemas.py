@@ -6,7 +6,7 @@ from pydantic import BaseModel, validator
 class NewUser(BaseModel):
     ID_Pessoa: int
     username: str
-    hashed_password: str
+    password: str
 
     @validator('username')
     def validate_username(cls, username):
@@ -16,10 +16,10 @@ class NewUser(BaseModel):
         
         return username
     
-    @validator('hashed_password')
-    def validate_hashed_password(cls, hashed_password):
+    @validator('password')
+    def validate_password(cls, password):
         regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})'
-        if not re.match(regex, hashed_password):
-            raise ValueError("Invalid hashed_password. It must contain at least one lowercase letter, one uppercase letter, one numeric character, one special character, and must be eight characters or longer.")
+        if not re.match(regex, password):
+            raise ValueError("Invalid password. It must contain at least one lowercase letter, one uppercase letter, one numeric character, one special character, and must be eight characters or longer.")
         
-        return hashed_password
+        return password

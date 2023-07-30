@@ -1,6 +1,8 @@
+# configs
+etc/
 ivar/
+docker-compose.yaml
 
 senhas.md
 students-limits.md
 
-.env

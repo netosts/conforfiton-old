@@ -52,8 +52,6 @@ class NewStudent(BaseModel):
     
     @validator('rg', 'ufRG')
     def validate_rg(cls, value):
-      if value is not None:
-        raise ValueError("RG and UF must be together")
       if value is not None and len(value) > 20:
         raise ValueError("Rg can't be more than 20 characters.")
       return value

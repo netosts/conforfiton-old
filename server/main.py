@@ -1,4 +1,5 @@
 # pylint: skip-file
+from kink import di
 
 # bootstrap the config and db inside di[]
 from .bootstrap import bootstrap
@@ -16,19 +17,14 @@ from .user.routes import user_router
 from .person.models import Person
 
 
-from decouple import config
-
-
 app = FastAPI()
 
 # CORS Middleware validation
 # who has access to the backend ↓
-ORIGINS = config('ORIGINS')
-# ORIGINS = config('ORIGINS').split(',')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ORIGINS,
+    allow_origins=di["ORIGINS"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
