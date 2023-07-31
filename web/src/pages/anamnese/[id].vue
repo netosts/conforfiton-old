@@ -22,7 +22,7 @@ const form = ref({ peso: null })
 const q3Calc = ref(null);
 const transformTime = ref('dia');
 
-for (let i = 1; i < 30; i++) {
+for (let i = 1; i < 27; i++) {
   Object.defineProperty(form.value, `q${i}`, {
     value: i === 12 ? [] : undefined,
     writable: true,
