@@ -23,13 +23,14 @@ const props = defineProps({
   meta: Object,
   rules: [String, Object, Array],
   options: Array,
+  checked: String,
   radios: Array,
   rows: {
     type: String,
     default: '3',
   },
   tabindex: String,
-  modelValue: [String, Number],
+  modelValue: [String, Number, Boolean, Object],
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -71,16 +72,17 @@ const {
 
     <Field v-if="type === 'select'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
       @update:model-value="value = $event" :tabindex="tabindex">
-      <option v-for="option, index in options" :key="index" :value="option">{{ option }}</option>
+      <option v-for="option, index in options" :key="index" :value="option">
+        {{ option }}</option>
     </Field>
 
     <Field v-else-if="type === 'textarea'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
       :rows="rows" @update:model-value="value = $event" :tabindex="tabindex" />
 
     <div v-else-if="type === 'radio'" v-for="radio in radios" :key="radio" class="radio-container">
-      <Field :name="name" :type="type" :id="radio.label" :rules="rules" :value="radio.value"
+      <Field :name="name" :type="type" :id="name + radio.label" :rules="rules" :value="radio.value"
         @update:model-value="value = $event" />
-      <label :for="radio.label">{{ radio.label }}</label>
+      <label :for="name + radio.label">{{ radio.label }}</label>
     </div>
 
     <Field v-else :name="name" :id="name" :type="type" :rules="rules" :placeholder="placeholder"

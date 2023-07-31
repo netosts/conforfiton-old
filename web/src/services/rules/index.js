@@ -2,8 +2,8 @@ import { cpfValidator } from '../validators/validators';
 
 
 export function required(value) {
-  if (!value || (typeof value === 'string' && value.trim().length === 0)) {
-    return 'Este campo é obrigatório';
+  if (value === undefined || (typeof value === 'string' && value.trim().length === 0)) {
+    return 'Este campo é obrigatório.';
   }
   return true;
 }

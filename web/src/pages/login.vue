@@ -37,7 +37,7 @@ async function onSubmit(values, { setErrors }) {
 
     const data = await getToken(http, payload);
 
-    setExpToken(data.access_token, 60 * 60 * 1000); // Set expiry by milliseconds
+    setExpToken(data.access_token, 3 * 60 * 60 * 1000); // Set expiry by milliseconds
     localStorage.setItem('user', data.user_id);
 
     location.reload();
