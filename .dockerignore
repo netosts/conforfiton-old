@@ -1,0 +1,9 @@
+.vscode/
+web/
+server/**/__pycache__/
+
+.gitignore
+
+LICENSE
+
+senhas.md
