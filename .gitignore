@@ -1,7 +1,10 @@
 # configs
 etc/
 ivar/
-docker-compose.yaml
+/docker-compose.yaml
+
+.vscode/
+
+requirements.txt
 
 senhas.md
-students-limits.md
