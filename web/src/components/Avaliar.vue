@@ -1,8 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Form, Field } from 'vee-validate';
+
+import { useRouter } from 'vue-router/auto';
 
 // VARIABLES
 const bodyElement = ref(null);
+const router = useRouter();
 
 // Emits
 const emit = defineEmits(['isAvaliarActive']);
@@ -13,13 +17,15 @@ const props = defineProps({
   studentName: String,
 });
 
+// FUNCTIONS
 function closeAvaliar() {
   emit('isAvaliarActive', false);
   bodyElement.value.style.overflow = 'auto';
 };
 
-function autoScroll() {
-  bodyElement.value.style.overflow = 'auto';
+function onSubmit(values) {
+  console.log(values);
+  router.push(`/avaliar/${props.studentId}`);
 };
 
 // DOM Mount
@@ -30,41 +36,38 @@ onMounted(() => {
 
 <template>
   <aside @click.self="closeAvaliar">
-    <div class="container">
-      <div class="container__title">
-        <div class="container__title__text">
-          <h1>Avaliar</h1>
-          <strong>{{ studentName }}</strong>
+    <Form @submit="onSubmit">
+      <div class="container">
+        <div class="container__title">
+          <div class="container__title__text">
+            <h1>Avaliar</h1>
+            <strong>{{ studentName }}</strong>
+          </div>
+          <div class="container__title__buttons">
+            <button type="button" @click="closeAvaliar">
+              <font-awesome-icon icon="fa-solid fa-xmark" size="xl" />
+            </button>
+          </div>
         </div>
-        <div class="container__title__buttons">
-          <button @click="closeAvaliar">
-            <font-awesome-icon icon="fa-solid fa-xmark" size="xl" />
-          </button>
+        <div class="container__content">
+          <div class="container__content__checkbox">
+            <label for="neuromuscular">Neuromuscular</label>
+            <Field name="avaliar" id="neuromuscular" type="checkbox" value="Neuromuscular" />
+          </div>
+          <div class="container__content__checkbox">
+            <label for="antropometria">Antropometria</label>
+            <Field name="avaliar" id="antropometria" type="checkbox" value="Antropometria" />
+          </div>
+          <div class="container__content__checkbox">
+            <label for="cardio">Cardio</label>
+            <Field name="avaliar" id="cardio" type="checkbox" value="Cardio" />
+          </div>
         </div>
-      </div>
-      <div class="container__content">
-        <div class="container__content__item">
-          <RouterLink :to="'/anamnese/' + studentId" @click="autoScroll">
-            <button>Anamnese</button>
-          </RouterLink>
-        </div>
-        <div class="container__content__item">
-          <RouterLink to="/neuromuscular">
-            <button>Neuromuscular</button>
-          </RouterLink>
-        </div>
-        <div class="container__content__item">
-          <RouterLink to="/antropometria">
-            <button>Antropometria</button>
-          </RouterLink>
-        </div>
-        <div class="container__content__item">
-          <RouterLink to="/cardio">
-            <button>Cardio</button>
-          </RouterLink>
+        <div class="container__submit">
+          <button class="submit">Avaliar</button>
         </div>
       </div>
-    </div>
+    </Form>
   </aside>
 </template>
 
@@ -142,41 +145,37 @@ aside {
 
     &__content {
       display: flex;
-      gap: 25px;
-      padding: 20px;
+      flex-direction: column;
+      gap: 5px;
+      padding: 20px 20px 10px 20px;
 
-      @include mq(s-m) {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        text-align: center;
-        gap: 15px;
-        padding: 20px 15px;
+      &__checkbox {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        border-radius: $border-radius;
+        background-color: $buttons;
+
+        label {
+          flex: 1;
+          color: white;
+          padding: 5px 15px;
+        }
+
+        input {
+          width: 15px;
+          margin-right: 10px;
+        }
       }
+    }
 
-      &__item {
-        &:nth-child(1) {
-          button {
-            @include submitButtons($validation, white);
-          }
-        }
+    &__submit {
+      display: flex;
+      padding: 10px;
 
-        &:nth-child(2) {
-          button {
-            @include submitButtons($validation, white);
-          }
-        }
-
-        &:nth-child(3) {
-          button {
-            @include submitButtons($validation, white);
-          }
-        }
-
-        &:nth-child(4) {
-          button {
-            @include submitButtons($validation, white);
-          }
-        }
+      .submit {
+        flex: 1;
+        @include submitButtons($validation, white);
       }
     }
   }

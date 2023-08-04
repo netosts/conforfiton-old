@@ -70,7 +70,9 @@ watch(sidebarIsActive, (newValue) => {
         <ul>
           <li>Alunos</li>
           <ul>
-            <li>Visualizar todos</li>
+            <RouterLink to="/register" @click="toggleSidebar">
+              <li>Cadastrar aluno</li>
+            </RouterLink>
             <li>Avaliar aluno</li>
             <li>Adicionar peso</li>
             <li>

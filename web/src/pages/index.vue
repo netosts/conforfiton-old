@@ -15,7 +15,6 @@ definePage({
 // VARIABLES
 const bodyElement = ref(null);
 const students = ref([]);
-const isCreateStudentActive = ref(false);
 const isAvaliarActive = ref(false);
 const studentsFilter = ref('ativos');
 const inputBar = ref('');
@@ -31,17 +30,12 @@ const handleAvaliar = (emittedValue) => {
 };
 
 // FUNCTIONS
-// Toggle the create student form
-function toggleCreate() {
-  isCreateStudentActive.value = !isCreateStudentActive.value;
-  bodyElement.value.style.overflow = isCreateStudentActive.value ? 'hidden' : 'auto';
-};
-
 function toggleAvaliar(ID_Pessoa, nmPessoa) {
   isAvaliarActive.value = !isAvaliarActive.value;
   bodyElement.value.style.overflow = isAvaliarActive.value ? 'hidden' : 'auto';
   studentId.value = ID_Pessoa;
   studentName.value = nmPessoa;
+  console.log(studentId.value);
 };
 
 // Axios Functions
@@ -117,14 +111,15 @@ onMounted(() => {
 
 <template>
   <main>
-    <CreateStudent v-show="isCreateStudentActive" />
     <Avaliar :studentName="studentName" :studentId="studentId" @isAvaliarActive="handleAvaliar"
       v-show="isAvaliarActive" />
 
     <div class="searchbox">
       <div class="searchbox__title">
         <h3>Procurar Alunos</h3>
-        <button class="create-button" @click="toggleCreate">+ Cadastrar Aluno</button>
+        <RouterLink to="/anamnese">
+          <button>+ Novo Aluno</button>
+        </RouterLink>
       </div>
 
       <div class="searchbox__input">
@@ -147,69 +142,35 @@ onMounted(() => {
       </select>
     </div>
 
-    <div class="sections">
-      <div class="sections__students">
-        <section v-for="student in students" :key="student" class="student">
-          <div class="student__if">
-            <div class="student__if__container1">
-              <div class="student__if__container1__identity">
-                <div class="student__if__container1__identity__profile">
-                  <div class="student__if__container1__identity__profile__picture">
-                    <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
-                  </div>
-                  <div class="student__if__container1__identity__profile__info">
-                    <div class="student__if__container1__identity__profile__info__name">
-                      <p>{{ student.nmPessoa }}</p>
-                    </div>
-                    <div class="student__if__container1__identity__profile__info__desempenho">
-                      <p>Desempenho: Bom</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="student__if__container1__identity__button">
-                  <button @click="toggleAvaliar(student.ID_Pessoa, student.nmPessoa)">Avaliar</button>
-                </div>
+    <div class="students">
+      <section v-for="student in students" :key="student" class="student">
+        <div class="student__container">
+          <RouterLink :to="`/student/${student.ID_Pessoa}`">
+            <div class="student__container__profile">
+              <div class="student__container__profile__picture">
+                <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
               </div>
-              <div class="student__if__container1__info">
-                <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
-                <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong> | </p>
-                <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
-                <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
-              </div>
-              <div class="student__if__container1__dsObs">
-                <p>{{ student.dsObs ? student.dsObs : '' }}</p>
+              <div class="student__container__profile__info">
+                <div class="student__container__profile__info__name">
+                  <p>{{ student.nmPessoa }}</p>
+                </div>
+                <div class="student__container__profile__info__content">
+                  <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
+                  <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong> | </p>
+                  <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
+                  <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
+                  <p>Desempenho: Bom</p>
+                </div>
               </div>
             </div>
-            <div class="student__if__container2">
-              <div class="student__if__container2__details">
-                <p v-if="!student.deleted_at">
-                  <font-awesome-icon icon="fa-solid fa-check" />
-                  Ativo
-                </p>
-                <p v-if="student.deleted_at">
-                  <font-awesome-icon icon="fa-solid fa-xmark" />
-                  Desativado
-                </p>
-                <p v-if="student.ufRG">
-                  <font-awesome-icon icon="fa-solid fa-location-dot" />
-                  {{ student.ufRG }}
-                </p>
-                <p v-if="student.telefone">
-                  <font-awesome-icon icon="fa-solid fa-phone-flip" />
-                  {{ formatTelefone(student.telefone) }}
-                </p>
-                <p v-if="student.dsEmail">
-                  <font-awesome-icon icon="fa-solid fa-envelope" />
-                  {{ student.dsEmail }}
-                </p>
-                <RouterLink :to="`/student/${student.ID_Pessoa}`">
-                  <button>Mais Detalhes</button>
-                </RouterLink>
-              </div>
+          </RouterLink>
+          <div class="student__container__button">
+            <div class="student__container__button__box">
+              <button @click="toggleAvaliar(student.ID_Pessoa, student.nmPessoa)">Avaliar</button>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   </main>
 </template>
@@ -325,124 +286,90 @@ main {
     }
   }
 
-  .sections {
+  .students {
     display: flex;
+    flex-direction: column;
     gap: 25px;
+    width: 100%;
 
-    @include mq(l) {
-      flex-direction: column;
-    }
+    .student {
+      border-radius: $border-radius;
+      box-shadow: $box-shadow;
+      background-color: white;
 
-    &__students {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      width: 100%;
-
-      .student {
+      &__container {
         display: flex;
-        flex-direction: column;
-        width: 100%;
-        border-radius: $border-radius;
-        box-shadow: $box-shadow;
-        background-color: white;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 16px;
 
-        &__if {
-          &__container1 {
+        a {
+          text-decoration: none;
+          transition: 0.2s;
+
+          &:hover {
+            filter: brightness(0.8);
+          }
+        }
+
+        &__profile {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 14px;
+
+          &__picture {
+            width: 60px;
+            height: 60px;
+            border-radius: $border-radius;
+            background-image: url('../assets/images/default-profile-picture2.jpg');
+            background-size: cover;
+          }
+
+          &__info {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            padding: 16px 16px 10px 16px;
-            border-bottom: 2px dotted $background;
+            justify-content: space-around;
 
-            &__identity {
-              display: flex;
-              justify-content: space-between;
-              gap: 20px;
-
-              &__profile {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 14px;
-
-                &__picture {
-                  width: 50px;
-                  height: 50px;
-                  border-radius: $border-radius;
-                  background-image: url('../assets/images/default-profile-picture2.jpg');
-                  background-size: cover;
-                }
-
-                &__info {
-                  display: flex;
-                  flex-direction: column;
-
-                  &__name {
-                    font-size: 1.2rem;
-                    font-weight: 600;
-                    color: $txt-title;
-                  }
-
-                  &__desempenho {
-                    font-size: 0.85rem;
-                    color: $txt-subtitle;
-                  }
-                }
-              }
-
-              &__button {
-                button {
-                  @include submitButtons($validation, white);
-                }
-              }
+            &__name {
+              font-size: 1.2rem;
+              font-weight: 600;
+              color: $txt-title;
             }
 
-            &__info {
+
+            &__content {
               display: flex;
               flex-wrap: wrap;
               gap: 5px;
-              font-size: .9rem;
-              color: $txt-aside;
-            }
-
-            &__dsObs {
-              font-size: .85rem;
+              font-size: 0.9rem;
               color: $txt-subtitle;
+
+              @include mq(l) {
+                display: none;
+              }
             }
           }
+        }
 
-          &__container2 {
-            padding: 10px 16px;
+        &__button {
 
-            &__details {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              flex-wrap: wrap;
-              gap: 16px;
+          button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: $border-radius;
+            background-color: $validation;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
 
-              p {
-                font-size: 0.85rem;
-                color: $txt-aside;
-              }
+            &:hover {
+              filter: brightness(0.9);
+            }
 
-              button {
-                padding: 8px 16px;
-                border: none;
-                border-radius: $border-radius;
-                background-color: $buttons;
-                color: white;
-                cursor: pointer;
-                transition: 0.2s;
-
-                &:hover {
-                  filter: brightness(0.9);
-                }
-
-                &:active {
-                  filter: brightness(0.7);
-                }
-              }
+            &:active {
+              filter: brightness(0.7);
             }
           }
         }

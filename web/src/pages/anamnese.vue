@@ -1,21 +1,19 @@
 <script setup>
-import http from '../../services/api/http';
-import { getStudentCredentials } from '../../services/api/get';
+import http from '../services/api/http';
+import { getStudentCredentials } from '../services/api/get';
 
-import { ref, onMounted } from 'vue';
-import { useRoute, definePage } from 'vue-router/auto'
+import { ref } from 'vue';
+import { definePage } from 'vue-router/auto'
 
 import { Form } from 'vee-validate';
-import TextField from '../../components/TextField.vue';
+import TextField from '../components/TextField.vue';
 
 
 definePage({
-  meta: { isStudent: true, requiresAuth: true }
+  meta: { requiresAuth: true }
 });
 
 // VARIABLES
-const route = useRoute();
-const student = ref(null);
 
 // Form variables
 const form = ref({ peso: null })
@@ -142,15 +140,6 @@ function pushToTime() {
     form.value.q3.tempo = q3Calc.value * 365
   }
 };
-
-async function initStudent() {
-  student.value = await getStudentCredentials(http, route.params.id);
-};
-
-// DOM Mount
-onMounted(() => {
-  initStudent();
-});
 </script>
 
 <template>
@@ -165,7 +154,6 @@ onMounted(() => {
 
       <div class="form__title">
         <h1>Formulário Anamnese</h1>
-        <h2>{{ student ? student.nmPessoa : '' }}</h2>
       </div>
 
       <TextField v-model="form.peso" name="peso" :meta="meta" type="number" label="Qual seu peso?"
@@ -297,8 +285,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/variables';
-@import '../../assets/styles/mixins';
+@import '../assets/styles/variables';
+@import '../assets/styles/mixins';
 
 
 main {
