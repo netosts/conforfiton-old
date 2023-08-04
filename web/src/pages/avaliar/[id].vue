@@ -2,6 +2,8 @@
 import http from '../../services/api/http';
 import { getStudentAvaliar } from '../../services/api/get';
 
+import { calcular1RM, calcularPontos, supinoConfig, roscaDiretaConfig, puxadaPelaFrenteConfig, legPressConfig, extensaoDeJoelhosConfig, flexaoDeJoelhosConfig } from '../../services/configs/neuromuscular';
+
 import { useAvaliarStore } from '../../stores/avaliar';
 
 import { onMounted, ref, reactive, computed } from 'vue';
@@ -24,223 +26,43 @@ const store = useAvaliarStore();
 const supino = reactive({
   pesoLevantado: undefined,
   reps: undefined,
-  rm: computed(() => {
-    if (supino.pesoLevantado === undefined || supino.reps === undefined) {
-      return;
-    }
-    return calcular1RM(supino.pesoLevantado, supino.reps)
-  }),
-  pontos: computed(() => {
-    if (student.value) {
-      const forcaRelativa = calcularForcaRelativa(supino.rm, student.value.peso)
-      if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.5) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.9)) {
-        return 10;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.4) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.85)) {
-        return 9;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.3) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.8)) {
-        return 8;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.2) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.7)) {
-        return 7;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.1) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.65)) {
-        return 6;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.6)) {
-        return 5;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.9) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.55)) {
-        return 4;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.8) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.5)) {
-        return 3;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.7) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.45)) {
-        return 2;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.6) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.35)) {
-        return 1;
-      }
-    }
-  }),
+  rm: computed(() => calcular1RM(supino.pesoLevantado, supino.reps)),
+  pontos: computed(() => calcularPontos(student.value, supino.rm, supinoConfig)),
 });
 
 const roscaDireta = reactive({
   pesoLevantado: undefined,
   reps: undefined,
-  rm: computed(() => {
-    if (roscaDireta.pesoLevantado === undefined || roscaDireta.reps === undefined) {
-      return;
-    }
-    return calcular1RM(roscaDireta.pesoLevantado, roscaDireta.reps)
-  }),
-  pontos: computed(() => {
-    if (student.value) {
-      const forcaRelativa = calcularForcaRelativa(roscaDireta.rm, student.value.peso)
-      if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.7) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.5)) {
-        return 10;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.65) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.45)) {
-        return 9;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.6) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.42)) {
-        return 8;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.55) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.38)) {
-        return 7;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.5) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.35)) {
-        return 6;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.45) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.32)) {
-        return 5;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.4) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.28)) {
-        return 4;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.35) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.25)) {
-        return 3;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.3) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.21)) {
-        return 2;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.25) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.18)) {
-        return 1;
-      }
-    }
-  }),
+  rm: computed(() => calcular1RM(roscaDireta.pesoLevantado, roscaDireta.reps)),
+  pontos: computed(() => calcularPontos(student.value, roscaDireta.rm, roscaDiretaConfig)),
 });
 
 const puxadaPelaFrente = reactive({
   pesoLevantado: undefined,
   reps: undefined,
-  rm: computed(() => {
-    if (puxadaPelaFrente.pesoLevantado === undefined || puxadaPelaFrente.reps === undefined) {
-      return;
-    }
-    return calcular1RM(puxadaPelaFrente.pesoLevantado, puxadaPelaFrente.reps)
-  }),
-  pontos: computed(() => {
-    if (student.value) {
-      const forcaRelativa = calcularForcaRelativa(puxadaPelaFrente.rm, student.value.peso)
-      if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.2) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.85)) {
-        return 10;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.15) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.8)) {
-        return 9;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.1) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.75)) {
-        return 8;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.05) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.73)) {
-        return 7;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.7)) {
-        return 6;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.95) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.65)) {
-        return 5;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.9) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.63)) {
-        return 4;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.85) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.6)) {
-        return 3;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.8) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.55)) {
-        return 2;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.75) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.5)) {
-        return 1;
-      }
-    }
-  }),
+  rm: computed(() => calcular1RM(puxadaPelaFrente.pesoLevantado, puxadaPelaFrente.reps)),
+  pontos: computed(() => calcularPontos(student.value, puxadaPelaFrente.rm, puxadaPelaFrenteConfig)),
 });
 
 const legPress = reactive({
   pesoLevantado: undefined,
   reps: undefined,
-  rm: computed(() => {
-    if (legPress.pesoLevantado === undefined || legPress.reps === undefined) {
-      return;
-    }
-    return calcular1RM(legPress.pesoLevantado, legPress.reps)
-  }),
-  pontos: computed(() => {
-    if (student.value) {
-      const forcaRelativa = calcularForcaRelativa(legPress.rm, student.value.peso)
-      if ((student.value.sexo === 'Masculino' && forcaRelativa >= 3) || (student.value.sexo === 'Feminino' && forcaRelativa >= 2.7)) {
-        return 10;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 2.8) || (student.value.sexo === 'Feminino' && forcaRelativa >= 2.5)) {
-        return 9;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 2.6) || (student.value.sexo === 'Feminino' && forcaRelativa >= 2.3)) {
-        return 8;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 2.4) || (student.value.sexo === 'Feminino' && forcaRelativa >= 2.1)) {
-        return 7;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 2.2) || (student.value.sexo === 'Feminino' && forcaRelativa >= 2)) {
-        return 6;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 2) || (student.value.sexo === 'Feminino' && forcaRelativa >= 1.8)) {
-        return 5;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.8) || (student.value.sexo === 'Feminino' && forcaRelativa >= 1.6)) {
-        return 4;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.6) || (student.value.sexo === 'Feminino' && forcaRelativa >= 1.4)) {
-        return 3;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.4) || (student.value.sexo === 'Feminino' && forcaRelativa >= 1.2)) {
-        return 2;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 1.2) || (student.value.sexo === 'Feminino' && forcaRelativa >= 1)) {
-        return 1;
-      }
-    }
-  }),
+  rm: computed(() => calcular1RM(legPress.pesoLevantado, legPress.reps)),
+  pontos: computed(() => calcularPontos(student.value, legPress.rm, legPressConfig)),
 });
 
 const extensaoDeJoelhos = reactive({
   pesoLevantado: undefined,
   reps: undefined,
-  rm: computed(() => {
-    if (extensaoDeJoelhos.pesoLevantado === undefined || extensaoDeJoelhos.reps === undefined) {
-      return;
-    }
-    return calcular1RM(extensaoDeJoelhos.pesoLevantado, extensaoDeJoelhos.reps)
-  }),
-  pontos: computed(() => {
-    if (student.value) {
-      const forcaRelativa = calcularForcaRelativa(extensaoDeJoelhos.rm, student.value.peso)
-      if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.8) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.7)) {
-        return 10;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.75) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.65)) {
-        return 9;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.7) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.6)) {
-        return 8;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.65) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.55)) {
-        return 7;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.6) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.52)) {
-        return 6;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.55) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.5)) {
-        return 5;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.5) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.45)) {
-        return 4;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.45) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.4)) {
-        return 3;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.4) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.35)) {
-        return 2;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.35) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.3)) {
-        return 1;
-      }
-    }
-  }),
+  rm: computed(() => calcular1RM(extensaoDeJoelhos.pesoLevantado, extensaoDeJoelhos.reps)),
+  pontos: computed(() => calcularPontos(student.value, extensaoDeJoelhos.rm, extensaoDeJoelhosConfig)),
 });
 
 const flexaoDeJoelhos = reactive({
   pesoLevantado: undefined,
   reps: undefined,
-  rm: computed(() => {
-    if (flexaoDeJoelhos.pesoLevantado === undefined || flexaoDeJoelhos.reps === undefined) {
-      return;
-    }
-    return calcular1RM(flexaoDeJoelhos.pesoLevantado, flexaoDeJoelhos.reps)
-  }),
-  pontos: computed(() => {
-    if (student.value) {
-      const forcaRelativa = calcularForcaRelativa(flexaoDeJoelhos.rm, student.value.peso)
-      if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.7) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.6)) {
-        return 10;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.65) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.55)) {
-        return 9;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.6) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.52)) {
-        return 8;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.55) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.5)) {
-        return 7;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.5) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.45)) {
-        return 6;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.45) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.4)) {
-        return 5;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.4) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.35)) {
-        return 4;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.35) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.3)) {
-        return 3;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.3) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.25)) {
-        return 2;
-      } else if ((student.value.sexo === 'Masculino' && forcaRelativa >= 0.25) || (student.value.sexo === 'Feminino' && forcaRelativa >= 0.2)) {
-        return 1;
-      }
-    }
-  }),
+  rm: computed(() => calcular1RM(flexaoDeJoelhos.pesoLevantado, flexaoDeJoelhos.reps)),
+  pontos: computed(() => calcularPontos(student.value, flexaoDeJoelhos.rm, flexaoDeJoelhosConfig)),
 });
 
 const pontosTotal = computed(() => {
@@ -252,30 +74,6 @@ const pontosTotal = computed(() => {
 
 
 // FUNCTIONS
-function calcular1RM(pesoLevantado, reps) {
-  const table = {
-    1: 100,
-    2: 95,
-    3: 93,
-    4: 90,
-    5: 87,
-    6: 85,
-    7: 83,
-    8: 80,
-    9: 77,
-    10: 75,
-    11: 70,
-    12: 67,
-    15: 65,
-  }
-
-  return Number((pesoLevantado * 100 / table[reps]).toFixed(1));
-};
-
-function calcularForcaRelativa(RM, pesoCorporal) {
-  return RM / pesoCorporal;
-};
-
 function onSubmit(values) {
   console.log(values);
 };
@@ -461,7 +259,7 @@ main {
   section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
     border-radius: $border-radius;
     box-shadow: $box-shadow;
     background-color: white;
@@ -493,7 +291,8 @@ main {
 
       .neuro {
         display: flex;
-        gap: 20px;
+        align-items: center;
+        gap: 10px;
         padding: 0 10px;
 
         @include mq(m) {
@@ -502,13 +301,24 @@ main {
         }
 
         .register-field {
+          gap: 2px;
           flex: 1;
+          color: $txt-title;
         }
 
         &__result {
-          @include inputContainers();
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          font-weight: 500;
 
           input {
+            @include createInput();
+            font-weight: 500;
+          }
+
+          input {
+            background-color: rgb(232, 241, 243);
             width: 80px;
 
             @include mq(m) {
