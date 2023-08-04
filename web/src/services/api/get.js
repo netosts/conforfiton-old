@@ -18,6 +18,16 @@ export function getStudentCredentials(http, ID_Pessoa) {
   });
 };
 
+// Get Student for Avaliar page
+export function getStudentAvaliar(http, ID_Pessoa) {
+  return http.get(`/student/avaliar/${ID_Pessoa}`)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error(`Error: ${err.response.data}; Status: ${err.response.status}`);
+    throw err;
+  });
+};
+
 // Return how many of the specified CPF are in the database
 export function countCpfDuplicate(http, cpf) {
   return http.get(`/cpfCnpj/${cpf}`)

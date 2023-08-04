@@ -35,7 +35,6 @@ function toggleAvaliar(ID_Pessoa, nmPessoa) {
   bodyElement.value.style.overflow = isAvaliarActive.value ? 'hidden' : 'auto';
   studentId.value = ID_Pessoa;
   studentName.value = nmPessoa;
-  console.log(studentId.value);
 };
 
 // Axios Functions

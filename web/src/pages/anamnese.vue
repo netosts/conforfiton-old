@@ -295,6 +295,9 @@ main {
   gap: 16px;
 
   .voltar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-weight: 600;
     text-decoration: none;
     color: $logo-color;

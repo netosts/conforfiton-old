@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
+import { useAvaliarStore } from '../stores/avaliar';
 
 import { useRouter } from 'vue-router/auto';
 
 // VARIABLES
 const bodyElement = ref(null);
 const router = useRouter();
+const store = useAvaliarStore();
 
 // Emits
 const emit = defineEmits(['isAvaliarActive']);
@@ -24,7 +26,8 @@ function closeAvaliar() {
 };
 
 function onSubmit(values) {
-  console.log(values);
+  store.types = values.avaliar;
+  bodyElement.value.style.overflow = 'auto';
   router.push(`/avaliar/${props.studentId}`);
 };
 
@@ -36,12 +39,11 @@ onMounted(() => {
 
 <template>
   <aside @click.self="closeAvaliar">
-    <Form @submit="onSubmit">
+    <Form @submit="onSubmit" v-slot="{ values }">
       <div class="container">
         <div class="container__title">
           <div class="container__title__text">
-            <h1>Avaliar</h1>
-            <strong>{{ studentName }}</strong>
+            <h1>{{ studentName }}</h1>
           </div>
           <div class="container__title__buttons">
             <button type="button" @click="closeAvaliar">
@@ -64,7 +66,9 @@ onMounted(() => {
           </div>
         </div>
         <div class="container__submit">
-          <button class="submit">Avaliar</button>
+          <div class="submit" :class="{ 'submit--disabled': !values.avaliar?.length ? true : false }">
+            <button type="submit" class="submit__btn">Avaliar</button>
+          </div>
         </div>
       </div>
     </Form>
@@ -95,8 +99,13 @@ aside {
   }
 
   .container {
+    width: 375px;
     border-radius: $border-radius;
     background-color: rgb(245, 245, 245);
+
+    @include mq(xs) {
+      width: 300px;
+    }
 
     &__title {
       display: flex;
@@ -111,12 +120,6 @@ aside {
         padding: 20px;
 
         h1 {
-          font-size: 1rem;
-          font-weight: 600;
-          color: $txt-title;
-        }
-
-        strong {
           font-size: 1.2rem;
           font-weight: 800;
           color: $logo-color;
@@ -147,7 +150,7 @@ aside {
       display: flex;
       flex-direction: column;
       gap: 5px;
-      padding: 20px 20px 10px 20px;
+      padding: 20px 10px 10px 10px;
 
       &__checkbox {
         display: flex;
@@ -174,8 +177,22 @@ aside {
       padding: 10px;
 
       .submit {
+        display: flex;
         flex: 1;
-        @include submitButtons($validation, white);
+
+        &__btn {
+          flex: 1;
+          @include submitButtons($validation, white);
+        }
+
+        &--disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+
+          .submit__btn {
+            pointer-events: none;
+          }
+        }
       }
     }
   }

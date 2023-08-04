@@ -209,6 +209,26 @@ async def new_student(data: NewStudent):
         }, 200)
 
 
+@student_router.get("/avaliar/{ID_Pessoa}")
+async def get_student_for_avaliar_page(ID_Pessoa):
+    newest_peso = Peso.where('ID_Pessoa', ID_Pessoa).max('dtData')
+    student = di["db"].table('tbl_Pessoa as tp') \
+                    .where('tp.ID_Pessoa', ID_Pessoa) \
+                    .select('tp.ID_Pessoa', 'tp.nmPessoa', 'ta.sexo', 'tp2.peso') \
+                    .join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', 'tp2.ID_Pessoa') \
+                    .where('tp2.dtData', newest_peso) \
+                    .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
+                    .first()
+    
+    if student:
+        return student.serialize()
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": "Student not found."
+        }, 404)
+
+
 # Update Student
 # @student_router.put('/{ID_Pessoa}')
 # async def update_student(ID_Pessoa, data: NewStudent):
