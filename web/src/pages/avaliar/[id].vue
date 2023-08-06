@@ -1,5 +1,4 @@
 <script setup>
-import http from '../../services/api/http';
 import { getStudentAvaliar } from '../../services/api/get';
 
 import { calcular1RM, calcularPontos, supinoConfig, roscaDiretaConfig, puxadaPelaFrenteConfig, legPressConfig, extensaoDeJoelhosConfig, flexaoDeJoelhosConfig } from '../../services/configs/neuromuscular';
@@ -7,7 +6,7 @@ import { calcular1RM, calcularPontos, supinoConfig, roscaDiretaConfig, puxadaPel
 import { useAvaliarStore } from '../../stores/avaliar';
 
 import { onMounted, ref, reactive, computed } from 'vue';
-import { useRoute, definePage } from 'vue-router/auto';
+import { useRoute, useRouter, definePage } from 'vue-router/auto';
 
 import { Form } from 'vee-validate';
 import TextField from '../../components/TextField.vue';
@@ -18,9 +17,12 @@ definePage({
 });
 
 // VARIABLES
+const router = useRouter();
 const route = useRoute();
 const student = ref(null);
 const store = useAvaliarStore();
+
+const form = ref(null);
 
 // Form variables
 const supino = reactive({
@@ -72,14 +74,19 @@ const pontosTotal = computed(() => {
   return supino.pontos + roscaDireta.pontos + puxadaPelaFrente.pontos + legPress.pontos + extensaoDeJoelhos.pontos + flexaoDeJoelhos.pontos;
 });
 
-
 // FUNCTIONS
 function onSubmit(values) {
   console.log(values);
+  router.push('/print');
 };
 
 async function initStudent() {
-  student.value = await getStudentAvaliar(http, route.params.id);
+  try {
+    student.value = await getStudentAvaliar(route.params.id);
+  } catch {
+    alert('Houve um erro, o aluno não pôde ser encontrado.');
+    router.push('/');
+  }
 };
 
 // DOM Mount
@@ -96,15 +103,13 @@ onMounted(() => {
         voltar
       </RouterLink>
 
-      <h1>{{ student?.nmPessoa }}</h1>
+      <h1>{{ student?.nm_pessoa }}</h1>
     </div>
 
-    <Form @submit="onSubmit">
-      <section>
+    <Form @submit="onSubmit" id="myForm">
+      <section class="student-details">
         <p>Peso corporal atual: {{ student?.peso }}</p>
       </section>
-
-      <button type="button" @click="calcularForcaRelativa(57.1, student.peso)">click</button>
 
       <section v-if="store.types?.includes('Neuromuscular')">
         <h2>Neuromuscular</h2>
@@ -222,6 +227,8 @@ onMounted(() => {
       <section v-if="store.types?.includes('Cardio')">
         <h2>Cardio</h2>
       </section>
+
+      <button class="submit">Salvar</button>
     </Form>
   </main>
 </template>
@@ -234,7 +241,7 @@ onMounted(() => {
 main {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 
   .top {
     display: flex;
@@ -256,77 +263,95 @@ main {
     }
   }
 
-  section {
+  form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    background-color: white;
-    color: $txt-aside;
 
-    h2 {
-      padding: 10px;
-      border-bottom: 1px solid $input-border;
-      text-align: center;
-      color: $txt-title;
+    .student-details {
+      padding: 20px;
+      background-color: $readonly;
+      font-weight: 500;
+      text-transform: uppercase;
+      pointer-events: none;
     }
 
-    .neurobox {
+    section {
       display: flex;
       flex-direction: column;
+      gap: 20px;
+      border-radius: $border-radius;
+      box-shadow: $box-shadow;
+      background-color: white;
+      color: $txt-aside;
 
-      h3 {
-        padding: 5px 10px 0 10px;
-        color: $txt-aside;
-      }
-
-      h4 {
+      h2 {
         padding: 10px;
-
-        .p-total {
-          color: $logo-color;
-        }
+        border-bottom: 1px solid $input-border;
+        text-align: center;
+        color: $txt-title;
       }
 
-      .neuro {
+      .neurobox {
         display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0 10px;
+        flex-direction: column;
 
-        @include mq(m) {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+        h3 {
+          padding: 5px 10px 0 10px;
+          color: $txt-aside;
         }
 
-        .register-field {
-          gap: 2px;
-          flex: 1;
-          color: $txt-title;
+        h4 {
+          padding: 10px;
+
+          .p-total {
+            color: $logo-color;
+          }
         }
 
-        &__result {
+        .neuro {
           display: flex;
-          flex-direction: column;
-          gap: 2px;
-          font-weight: 500;
+          align-items: center;
+          gap: 10px;
+          padding: 0 10px;
 
-          input {
-            @include createInput();
-            font-weight: 500;
+          @include mq(m) {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
           }
 
-          input {
-            background-color: rgb(232, 241, 243);
-            width: 80px;
+          .register-field {
+            gap: 2px;
+            flex: 1;
+            color: $txt-title;
+          }
 
-            @include mq(m) {
-              width: 100%;
+          &__result {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-weight: 500;
+
+            input {
+              @include createInput();
+              font-weight: 500;
+            }
+
+            input {
+              background-color: $readonly;
+              width: 80px;
+
+              @include mq(m) {
+                width: 100%;
+              }
             }
           }
         }
       }
+    }
+
+    .submit {
+      @include submitButtons($validation, white);
     }
   }
 }

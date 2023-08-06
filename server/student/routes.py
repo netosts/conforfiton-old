@@ -14,7 +14,7 @@ student_router = APIRouter(prefix='/student')
 # FUNCTIONS
 def type_search(inputFilter):
         if inputFilter == 'inputName':
-            return "nmPessoa"
+            return "nm_pessoa"
         elif inputFilter == 'inputCpf':
             return "cpfCnpj"
         
@@ -28,10 +28,10 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
     limit = int(limit)
     max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
-    students = di["db"].table('tbl_Pessoa as tp') \
+    students = di["db"].table('tbl_pessoa as tp') \
                        .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
                        .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
+                       .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
                        .where_null('tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
@@ -50,10 +50,10 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit):
     limit = int(limit)
     max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
-    students = di["db"].table('tbl_Pessoa as tp') \
+    students = di["db"].table('tbl_pessoa as tp') \
                        .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
                        .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
                        .where_not_null('tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
@@ -72,10 +72,10 @@ async def inputbar_all_students(inputFilter, inputBar, limit):
     limit = int(limit)
     max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
 
-    students = di["db"].table('tbl_Pessoa as tp') \
+    students = di["db"].table('tbl_pessoa as tp') \
                        .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
                        .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nmPessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
                        .limit(limit) \
@@ -89,16 +89,16 @@ async def inputbar_all_students(inputFilter, inputBar, limit):
 async def find_student(ID_Pessoa):
     newest_peso = Peso.where('ID_Pessoa', ID_Pessoa).max('dtData')
     if newest_peso:
-        student = di["db"].table('tbl_Pessoa') \
-                        .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
-                        .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
-                        .join('tbl_peso', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
+        student = di["db"].table('tbl_pessoa') \
+                        .join('tbl_Aluno', 'tbl_pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
+                        .where('tbl_pessoa.ID_Pessoa', ID_Pessoa) \
+                        .join('tbl_peso', 'tbl_pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
                         .where('tbl_peso.dtData', newest_peso) \
                         .first()
     else:
-        student = di["db"].table('tbl_Pessoa') \
-                        .join('tbl_Aluno', 'tbl_Pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
-                        .where('tbl_Pessoa.ID_Pessoa', ID_Pessoa) \
+        student = di["db"].table('tbl_pessoa') \
+                        .join('tbl_Aluno', 'tbl_pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
+                        .where('tbl_pessoa.ID_Pessoa', ID_Pessoa) \
                         .first()
     
     if student:
@@ -113,7 +113,7 @@ async def find_student(ID_Pessoa):
 # Get Credentials of Student using his ID
 @student_router.get('/credentials/{ID_Pessoa}')
 async def get_student_credentials(ID_Pessoa):
-    student = Person.where('ID_Pessoa', ID_Pessoa).select('ID_Pessoa', 'nmPessoa').first()
+    student = Person.where('ID_Pessoa', ID_Pessoa).select('ID_Pessoa', 'nm_pessoa').first()
     
     if student:
         return student.serialize()
@@ -159,7 +159,7 @@ async def new_student(data: NewStudent):
         }, 409)
 
     person = Person()
-    person.nmPessoa = data.nmPessoa
+    person.nm_pessoa = data.nm_pessoa
     person.ser = data.ser
     person.tipoPessoa = data.tipoPessoa
     person.cpfCnpj = data.cpfCnpj
@@ -200,21 +200,21 @@ async def new_student(data: NewStudent):
         else:
             return JSONResponse({
                 "error":True,
-                "data": f"Houve um erro e {person.nmPessoa} não foi cadastrado(a)."
+                "data": f"Houve um erro e {person.nm_pessoa} não foi cadastrado(a)."
             }, 422)
     
     return JSONResponse({
             "error":False,
-            "data": f"{person.nmPessoa} foi cadastrado(a) com sucesso."
+            "data": f"{person.nm_pessoa} foi cadastrado(a) com sucesso."
         }, 200)
 
 
 @student_router.get("/avaliar/{ID_Pessoa}")
 async def get_student_for_avaliar_page(ID_Pessoa):
     newest_peso = Peso.where('ID_Pessoa', ID_Pessoa).max('dtData')
-    student = di["db"].table('tbl_Pessoa as tp') \
+    student = di["db"].table('tbl_pessoa as tp') \
                     .where('tp.ID_Pessoa', ID_Pessoa) \
-                    .select('tp.ID_Pessoa', 'tp.nmPessoa', 'ta.sexo', 'tp2.peso') \
+                    .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'ta.sexo', 'tp2.peso') \
                     .join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', 'tp2.ID_Pessoa') \
                     .where('tp2.dtData', newest_peso) \
                     .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
@@ -233,7 +233,7 @@ async def get_student_for_avaliar_page(ID_Pessoa):
 # @student_router.put('/{ID_Pessoa}')
 # async def update_student(ID_Pessoa, data: NewStudent):
 #     person = Person.find(ID_Pessoa)
-#     person.nmPessoa = data.nmPessoa
+#     person.nm_pessoa = data.nm_pessoa
 #     person.ser = data.ser
 #     person.tipoPessoa = data.tipoPessoa
 #     person.cpfCnpj = data.cpfCnpj
@@ -258,4 +258,4 @@ async def get_student_for_avaliar_page(ID_Pessoa):
 #             if peso.peso != None or peso.peso > 0:
 #                 peso.save()
 
-#     return f"{person.nmPessoa} foi atualizado(a) com sucesso!"
+#     return f"{person.nm_pessoa} foi atualizado(a) com sucesso!"

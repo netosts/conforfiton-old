@@ -1,5 +1,7 @@
+import http from '../../services/api/http';
+
 // Get specific student by id
-export function getStudent(http, ID_Pessoa) {
+export function getStudent(ID_Pessoa) {
   return http.get(`/student/${ID_Pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
@@ -9,7 +11,7 @@ export function getStudent(http, ID_Pessoa) {
 };
 
 // Get Credentials of Student by ID
-export function getStudentCredentials(http, ID_Pessoa) {
+export function getStudentCredentials(ID_Pessoa) {
   return http.get(`/student/credentials/${ID_Pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
@@ -19,7 +21,7 @@ export function getStudentCredentials(http, ID_Pessoa) {
 };
 
 // Get Student for Avaliar page
-export function getStudentAvaliar(http, ID_Pessoa) {
+export function getStudentAvaliar(ID_Pessoa) {
   return http.get(`/student/avaliar/${ID_Pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
@@ -29,7 +31,7 @@ export function getStudentAvaliar(http, ID_Pessoa) {
 };
 
 // Return how many of the specified CPF are in the database
-export function countCpfDuplicate(http, cpf) {
+export function countCpfDuplicate(cpf) {
   return http.get(`/cpfCnpj/${cpf}`)
   .then((res) => res.data)
   .catch((err) => {
@@ -39,7 +41,7 @@ export function countCpfDuplicate(http, cpf) {
 };
 
 // Return how many of the specified RG in UF are in the database
-export function countRgUfDuplicate(http, rg, ufRG) {
+export function countRgUfDuplicate(rg, ufRG) {
   return http.get(`/rg/${rg}/${ufRG}`)
   .then((res) => res.data)
   .catch((err) => {
@@ -49,7 +51,7 @@ export function countRgUfDuplicate(http, rg, ufRG) {
 };
 
 // Return how many of the specified Email are in the database
-export function countEmailDuplicate(http, dsEmail) {
+export function countEmailDuplicate(dsEmail) {
   return http.get(`/dsEmail/${dsEmail}`)
   .then((res) => res.data)
   .catch((err) => {

@@ -1,5 +1,4 @@
 <script setup>
-import http from '../services/api/http';
 import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/api/get';
 import { postStudent } from '../services/api/post';
 
@@ -55,7 +54,7 @@ const tmCamisaList = [
 
 // Form-level Validation Schema
 const schema = {
-  name: 'required|maxLength:60',
+  name: 'required|maxLength:100',
   cpf: 'required|cpf|maxLength:11',
   rg: 'maxLength:20',
   telefone: 'minLength:11|maxLength:11',
@@ -133,7 +132,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   form.telefone = form.telefone.replace(/\D/g, '');  // only digits
 
   // Post new student
-  postStudent(http, form);
+  postStudent(form);
 };
 
 // DOM Mounted

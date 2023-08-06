@@ -1,5 +1,4 @@
 <script setup>
-import http from '../../services/api/http';
 import { getStudent } from '../../services/api/get';
 
 import { onMounted, ref } from 'vue';
@@ -17,7 +16,7 @@ const student = ref({});
 
 // FUNCTIONS
 async function initStudent() {
-  student.value = await getStudent(http, route.params.id);
+  student.value = await getStudent(route.params.id);
 }
 
 // DOM Mount

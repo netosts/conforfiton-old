@@ -1,5 +1,4 @@
 <script setup>
-import http from '../services/api/http';
 import { getStudentCredentials } from '../services/api/get';
 
 import { ref } from 'vue';

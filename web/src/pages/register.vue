@@ -1,5 +1,4 @@
 <script setup>
-import http from '../services/api/http';
 import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/api/get';
 import { postStudent } from '../services/api/post';
 
@@ -131,7 +130,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   form.telefone = form.telefone.replace(/\D/g, '');  // only digits
 
   // Post new student
-  postStudent(http, form);
+  postStudent(form);
 };
 </script>
 

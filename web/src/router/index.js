@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 
 import { getStudentCredentials } from '../services/api/get';
-import http from '../services/api/http';
 
 
 const router = createRouter({
@@ -20,7 +19,7 @@ router.beforeEach((to, from) => {
 router.beforeResolve(async (to, from) => {
   if (to.meta.isStudent) {
     try {
-      await getStudentCredentials(http, to.params.id)
+      await getStudentCredentials(to.params.id)
     } catch {
       return {
         name: 'NotFound',

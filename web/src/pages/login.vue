@@ -1,5 +1,4 @@
 <script setup>
-import http from '../services/api/http';
 import { getToken } from '../services/api/post';
 import { setExpToken } from '../services/api/token';
 
@@ -35,7 +34,7 @@ async function onSubmit(values, { setErrors }) {
     payload.append('username', login.username);
     payload.append('password', login.password);
 
-    const data = await getToken(http, payload);
+    const data = await getToken(payload);
 
     setExpToken(data.access_token, 3 * 60 * 60 * 1000); // Set expiry by milliseconds
     localStorage.setItem('user', data.user_id);

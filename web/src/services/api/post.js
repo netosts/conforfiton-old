@@ -1,4 +1,6 @@
-export function postStudent(http, form) {
+import http from './http';
+
+export function postStudent(form) {
   http.post('/student', form).then((res) => {
     console.log('ALUNO CRIADO COM SUCESSO..');
     alert(res.data.data);
@@ -10,7 +12,7 @@ export function postStudent(http, form) {
 };
 
 
-export function getToken(http, payload) {
+export function getToken(payload) {
   return http.post('/user/token', payload)
   .then((res) => res.data)
   .catch((err) => {

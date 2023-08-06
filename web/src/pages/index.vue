@@ -1,6 +1,5 @@
 <script setup>
 import http from '../services/api/http';
-import CreateStudent from '../components/CreateStudent.vue';
 import Avaliar from '../components/Avaliar.vue';
 
 import { definePage } from 'vue-router/auto'
@@ -30,11 +29,11 @@ const handleAvaliar = (emittedValue) => {
 };
 
 // FUNCTIONS
-function toggleAvaliar(ID_Pessoa, nmPessoa) {
+function toggleAvaliar(ID_Pessoa, nm_pessoa) {
   isAvaliarActive.value = !isAvaliarActive.value;
   bodyElement.value.style.overflow = isAvaliarActive.value ? 'hidden' : 'auto';
   studentId.value = ID_Pessoa;
-  studentName.value = nmPessoa;
+  studentName.value = nm_pessoa;
 };
 
 // Axios Functions
@@ -151,7 +150,7 @@ onMounted(() => {
               </div>
               <div class="student__container__profile__info">
                 <div class="student__container__profile__info__name">
-                  <p>{{ student.nmPessoa }}</p>
+                  <p>{{ student.nm_pessoa }}</p>
                 </div>
                 <div class="student__container__profile__info__content">
                   <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
@@ -165,7 +164,7 @@ onMounted(() => {
           </RouterLink>
           <div class="student__container__button">
             <div class="student__container__button__box">
-              <button @click="toggleAvaliar(student.ID_Pessoa, student.nmPessoa)">Avaliar</button>
+              <button @click="toggleAvaliar(student.ID_Pessoa, student.nm_pessoa)">Avaliar</button>
             </div>
           </div>
         </div>
