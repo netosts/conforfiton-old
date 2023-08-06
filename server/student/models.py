@@ -6,6 +6,6 @@ Model.set_connection_resolver(di["db"])
 
 
 class Student(Model):
-    __table__ = "tbl_Aluno"
-    __primary_key__= "ID_Pessoa"
+    __table__ = "tbl_aluno"
+    __primary_key__= "id_pessoa"
     __timestamps__ = False

@@ -1,6 +1,7 @@
 <script setup>
 import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../services/api/get';
 import { postStudent } from '../services/api/post';
+import { ufList, sexoList, tmCamisaList } from '../services/configs/lists';
 
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router/auto';
@@ -14,41 +15,28 @@ const router = useRouter();
 
 // Form Variables
 const form = reactive({
-  nmPessoa: '',
+  nm_pessoa: '',
   ser: 'Aluno',
-  tipoPessoa: 'PF',
-  cpfCnpj: '',
+  tipo_pessoa: 'PF',
+  cpf_cnpj: '',
   rg: '',
-  ufRG: '',
-  empPersonal: false,
-  dtNascimento: '',
-  dsObs: '',
-  dsEmail: '',
+  uf_rg: '',
+  emp_personal: false,
+  dt_nascimento: '',
+  ds_obs: '',
+  ds_email: '',
   telefone: '',
   altura: '',
   sexo: '',
-  tmCamisa: '',
-  fotoAluno: null,
-  ID_Empresa: 1,
-  ID_Personal: 2,
+  tm_camisa: '',
+  foto_aluno: null,
+  id_empresa: 1,
+  id_personal: 2,
   peso: '',
-  dtData: '',
-  bpmRepouso: '',
-  bpmMaximo: '',
+  dt_data: '',
+  bpm_repouso: '',
+  bpm_maximo: '',
 });
-
-// Lists
-const ufList = [
-  '', 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
-  'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
-  'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-];
-const sexoList = [
-  'Masculino', 'Feminino'
-];
-const tmCamisaList = [
-  'PP', 'P', 'M', 'G', 'GG', 'XG'
-];
 
 // Form-level Validation Schema
 const schema = {
@@ -60,9 +48,9 @@ const schema = {
   sexo: 'required',
   altura: 'required|between:0,250|maxDecimal:1',
   peso: 'between:0,600|maxDecimal:2',
-  bpmMaximo: 'between:0,220',
-  bpmRepouso: 'between:0,220',
-  dsObs: 'maxLength:300'
+  bpm_maximo: 'between:0,220',
+  bpm_repouso: 'between:0,220',
+  ds_obs: 'maxLength:300'
 };
 
 // FUNCTIONS
@@ -78,41 +66,41 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   let errors = 0;  // track errors
 
   // CPF Duplicate validation
-  form.cpfCnpj = form.cpfCnpj.replace(/\D/g, '');  // only digits
-  const countedCpf = await countCpfDuplicate(http, form.cpfCnpj);
+  form.cpf_cnpj = form.cpf_cnpj.replace(/\D/g, '');  // only digits
+  const countedCpf = await countCpfDuplicate(form.cpf_cnpj);
   if (countedCpf > 0) {
     setFieldError('cpf', 'O CPF já foi cadastrado.');
     errors++;
   }
 
   // RG and UF must be together
-  if ((form.rg !== '' && form.ufRG === '') || (form.ufRG !== '' && form.rg === '')) {
+  if ((form.rg !== '' && form.uf_rg === '') || (form.uf_rg !== '' && form.rg === '')) {
     setErrors({
       rg: 'O RG e UF precisam ser cadastrados juntos.',
       uf: ' ',
     });
     errors++;
-  } else if (form.rg !== '' && form.ufRG !== '') {
+  } else if (form.rg !== '' && form.uf_rg !== '') {
     // RG in UF Duplicate validation
-    const countedRgUf = await countRgUfDuplicate(http, form.rg, form.ufRG);
+    const countedRgUf = await countRgUfDuplicate(form.rg, form.uf_rg);
     if (countedRgUf > 0) {
-      setFieldError('rg', `O RG já foi cadastrado em ${form.ufRG}.`);
+      setFieldError('rg', `O RG já foi cadastrado em ${form.uf_rg}.`);
       errors++;
     }
   }
 
   // Email duplicate validation
-  const countedEmail = await countEmailDuplicate(http, form.dsEmail);
+  const countedEmail = await countEmailDuplicate(form.ds_email);
   if (countedEmail > 0) {
     setFieldError('email', 'Este email já foi cadastrado.')
     errors++;
   }
 
   // BPM Maximo and Repouso must be together
-  if ((form.bpmMaximo !== '' && form.bpmRepouso === '') || (form.bpmMaximo === '' && form.bpmRepouso !== '')) {
+  if ((form.bpm_maximo !== '' && form.bpm_repouso === '') || (form.bpm_maximo === '' && form.bpm_repouso !== '')) {
     setErrors({
-      bpmMaximo: 'As frequências cardíacas precisam ser cadastradas juntas.',
-      bpmRepouso: 'As frequências cardíacas precisam ser cadastradas juntas.'
+      bpm_maximo: 'As frequências cardíacas precisam ser cadastradas juntas.',
+      bpm_repouso: 'As frequências cardíacas precisam ser cadastradas juntas.'
     });
     errors++;
   }
@@ -125,7 +113,7 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString();
   // Format problematic values before posting
-  form.dtData = formattedDate;
+  form.dt_data = formattedDate;
   form.rg = form.rg.replace(/\D/g, '');  // only digits
   form.telefone = form.telefone.replace(/\D/g, '');  // only digits
 
@@ -155,18 +143,18 @@ async function onSubmit(values, { setFieldError, setErrors }) {
         </div>
 
         <!-- Início do cadastro -->
-        <TextField v-model="form.nmPessoa" :meta="meta" name="name" type="text" label="Nome completo" required="*"
+        <TextField v-model="form.nm_pessoa" :meta="meta" name="name" type="text" label="Nome completo" required="*"
           placeholder="Digite o nome do aluno" />
 
         <div class="form__container__cpf-rg-uf">
-          <TextField v-model="form.cpfCnpj" :meta="meta" name="cpf" type="text" label="CPF" required="*"
+          <TextField v-model="form.cpf_cnpj" :meta="meta" name="cpf" type="text" label="CPF" required="*"
             placeholder="Digite o CPF do aluno" />
 
           <div class="form__container__cpf-rg-uf__rg-uf">
             <TextField v-model="form.rg" :meta="meta" name="rg" type="text" label="RG"
               placeholder="Digite o RG do aluno" />
 
-            <TextField v-model="form.ufRG" :meta="meta" name="uf" type="select" label="UF" :options="ufList" />
+            <TextField v-model="form.uf_rg" :meta="meta" name="uf" type="select" label="UF" :options="ufList" />
           </div>
         </div>
 
@@ -174,20 +162,20 @@ async function onSubmit(values, { setFieldError, setErrors }) {
           <TextField v-model="form.telefone" :meta="meta" name="telefone" type="text" label="Telefone"
             placeholder="(00)00000-0000" />
 
-          <TextField v-model="form.dsEmail" :meta="meta" name="email" type="text" label="E-mail" required="*"
+          <TextField v-model="form.ds_email" :meta="meta" name="email" type="text" label="E-mail" required="*"
             placeholder="Digite o Email do aluno" />
         </div>
 
         <div class="form__container__data-sexo-camisa">
           <div class="form__container__data-sexo-camisa__dtNascimento">
             <label for="date">Data Nascimento</label>
-            <input v-model="form.dtNascimento" type="date" id="date">
+            <input v-model="form.dt_nascimento" type="date" id="date">
           </div>
 
           <TextField v-model="form.sexo" :meta="meta" name="sexo" type="select" label="Sexo Biológico" required="*"
             :options="sexoList" />
 
-          <TextField v-model="form.tmCamisa" :meta="meta" name="camisa" type="select" label="Camisa"
+          <TextField v-model="form.tm_camisa" :meta="meta" name="camisa" type="select" label="Camisa"
             :options="tmCamisaList" />
         </div>
 
@@ -200,14 +188,14 @@ async function onSubmit(values, { setFieldError, setErrors }) {
         </div>
 
         <div class="form__container__freqCardio">
-          <TextField v-model="form.bpmMaximo" :meta="meta" name="bpmMaximo" type="number" label="Freq. C. Máxima"
+          <TextField v-model="form.bpm_maximo" :meta="meta" name="bpmMaximo" type="number" label="Freq. C. Máxima"
             placeholder="BPM" />
 
-          <TextField v-model="form.bpmRepouso" :meta="meta" name="bpmRepouso" type="number" label="Freq. C. Repouso"
+          <TextField v-model="form.bpm_repouso" :meta="meta" name="bpmRepouso" type="number" label="Freq. C. Repouso"
             placeholder="BPM" />
         </div>
 
-        <TextField v-model="form.dsObs" :meta="meta" name="dsObs" type="textarea" label="Observação"
+        <TextField v-model="form.ds_obs" :meta="meta" name="dsObs" type="textarea" label="Observação"
           placeholder="Digite aqui se tiver alguma observação" />
 
         <!-- SUBMIT -->

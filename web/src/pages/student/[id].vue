@@ -30,8 +30,8 @@ onMounted(() => {
     <RouterLink to="/">
       <p>home</p>
     </RouterLink>
-    <p>aluno: {{ student.nmPessoa }}</p>
-    <p>cpf: {{ student.cpfCnpj }}</p>
+    <p>aluno: {{ student.nm_pessoa }}</p>
+    <p>cpf: {{ student.cpf_cnpj }}</p>
   </main>
 </template>
 

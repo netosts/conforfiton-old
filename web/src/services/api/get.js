@@ -1,38 +1,48 @@
 import http from '../../services/api/http';
 
 // Get specific student by id
-export function getStudent(ID_Pessoa) {
-  return http.get(`/student/${ID_Pessoa}`)
+export function getStudent(id_pessoa) {
+  return http.get(`/student/${id_pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
-    console.error(`Error: ${err.response.data}; Status: ${err.response.status}`);
+    console.error(err.response);
     throw err;
   });
 };
 
 // Get Credentials of Student by ID
-export function getStudentCredentials(ID_Pessoa) {
-  return http.get(`/student/credentials/${ID_Pessoa}`)
+export function getStudentCredentials(id_pessoa) {
+  return http.get(`/student/credentials/${id_pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
-    console.error(`Error: ${err.response.data}; Status: ${err.response.status}`);
+    console.error(err.response);
     throw err;
   });
 };
 
 // Get Student for Avaliar page
-export function getStudentAvaliar(ID_Pessoa) {
-  return http.get(`/student/avaliar/${ID_Pessoa}`)
+export function getStudentAvaliar(id_pessoa) {
+  return http.get(`/student/avaliar/${id_pessoa}`)
   .then((res) => res.data)
   .catch((err) => {
-    console.error(`Error: ${err.response.data}; Status: ${err.response.status}`);
+    console.error(err.response);
     throw err;
   });
 };
 
+// Get RM Config
+export function getRmConfig(sexo) {
+  return http.get(`/rm_config/${sexo}`)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error(err.response);
+    throw err;
+  })
+}
+
 // Return how many of the specified CPF are in the database
 export function countCpfDuplicate(cpf) {
-  return http.get(`/cpfCnpj/${cpf}`)
+  return http.get(`/cpf_cnpj/${cpf}`)
   .then((res) => res.data)
   .catch((err) => {
     console.error(err);
@@ -41,8 +51,8 @@ export function countCpfDuplicate(cpf) {
 };
 
 // Return how many of the specified RG in UF are in the database
-export function countRgUfDuplicate(rg, ufRG) {
-  return http.get(`/rg/${rg}/${ufRG}`)
+export function countRgUfDuplicate(rg, uf_rg) {
+  return http.get(`/rg/${rg}/${uf_rg}`)
   .then((res) => res.data)
   .catch((err) => {
     console.error(err);
@@ -51,8 +61,8 @@ export function countRgUfDuplicate(rg, ufRG) {
 };
 
 // Return how many of the specified Email are in the database
-export function countEmailDuplicate(dsEmail) {
-  return http.get(`/dsEmail/${dsEmail}`)
+export function countEmailDuplicate(ds_email) {
+  return http.get(`/ds_email/${ds_email}`)
   .then((res) => res.data)
   .catch((err) => {
     console.error(err);

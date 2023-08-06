@@ -4,6 +4,6 @@ from datetime import datetime
 
 
 class NewCardio(BaseModel):
-    bpmRepouso: int
-    bpmMaximo: int
-    dtData: datetime
+    bpm_repouso: int
+    bpm_maximo: int
+    dt_data: datetime

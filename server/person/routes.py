@@ -10,7 +10,7 @@ person_router = APIRouter(prefix='/person')
 @person_router.post('/')  # Create a new person
 async def new_person(data: NewPerson):
     # Look for CPF duplicate
-    cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
+    cpf = Person.where('cpf_cnpj', data.cpf_cnpj).count()
     if cpf > 0:
         error_message = {
             "error": "Duplicate CPF",
@@ -19,8 +19,8 @@ async def new_person(data: NewPerson):
         return JSONResponse(content=error_message, status_code=409)
     
     # Look for RG of specified UF duplicate
-    if data.rg != None and data.ufRG != None:
-        rg = Person.where('rg', data.rg).where('ufRG', data.ufRG).count()
+    if data.rg != None and data.uf_rg != None:
+        rg = Person.where('rg', data.rg).where('uf_rg', data.uf_rg).count()
         if rg > 0:
             error_message = {
                 "error": "Duplicate RG in specified UF",
@@ -29,7 +29,7 @@ async def new_person(data: NewPerson):
             return JSONResponse(content=error_message, status_code=409)
         
     # Email duplicate validation
-    email = Person.where('dsEmail', data.dsEmail).count()
+    email = Person.where('ds_email', data.ds_email).count()
     if email > 0:
         error_message = {
             "error": "Duplicate Email",
@@ -38,26 +38,26 @@ async def new_person(data: NewPerson):
         return JSONResponse(content=error_message, status_code=409)
 
     person = Person()
-    person.nmPessoa = data.nmPessoa
+    person.nm_pessoa = data.nm_pessoa
     person.ser = data.ser
-    person.tipoPessoa = data.tipoPessoa
-    person.cpfCnpj = data.cpfCnpj
+    person.tipo_pessoa = data.tipo_pessoa
+    person.cpf_cnpj = data.cpf_cnpj
     person.rg = data.rg
-    person.ufRG = data.ufRG
-    person.empPersonal = data.empPersonal
-    person.dtNascimento = data.dtNascimento
-    person.dsObs = data.dsObs
-    person.dsEmail = data.dsEmail
+    person.uf_rg = data.uf_rg
+    person.emp_personal = data.emp_personal
+    person.dt_nascimento = data.dt_nascimento
+    person.ds_obs = data.ds_obs
+    person.ds_email = data.ds_email
     person.telefone = data.telefone
     person.save()
 
-    return f"{person.nmPessoa} foi cadastrado(a) com sucesso!"
+    return f"{person.nm_pessoa} foi cadastrado(a) com sucesso!"
 
 
-@person_router.delete('/{ID_Pessoa}')
-async def delete_person(ID_Pessoa):
-    person = Person.find(ID_Pessoa)
-    personName = person.nmPessoa
+@person_router.delete('/{id_pessoa}')
+async def delete_person(id_pessoa):
+    person = Person.find(id_pessoa)
+    personName = person.nm_pessoa
     person.delete()
 
     return f"{personName} foi deletado(a) com sucesso!"

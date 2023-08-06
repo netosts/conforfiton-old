@@ -3,14 +3,14 @@ from pydantic import BaseModel, validator
 
 
 class NewAddress(BaseModel):
-    ID_Pessoa: int
+    id_pessoa: int
     rua: str
     numero: int
     complemento: str = None
     bairro: str
     cidade: str
     estado: str
-    CEP: str
+    cep: str
     pais: str
 
     @validator("*", pre=True, always=True)

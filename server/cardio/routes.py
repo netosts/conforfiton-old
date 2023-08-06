@@ -16,10 +16,10 @@ async def new_cardio(student_id, data: NewCardio):
         return JSONResponse("Student not found", 404)
 
     cardio = Cardio()
-    cardio.ID_Pessoa = student.ID_Pessoa
-    cardio.bpmRepouso = data.bpmRepouso
-    cardio.bpmMaximo = data.bpmMaximo
-    cardio.dtData = data.dtData
+    cardio.id_pessoa = student.id_pessoa
+    cardio.bpm_repouso = data.bpm_repouso
+    cardio.bpm_maximo = data.bpm_maximo
+    cardio.dt_data = data.dt_data
     cardio.save()
 
-    return f"Frequência cardíaca de {student.nmPessoa} cadastrada com sucesso!"
+    return f"Frequência cardíaca de {student.nm_pessoa} cadastrada com sucesso!"

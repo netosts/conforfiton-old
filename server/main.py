@@ -13,6 +13,7 @@ from .cardio.routes import cardio_router
 from .peso.routes import peso_router
 from .student.routes import student_router
 from .user.routes import user_router
+from .rm.routes import rm_router
 
 from .person.models import Person
 
@@ -40,23 +41,24 @@ app.include_router(person_router)
 app.include_router(cardio_router)
 app.include_router(peso_router)
 app.include_router(student_router)
+app.include_router(rm_router)
 
 # CPF-CNPJ
-@app.get('/cpfCnpj/{cpf}')
+@app.get('/cpf_cnpj/{cpf}')
 async def count_cpf(cpf):  # how many of the specified CPF are in the database
-    cpf = Person.where('cpfCnpj', cpf).count()
+    cpf = Person.where('cpf_cnpj', cpf).count()
     return cpf
 
 
 # RG-UF
-@app.get('/rg/{rg}/{ufRG}')
-async def count_rg(rg, ufRG):  # how many of the specified RG in UF are in the database
-    rg = Person.where('rg', rg).where('ufRG', ufRG).count()
+@app.get('/rg/{rg}/{uf_rg}')
+async def count_rg(rg, uf_rg):  # how many of the specified RG in UF are in the database
+    rg = Person.where('rg', rg).where('uf_rg', uf_rg).count()
     return rg
 
 
 # EMAIL
-@app.get('/dsEmail/{dsEmail}')
-async def count_email(dsEmail):  # how many of the specified Email are in the database
-    email = Person.where('dsEmail', dsEmail).count()
+@app.get('/ds_email/{ds_email}')
+async def count_email(ds_email):  # how many of the specified Email are in the database
+    email = Person.where('ds_email', ds_email).count()
     return email

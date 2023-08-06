@@ -7,17 +7,17 @@ class CreateTblFqCardio(Migration):
         """
         Run the migrations.
         """
-        with self.schema.create('tbl_fqCardio') as table:
-            table.increments('ID_fqCardio')
-            table.integer('ID_Pessoa').unsigned()
-            table.foreign('ID_Pessoa').references('ID_Pessoa').on('tbl_Pessoa')
-            table.small_integer('bpmRepouso') # limite 3 
-            table.small_integer('bpmMaximo')  # limite 3
-            table.timestamp('dtData')  
+        with self.schema.create('tbl_fq_cardio') as table:
+            table.increments('id_fq_cardio')
+            table.integer('id_pessoa').unsigned()
+            table.foreign('id_pessoa').references('id_pessoa').on('tbl_pessoa')
+            table.small_integer('bpm_repouso') # limite 3 
+            table.small_integer('bpm_maximo')  # limite 3
+            table.timestamp('dt_data')  
 
 
     def down(self):
         """
         Revert the migrations.
         """
-        self.schema.drop('tbl_fqCardio')
+        self.schema.drop('tbl_fq_cardio')

@@ -8,11 +8,11 @@ class CreateTblPeso(Migration):
         Run the migrations.
         """
         with self.schema.create('tbl_peso') as table:
-            table.increments('ID_peso')
-            table.integer('ID_Pessoa').unsigned()
-            table.foreign('ID_Pessoa').references('ID_Pessoa').on('tbl_Pessoa')
+            table.increments('id_peso')
+            table.integer('id_pessoa').unsigned()
+            table.foreign('id_pessoa').references('id_pessoa').on('tbl_pessoa')
             table.double('peso', 3, 2)
-            table.timestamp('dtData')
+            table.timestamp('dt_data')
 
     def down(self):
         """

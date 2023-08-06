@@ -16,9 +16,9 @@ async def new_peso(student_id, data: NewPeso):
         return JSONResponse("Student not found", 404)
     
     peso = Peso()
-    peso.ID_Pessoa = student.ID_Pessoa
+    peso.id_pessoa = student.id_pessoa
     peso.peso = data.peso
-    peso.dtData = data.dtData
+    peso.dt_data = data.dt_data
     peso.save()
 
-    return f"Peso de {student.nmPessoa} cadastrado com sucesso!"
+    return f"Peso de {student.nm_pessoa} cadastrado com sucesso!"

@@ -8,7 +8,7 @@ import { useRoute } from 'vue-router/auto';
 
 // VARIABLES
 const route = useRoute();
-const logging = ref(false);
+const hideBars = ref(false);
 
 // Get Emits
 const sidebarIsActive = ref(null);
@@ -18,16 +18,18 @@ const handleSidebar = (emittedValue) => {
 };
 
 watch(route, () => {
-  if (route.path === '/login') {
-    logging.value = true;
+  if (route.path === '/login' || route.path === '/print') {
+    hideBars.value = true;
+  } else {
+    hideBars.value = false;
   }
-})
+});
 </script>
 
 <template>
-  <SideBar v-show="!logging" @sidebarIsActive="handleSidebar" />
-  <TopBar v-show="!logging" :class="sidebarIsActive ? 'header__sidebar-active' : null" />
-  <RouterView :class="{ 'main__sidebar-active': sidebarIsActive && !logging }" />
+  <SideBar v-show="!hideBars" @sidebarIsActive="handleSidebar" />
+  <TopBar v-show="!hideBars" :class="sidebarIsActive ? 'header__sidebar-active' : null" />
+  <RouterView :class="{ 'main__sidebar-active': sidebarIsActive && !hideBars }" />
 </template>
 
 <style lang="scss" scoped>

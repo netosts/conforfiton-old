@@ -1,7 +1,7 @@
 <script setup>
-import { getStudentAvaliar } from '../../services/api/get';
-
-import { calcular1RM, calcularPontos, supinoConfig, roscaDiretaConfig, puxadaPelaFrenteConfig, legPressConfig, extensaoDeJoelhosConfig, flexaoDeJoelhosConfig } from '../../services/configs/neuromuscular';
+import { getStudentAvaliar, getRmConfig } from '../../services/api/get';
+import { repsList } from '../../services/configs/lists';
+import { calcular1RM, calcularPontos } from '../../services/configs/neuromuscular';
 
 import { useAvaliarStore } from '../../stores/avaliar';
 
@@ -20,51 +20,50 @@ definePage({
 const router = useRouter();
 const route = useRoute();
 const student = ref(null);
+const rmConfig = ref(null);
 const store = useAvaliarStore();
-
-const form = ref(null);
 
 // Form variables
 const supino = reactive({
   pesoLevantado: undefined,
   reps: undefined,
   rm: computed(() => calcular1RM(supino.pesoLevantado, supino.reps)),
-  pontos: computed(() => calcularPontos(student.value, supino.rm, supinoConfig)),
+  pontos: computed(() => calcularPontos(student.value, supino.rm, 'supino', rmConfig.value)),
 });
 
 const roscaDireta = reactive({
   pesoLevantado: undefined,
   reps: undefined,
   rm: computed(() => calcular1RM(roscaDireta.pesoLevantado, roscaDireta.reps)),
-  pontos: computed(() => calcularPontos(student.value, roscaDireta.rm, roscaDiretaConfig)),
+  pontos: computed(() => calcularPontos(student.value, roscaDireta.rm, 'roscaDireta', rmConfig.value)),
 });
 
 const puxadaPelaFrente = reactive({
   pesoLevantado: undefined,
   reps: undefined,
   rm: computed(() => calcular1RM(puxadaPelaFrente.pesoLevantado, puxadaPelaFrente.reps)),
-  pontos: computed(() => calcularPontos(student.value, puxadaPelaFrente.rm, puxadaPelaFrenteConfig)),
+  pontos: computed(() => calcularPontos(student.value, puxadaPelaFrente.rm, 'puxadaPelaFrente', rmConfig.value)),
 });
 
 const legPress = reactive({
   pesoLevantado: undefined,
   reps: undefined,
   rm: computed(() => calcular1RM(legPress.pesoLevantado, legPress.reps)),
-  pontos: computed(() => calcularPontos(student.value, legPress.rm, legPressConfig)),
+  pontos: computed(() => calcularPontos(student.value, legPress.rm, 'legPress', rmConfig.value)),
 });
 
 const extensaoDeJoelhos = reactive({
   pesoLevantado: undefined,
   reps: undefined,
   rm: computed(() => calcular1RM(extensaoDeJoelhos.pesoLevantado, extensaoDeJoelhos.reps)),
-  pontos: computed(() => calcularPontos(student.value, extensaoDeJoelhos.rm, extensaoDeJoelhosConfig)),
+  pontos: computed(() => calcularPontos(student.value, extensaoDeJoelhos.rm, 'extensaoDeJoelhos', rmConfig.value)),
 });
 
 const flexaoDeJoelhos = reactive({
   pesoLevantado: undefined,
   reps: undefined,
   rm: computed(() => calcular1RM(flexaoDeJoelhos.pesoLevantado, flexaoDeJoelhos.reps)),
-  pontos: computed(() => calcularPontos(student.value, flexaoDeJoelhos.rm, flexaoDeJoelhosConfig)),
+  pontos: computed(() => calcularPontos(student.value, flexaoDeJoelhos.rm, 'flexaoDeJoelhos', rmConfig.value)),
 });
 
 const pontosTotal = computed(() => {
@@ -80,9 +79,10 @@ function onSubmit(values) {
   router.push('/print');
 };
 
-async function initStudent() {
+async function initRequests() {
   try {
     student.value = await getStudentAvaliar(route.params.id);
+    rmConfig.value = await getRmConfig(student.value.sexo);
   } catch {
     alert('Houve um erro, o aluno não pôde ser encontrado.');
     router.push('/');
@@ -91,7 +91,7 @@ async function initStudent() {
 
 // DOM Mount
 onMounted(() => {
-  initStudent();
+  initRequests();
 });
 </script>
 
@@ -118,7 +118,7 @@ onMounted(() => {
           <h3>Supino</h3>
           <div class="neuro">
             <TextField v-model="supino.pesoLevantado" name="supinoPesoLevantado" type="number" label="peso levantado" />
-            <TextField v-model="supino.reps" name="supinoReps" type="number" label="repetições" />
+            <TextField v-model="supino.reps" name="supinoReps" type="select" :options="repsList" label="repetições" />
             <div class="neuro__result">
               <label>1RM</label>
               <input v-model="supino.rm" type="number" readonly>

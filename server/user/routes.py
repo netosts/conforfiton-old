@@ -79,7 +79,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
 # REGISTER
 @user_router.post('/register')
 async def new_user(data: NewUser):
-    vl_person = Person.where('ID_Pessoa', data.ID_Pessoa).count()
+    vl_person = Person.where('id_pessoa', data.id_pessoa).count()
     if vl_person == 0:
         return JSONResponse({
             "error": True,
@@ -87,7 +87,7 @@ async def new_user(data: NewUser):
         }, 404)
 
     user = User()
-    user.ID_Pessoa = data.ID_Pessoa
+    user.id_pessoa = data.id_pessoa
     user.username = data.username
     salt = pwd.genword(entropy=56, charset="ascii_62")
     user.salt = salt
@@ -116,5 +116,5 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=di["ACCESS_TOKEN_EXP"])
-    access_token = create_access_token(data={"sub": user.username, "id": user.ID_Pessoa}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer", "user_id": user.ID_Pessoa}
+    access_token = create_access_token(data={"sub": user.username, "id": user.id_pessoa}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.id_pessoa}

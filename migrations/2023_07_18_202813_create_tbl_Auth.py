@@ -7,9 +7,9 @@ class CreateTblAuth(Migration):
         """
         Run the migrations.
         """
-        with self.schema.create('tbl_Auth') as table:
-            table.integer('ID_Pessoa').unsigned().unique()
-            table.foreign('ID_Pessoa').references('ID_Pessoa').on('tbl_Pessoa')
+        with self.schema.create('tbl_auth') as table:
+            table.integer('id_pessoa').unsigned().unique()
+            table.foreign('id_pessoa').references('id_pessoa').on('tbl_pessoa')
             table.string('username', 30).unique()
             table.string('hash')
             table.string('salt')
@@ -21,4 +21,4 @@ class CreateTblAuth(Migration):
         """
         Revert the migrations.
         """
-        self.schema.drop('tbl_Auth')
+        self.schema.drop('tbl_auth')

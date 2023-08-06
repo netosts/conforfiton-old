@@ -6,31 +6,32 @@ from datetime import datetime
 
 
 class NewStudent(BaseModel):
-    # tbl_Pessoa
-    nmPessoa: str
+    # tbl_pessoa
+    nm_pessoa: str
     ser: str
-    tipoPessoa: str
-    cpfCnpj: str
+    tipo_pessoa: str
+    cpf_cnpj: str
     rg: str = None
-    ufRG: str = None
-    empPersonal: bool
-    dtNascimento: str = None
-    dsObs: str = None
-    dsEmail: str
+    uf_rg: str = None
+    emp_personal: bool
+    dt_nascimento: str = None
+    ds_obs: str = None
+    ds_email: str
     telefone: str = None
-    # tbl_Aluno
+    # tbl_aluno
     altura: int
     sexo: str
-    tmCamisa: str = None
-    fotoAluno: str = None
-    ID_Empresa: int
-    ID_Personal: int
+    tm_camisa: str = None
+    tm_bermuda: str = None
+    foto_aluno: str = None
+    id_empresa: int
+    id_personal: int
     # tbl_peso
     peso: float = None
-    dtData: datetime
-    #tbl_fqCardio
-    bpmRepouso: int = None
-    bpmMaximo: int = None
+    dt_data: datetime
+    #tbl_fq_cardio
+    bpm_repouso: int = None
+    bpm_maximo: int = None
 
     @validator("*", pre=True, always=True)
     def check_none(cls, v):
@@ -38,19 +39,19 @@ class NewStudent(BaseModel):
         return None
       return v
     
-    @validator('nmPessoa')
-    def validate_nmPessoa(cls, value):
+    @validator('nm_pessoa')
+    def validate_nm_pessoa(cls, value):
       if len(value) > 60:
         raise ValueError("Name can't be more than 60 characters.")
       return value
     
-    @validator('cpfCnpj')
-    def validate_cpfCnpj(cls, value):
+    @validator('cpf_cnpj')
+    def validate_cpf_cnpj(cls, value):
       if len(value) > 11:
         raise ValueError("Cpf can't be more than 11 characters.")
       return value
     
-    @validator('rg', 'ufRG')
+    @validator('rg', 'uf_rg')
     def validate_rg(cls, value):
       if value is not None and len(value) > 20:
         raise ValueError("Rg can't be more than 20 characters.")
@@ -62,7 +63,7 @@ class NewStudent(BaseModel):
         raise ValueError("Telefone can't be more than 11 characters.")
       return value
     
-    @validator('dsEmail')
+    @validator('ds_email')
     def validate_email(cls, value):
       regex = r'(?:[a-z0-9+!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
       if not re.match(regex, value, re.IGNORECASE):
@@ -90,14 +91,14 @@ class NewStudent(BaseModel):
           raise ValueError("Peso must have up to 2 decimal numbers.")
       return value
 
-    @validator('bpmMaximo', 'bpmRepouso')
+    @validator('bpm_maximo', 'bpm_repouso')
     def validate_bpm(cls, value):
       if value is not None and (value < 0 or value > 220):
         raise ValueError("BPM must be between 0bpm and 220bpm.")
       return value
 
-    @validator('dsObs')
-    def validate_dsObs(cls, value):
+    @validator('ds_obs')
+    def validate_ds_obs(cls, value):
       if value is not None and len(value) > 300:
-        raise ValueError("dsObs can't be more than 300 characters.")
+        raise ValueError("ds_obs can't be more than 300 characters.")
       return value

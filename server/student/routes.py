@@ -16,7 +16,7 @@ def type_search(inputFilter):
         if inputFilter == 'inputName':
             return "nm_pessoa"
         elif inputFilter == 'inputCpf':
-            return "cpfCnpj"
+            return "cpf_cnpj"
         
 
 # Get active Students + input bar value
@@ -26,12 +26,12 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
     # tp2 = peso
     # ta = aluno
     limit = int(limit)
-    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
+    max_peso = di["db"].raw('tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
 
     students = di["db"].table('tbl_pessoa as tp') \
-                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
+                       .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.id_pessoa', '=', max_peso) \
+                       .select('tp.id_pessoa', 'tp.nm_pessoa', 'tp.dt_nascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
                        .where_null('tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
@@ -48,12 +48,12 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit):
     # tp2 = peso
     # ta = aluno
     limit = int(limit)
-    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
+    max_peso = di["db"].raw('tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
 
     students = di["db"].table('tbl_pessoa as tp') \
-                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.id_pessoa', '=', max_peso) \
+                       .select('tp.id_pessoa', 'tp.nm_pessoa', 'tp.dt_nascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
                        .where_not_null('tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
@@ -70,12 +70,12 @@ async def inputbar_all_students(inputFilter, inputBar, limit):
     # tp2 = peso
     # ta = aluno
     limit = int(limit)
-    max_peso = di["db"].raw('tp2."ID_Pessoa" and tp2."dtData" = (select max("dtData") from tbl_peso where "ID_Pessoa" = tp2."ID_Pessoa")')
+    max_peso = di["db"].raw('tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
 
     students = di["db"].table('tbl_pessoa as tp') \
-                       .join('tbl_Aluno as ta', 'ta.ID_Pessoa', '=', 'tp.ID_Pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', max_peso) \
-                       .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'tp.dtNascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
+                       .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
+                       .left_join('tbl_peso as tp2', 'tp.id_pessoa', '=', max_peso) \
+                       .select('tp.id_pessoa', 'tp.nm_pessoa', 'tp.dt_nascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
                        .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('tp.created_at', 'desc') \
                        .limit(limit) \
@@ -85,20 +85,20 @@ async def inputbar_all_students(inputFilter, inputBar, limit):
 
 
 # Find Student by ID
-@student_router.get('/{ID_Pessoa}')
-async def find_student(ID_Pessoa):
-    newest_peso = Peso.where('ID_Pessoa', ID_Pessoa).max('dtData')
+@student_router.get('/{id_pessoa}')
+async def find_student(id_pessoa):
+    newest_peso = Peso.where('id_pessoa', id_pessoa).max('dt_data')
     if newest_peso:
         student = di["db"].table('tbl_pessoa') \
-                        .join('tbl_Aluno', 'tbl_pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
-                        .where('tbl_pessoa.ID_Pessoa', ID_Pessoa) \
-                        .join('tbl_peso', 'tbl_pessoa.ID_Pessoa', '=', 'tbl_peso.ID_Pessoa') \
+                        .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
+                        .where('tbl_pessoa.id_pessoa', id_pessoa) \
+                        .join('tbl_peso', 'tbl_pessoa.id_pessoa', '=', 'tbl_peso.id_pessoa') \
                         .where('tbl_peso.dtData', newest_peso) \
                         .first()
     else:
         student = di["db"].table('tbl_pessoa') \
-                        .join('tbl_Aluno', 'tbl_pessoa.ID_Pessoa', '=', 'tbl_Aluno.ID_Pessoa') \
-                        .where('tbl_pessoa.ID_Pessoa', ID_Pessoa) \
+                        .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
+                        .where('tbl_pessoa.id_pessoa', id_pessoa) \
                         .first()
     
     if student:
@@ -111,9 +111,9 @@ async def find_student(ID_Pessoa):
     
 
 # Get Credentials of Student using his ID
-@student_router.get('/credentials/{ID_Pessoa}')
-async def get_student_credentials(ID_Pessoa):
-    student = Person.where('ID_Pessoa', ID_Pessoa).select('ID_Pessoa', 'nm_pessoa').first()
+@student_router.get('/credentials/{id_pessoa}')
+async def get_student_credentials(id_pessoa):
+    student = Person.where('id_pessoa', id_pessoa).select('id_pessoa', 'nm_pessoa').first()
     
     if student:
         return student.serialize()
@@ -128,7 +128,7 @@ async def get_student_credentials(ID_Pessoa):
 @student_router.post('/')
 async def new_student(data: NewStudent):
     # Look for CPF duplicate
-    cpf = Person.where('cpfCnpj', data.cpfCnpj).count()
+    cpf = Person.where('cpf_cnpj', data.cpf_cnpj).count()
     if cpf > 0:
         return JSONResponse({
             "error": True,
@@ -136,22 +136,22 @@ async def new_student(data: NewStudent):
         }, 409)
 
     # Look for RG of specified UF duplicate
-    if data.rg != None and data.ufRG != None:
-        rg = Person.where('rg', data.rg).where('ufRG', data.ufRG).count()
+    if data.rg != None and data.uf_rg != None:
+        rg = Person.where('rg', data.rg).where('uf_rg', data.uf_rg).count()
         if rg > 0:
             return JSONResponse({
                 "error": True,
                 "message": "The provided RG and UF are already registered in the database."
             }, 409)
             
-    if (data.rg is not None and data.ufRG is None) or (data.rg is None and data.ufRG is not None):
+    if (data.rg is not None and data.uf_rg is None) or (data.rg is None and data.uf_rg is not None):
         return JSONResponse({
             "error": True,
             "data": "RG and UF must be together."
         }, 422)
     
     # Email duplicate validation
-    email = Person.where('dsEmail', data.dsEmail).count()
+    email = Person.where('ds_email', data.ds_email).count()
     if email > 0:
         return JSONResponse({
             "error": True,
@@ -161,40 +161,40 @@ async def new_student(data: NewStudent):
     person = Person()
     person.nm_pessoa = data.nm_pessoa
     person.ser = data.ser
-    person.tipoPessoa = data.tipoPessoa
-    person.cpfCnpj = data.cpfCnpj
+    person.tipo_pessoa = data.tipo_pessoa
+    person.cpf_cnpj = data.cpf_cnpj
     person.rg = data.rg
-    person.ufRG = data.ufRG
-    person.empPersonal = data.empPersonal
-    person.dtNascimento = data.dtNascimento
-    person.dsObs = data.dsObs
-    person.dsEmail = data.dsEmail
+    person.uf_rg = data.uf_rg
+    person.emp_personal = data.emp_personal
+    person.dt_nascimento = data.dt_nascimento
+    person.ds_obs = data.ds_obs
+    person.ds_email = data.ds_email
     person.telefone = data.telefone
 
     if person.save():
         student = Student()
-        student.ID_Pessoa = person.ID_Pessoa
+        student.id_pessoa = person.id_pessoa
         student.altura = data.altura
         student.sexo = data.sexo
-        student.tmCamisa = data.tmCamisa
-        student.fotoAluno = data.fotoAluno
-        student.ID_Empresa = data.ID_Empresa
-        student.ID_Personal = data.ID_Personal
+        student.tm_camisa = data.tm_camisa
+        student.foto_aluno = data.foto_aluno
+        student.id_empresa = data.id_empresa
+        student.id_personal = data.id_personal
 
         if student.save():
             if data.peso != None:
                 peso = Peso()
-                peso.ID_Pessoa = person.ID_Pessoa
+                peso.id_pessoa = person.id_pessoa
                 peso.peso = data.peso
-                peso.dtData = data.dtData
+                peso.dt_data = data.dt_data
                 peso.save()
 
-            if data.bpmRepouso and data.bpmMaximo != None:
+            if data.bpm_repouso and data.bpm_maximo != None:
                 cardio = Cardio()
-                cardio.ID_Pessoa = person.ID_Pessoa
-                cardio.bpmRepouso = data.bpmRepouso
-                cardio.bpmMaximo = data.bpmMaximo
-                cardio.dtData = data.dtData
+                cardio.id_pessoa = person.id_pessoa
+                cardio.bpm_repouso = data.bpm_repouso
+                cardio.bpm_maximo = data.bpm_maximo
+                cardio.dt_data = data.dt_data
                 cardio.save()
 
         else:
@@ -209,15 +209,15 @@ async def new_student(data: NewStudent):
         }, 200)
 
 
-@student_router.get("/avaliar/{ID_Pessoa}")
-async def get_student_for_avaliar_page(ID_Pessoa):
-    newest_peso = Peso.where('ID_Pessoa', ID_Pessoa).max('dtData')
+@student_router.get("/avaliar/{id_pessoa}")
+async def get_student_for_avaliar_page(id_pessoa):
+    newest_peso = Peso.where('id_pessoa', id_pessoa).max('dt_data')
     student = di["db"].table('tbl_pessoa as tp') \
-                    .where('tp.ID_Pessoa', ID_Pessoa) \
-                    .select('tp.ID_Pessoa', 'tp.nm_pessoa', 'ta.sexo', 'tp2.peso') \
-                    .join('tbl_peso as tp2', 'tp.ID_Pessoa', '=', 'tp2.ID_Pessoa') \
-                    .where('tp2.dtData', newest_peso) \
-                    .join('tbl_Aluno as ta', 'tp.ID_Pessoa', '=', 'ta.ID_Pessoa') \
+                    .where('tp.id_pessoa', id_pessoa) \
+                    .select('tp.id_pessoa', 'tp.nm_pessoa', 'ta.sexo', 'tp2.peso') \
+                    .join('tbl_peso as tp2', 'tp.id_pessoa', '=', 'tp2.id_pessoa') \
+                    .where('tp2.dt_data', newest_peso) \
+                    .join('tbl_aluno as ta', 'tp.id_pessoa', '=', 'ta.id_pessoa') \
                     .first()
     
     if student:
@@ -230,31 +230,31 @@ async def get_student_for_avaliar_page(ID_Pessoa):
 
 
 # Update Student
-# @student_router.put('/{ID_Pessoa}')
-# async def update_student(ID_Pessoa, data: NewStudent):
-#     person = Person.find(ID_Pessoa)
+# @student_router.put('/{id_pessoa}')
+# async def update_student(id_pessoa, data: NewStudent):
+#     person = Person.find(id_pessoa)
 #     person.nm_pessoa = data.nm_pessoa
 #     person.ser = data.ser
-#     person.tipoPessoa = data.tipoPessoa
-#     person.cpfCnpj = data.cpfCnpj
+#     person.tipo_pessoa = data.tipo_pessoa
+#     person.cpf_cnpj = data.cpf_cnpj
 #     person.rg = data.rg
-#     person.ufRG = data.ufRG
-#     person.dtNascimento = data.dtNascimento
-#     person.dsObs = data.dsObs
-#     person.dsEmail = data.dsEmail
+#     person.uf_rg = data.uf_rg
+#     person.dt_nascimento = data.dt_nascimento
+#     person.ds_obs = data.ds_obs
+#     person.ds_email = data.ds_email
 #     person.telefone = data.telefone
 #     person.save()
 #     if person.save():
-#         student = Student.find(ID_Pessoa)
+#         student = Student.find(id_pessoa)
 #         student.altura = data.altura
 #         student.sexo = data.sexo
-#         student.fotoAluno = data.fotoAluno
+#         student.foto_aluno = data.foto_aluno
 #         student.save()
 #         if student.save():
 #             peso = Peso()
-#             peso.ID_Pessoa = person.ID_Pessoa
+#             peso.id_Pessoa = person.id_pessoa
 #             peso.peso = data.peso
-#             peso.dtData = data.dtData
+#             peso.dt_data = data.dt_data
 #             if peso.peso != None or peso.peso > 0:
 #                 peso.save()
 

@@ -4,7 +4,7 @@ import Avaliar from '../components/Avaliar.vue';
 
 import { definePage } from 'vue-router/auto'
 import { ref, onMounted, watch } from 'vue';
-import { formatAge, formatTelefone } from '../services/validators/formats';
+import { formatAge } from '../services/validators/formats';
 
 
 definePage({
@@ -29,10 +29,10 @@ const handleAvaliar = (emittedValue) => {
 };
 
 // FUNCTIONS
-function toggleAvaliar(ID_Pessoa, nm_pessoa) {
+function toggleAvaliar(id_pessoa, nm_pessoa) {
   isAvaliarActive.value = !isAvaliarActive.value;
   bodyElement.value.style.overflow = isAvaliarActive.value ? 'hidden' : 'auto';
-  studentId.value = ID_Pessoa;
+  studentId.value = id_pessoa;
   studentName.value = nm_pessoa;
 };
 
@@ -143,7 +143,7 @@ onMounted(() => {
     <div class="students">
       <section v-for="student in students" :key="student" class="student">
         <div class="student__container">
-          <RouterLink :to="`/student/${student.ID_Pessoa}`">
+          <RouterLink :to="`/student/${student.id_pessoa}`">
             <div class="student__container__profile">
               <div class="student__container__profile__picture">
                 <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
@@ -154,7 +154,7 @@ onMounted(() => {
                 </div>
                 <div class="student__container__profile__info__content">
                   <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
-                  <p>Idade: <strong>{{ student.dtNascimento ? formatAge(student.dtNascimento) : '' }}</strong> | </p>
+                  <p>Idade: <strong>{{ student.dt_nascimento ? formatAge(student.dt_nascimento) : '' }}</strong> | </p>
                   <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
                   <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
                   <p>Desempenho: Bom</p>
@@ -164,7 +164,7 @@ onMounted(() => {
           </RouterLink>
           <div class="student__container__button">
             <div class="student__container__button__box">
-              <button @click="toggleAvaliar(student.ID_Pessoa, student.nm_pessoa)">Avaliar</button>
+              <button @click="toggleAvaliar(student.id_pessoa, student.nm_pessoa)">Avaliar</button>
             </div>
           </div>
         </div>

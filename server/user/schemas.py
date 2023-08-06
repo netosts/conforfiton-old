@@ -4,7 +4,7 @@ from pydantic import BaseModel, validator
 
 
 class NewUser(BaseModel):
-    ID_Pessoa: int
+    id_pessoa: int
     username: str
     password: str
 
