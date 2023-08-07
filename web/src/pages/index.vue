@@ -115,7 +115,7 @@ onMounted(() => {
     <div class="searchbox">
       <div class="searchbox__title">
         <h3>Procurar Alunos</h3>
-        <RouterLink to="/anamnese">
+        <RouterLink to="/register">
           <button>+ Novo Aluno</button>
         </RouterLink>
       </div>
@@ -156,7 +156,7 @@ onMounted(() => {
                   <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
                   <p>Idade: <strong>{{ student.dt_nascimento ? formatAge(student.dt_nascimento) : '' }}</strong> | </p>
                   <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
-                  <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p>
+                  <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p> |
                   <p>Desempenho: Bom</p>
                 </div>
               </div>
@@ -206,21 +206,7 @@ main {
       }
 
       button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: $border-radius;
-        background-color: $buttons;
-        color: white;
-        cursor: pointer;
-        transition: .3s;
-
-        &:hover {
-          filter: brightness(.85);
-        }
-
-        &:active {
-          filter: brightness(.5);
-        }
+        @include submitButtons($buttons, white);
       }
     }
 

@@ -17,8 +17,12 @@ const handleSidebar = (emittedValue) => {
   return sidebarIsActive.value = emittedValue;
 };
 
+const hiders = [
+  '/login', '/print', '/register'
+];
+
 watch(route, () => {
-  if (route.path === '/login' || route.path === '/print') {
+  if (hiders.includes(route.path)) {
     hideBars.value = true;
   } else {
     hideBars.value = false;
@@ -29,7 +33,7 @@ watch(route, () => {
 <template>
   <SideBar v-show="!hideBars" @sidebarIsActive="handleSidebar" />
   <TopBar v-show="!hideBars" :class="sidebarIsActive ? 'header__sidebar-active' : null" />
-  <RouterView :class="{ 'main__sidebar-active': sidebarIsActive && !hideBars }" />
+  <RouterView :class="{ 'main__sidebar-active': sidebarIsActive && !hideBars, 'main': !hideBars }" />
 </template>
 
 <style lang="scss" scoped>
@@ -59,7 +63,7 @@ header {
   left: 250px;
 }
 
-main {
+.main {
   position: relative;
   top: 69px;
   left: 75px;

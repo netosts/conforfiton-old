@@ -143,7 +143,8 @@ async def new_student(data: NewStudent):
                 "error": True,
                 "message": "The provided RG and UF are already registered in the database."
             }, 409)
-            
+
+    # RG and UF must be together        
     if (data.rg is not None and data.uf_rg is None) or (data.rg is None and data.uf_rg is not None):
         return JSONResponse({
             "error": True,

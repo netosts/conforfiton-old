@@ -9,6 +9,7 @@ import { useRoute, useRouter, definePage } from 'vue-router/auto';
 
 import { Form } from 'vee-validate';
 import TextField from '../../components/TextField.vue';
+import SubmitButton from '../../components/SubmitButton.vue';
 
 
 definePage({
@@ -28,7 +29,7 @@ const store = useAvaliarStore();
 // FUNCTIONS
 function onSubmit(values) {
   console.log(values);
-  // router.push('/print');
+  router.push('/print');
 };
 
 async function initRequests() {
@@ -53,29 +54,30 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="top">
-      <RouterLink to="/" class="voltar">
-        <font-awesome-icon icon="fa-solid fa-arrow-left" />
-        voltar
-      </RouterLink>
+    <section class="student">
+      <div class="top">
+        <RouterLink to="/" class="voltar">
+          <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
+        </RouterLink>
+        <h1>{{ student?.nm_pessoa }}</h1>
+      </div>
 
-      <h1>{{ student?.nm_pessoa }}</h1>
-    </div>
+      <div class="student__details">
+        <p>Peso: {{ student?.peso }}kg</p>
+        <p>Sexo: {{ student?.sexo }}</p>
+      </div>
+    </section>
 
-    <Form @submit="onSubmit" id="myForm">
-      <section class="student-details">
-        <p>Peso corporal atual: {{ student?.peso }}</p>
-      </section>
-
+    <Form @submit="onSubmit">
       <section v-if="store.types?.includes('Neuromuscular')">
         <h2>Neuromuscular</h2>
 
-        <table>
+        <table class="neuro-table">
           <thead>
             <tr>
               <th>Exercício</th>
-              <th>Peso Levantado</th>
-              <th>Repetições</th>
+              <th>Peso L.</th>
+              <th>Reps</th>
               <th>1RM</th>
               <th>Pontos</th>
             </tr>
@@ -95,8 +97,9 @@ onMounted(() => {
           </tbody>
         </table>
 
-        <div class="neurobox">
-          <h4>Total: <span class="p-total">{{ pontosTotal }}</span></h4>
+        <div class="neuro-total">
+          <h3>Total: </h3>
+          <span>{{ pontosTotal }}</span>
         </div>
       </section>
 
@@ -108,7 +111,7 @@ onMounted(() => {
         <h2>Cardio</h2>
       </section>
 
-      <button class="submit">Salvar</button>
+      <SubmitButton msg="Salvar" />
     </Form>
   </main>
 </template>
@@ -123,43 +126,60 @@ main {
   flex-direction: column;
   gap: 10px;
 
-  .top {
+  .student {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    background-color: white;
+    color: $txt-aside;
 
-    h1 {
-      text-align: center;
-      flex: 1;
+    .top {
+      padding: 10px;
+      box-shadow: $box-shadow;
+
+      .voltar {
+        position: absolute;
+        top: 5px;
+        @include tool();
+        color: $buttons;
+      }
+
+      h1 {
+        text-align: center;
+      }
     }
 
-    .voltar {
-      position: absolute;
+    &__details {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      justify-content: space-evenly;
+      gap: 5px;
+      background-color: $readonly;
       font-weight: 600;
-      text-decoration: none;
-      color: $logo-color;
+      pointer-events: none;
+
+      p {
+        flex: 1;
+        padding: 20px;
+        text-align: center;
+      }
+
+      p:nth-child(1) {
+        border-right: 2px solid $background;
+      }
     }
   }
+
 
   form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-    .student-details {
-      padding: 20px;
-      background-color: $readonly;
-      font-weight: 500;
-      text-transform: uppercase;
-      pointer-events: none;
-    }
-
     section {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 10px;
       border-radius: $border-radius;
       box-shadow: $box-shadow;
       background-color: white;
@@ -172,8 +192,8 @@ main {
         color: $txt-title;
       }
 
-      table {
-        margin: 0px 10px 10px 10px;
+      .neuro-table {
+        margin: 0px 10px;
         border-collapse: collapse;
         border: 1px solid $input-border;
 
@@ -191,16 +211,35 @@ main {
         td {
           font-weight: 500;
           color: $txt-aside;
-        }
 
-        td:not(:nth-child(1)) {
-          width: 130px;
+          &:not(:nth-child(1)) {
+            min-width: 60px;
+            max-width: 100px;
+
+            .register-field {
+              min-width: 60px;
+            }
+          }
         }
       }
-    }
 
-    .submit {
-      @include submitButtons($validation, white);
+      .neuro-total {
+        display: flex;
+        margin: 0 10px 10px 10px;
+        border: 1px solid $input-border;
+
+        h3 {
+          padding: 0 10px;
+          font-size: 1.2rem;
+        }
+
+        span {
+          flex: 1;
+          font-size: 1.2rem;
+          font-weight: 800;
+          color: $logo-color;
+        }
+      }
     }
   }
 }

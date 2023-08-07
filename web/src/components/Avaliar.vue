@@ -120,9 +120,9 @@ aside {
         padding: 20px;
 
         h1 {
-          font-size: 1.2rem;
+          font-size: 1.4rem;
           font-weight: 800;
-          color: $logo-color;
+          color: $txt-aside;
         }
       }
 
@@ -156,12 +156,11 @@ aside {
         display: flex;
         justify-content: space-between;
         flex-direction: row;
-        border-radius: $border-radius;
-        background-color: $buttons;
+        border-bottom: 1px solid $input-border;
 
         label {
           flex: 1;
-          color: white;
+          color: $txt-aside;
           padding: 5px 15px;
         }
 

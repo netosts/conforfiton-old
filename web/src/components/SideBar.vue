@@ -55,7 +55,7 @@ watch(sidebarIsActive, (newValue) => {
       <div class="logo" v-show="sidebarIsActive">
         <RouterLink to="/">
           <div class="logo__image">
-            <img src="../assets/images/temp-logo.png" alt="logo temporaria">
+            <!-- <img src="../assets/images/temp-logo.png" alt="logo temporaria"> -->
           </div>
           <div class="logo__title">
             <h1>Confor<span>Fit</span></h1>
@@ -67,22 +67,28 @@ watch(sidebarIsActive, (newValue) => {
       </div>
       <div class="menu" v-show="sidebarIsActive">
         <h2>Menu</h2>
-        <ul>
-          <li>Alunos</li>
-          <ul>
-            <RouterLink to="/register" @click="toggleSidebar">
-              <li>Cadastrar aluno</li>
-            </RouterLink>
-            <li>Avaliar aluno</li>
-            <li>Adicionar peso</li>
-            <li>
-              <RouterLink to="/login">Login</RouterLink>
-            </li>
-            <li>
-              <button @click="logout">Logout</button>
-            </li>
-          </ul>
-        </ul>
+        <div class="menu__content">
+          <RouterLink to="/register/student" @click="toggleSidebar">
+            <font-awesome-icon icon="fa-solid fa-feather" size="sm" />
+            Cadastro Avulso
+          </RouterLink>
+        </div>
+        <h2>Pages</h2>
+        <div class="menu__content">
+          <RouterLink to="/">
+            <font-awesome-icon icon="fa-solid fa-house" size="sm" />
+            Home
+          </RouterLink>
+          <RouterLink to="/register">
+            <font-awesome-icon icon="fa-solid fa-plus" size="sm" />
+            Novo Aluno
+          </RouterLink>
+          <RouterLink to="/print">
+            <font-awesome-icon icon="fa-solid fa-print" size="sm" />
+            Imprimir Avaliação
+          </RouterLink>
+          <button @click="logout">Logout</button>
+        </div>
       </div>
     </div>
     <div class="sidebar__2" @click="toggleSidebar"></div>
@@ -195,18 +201,39 @@ watch(sidebarIsActive, (newValue) => {
   }
 
   .menu {
-    padding: 20px;
+    margin-top: 40px;
     color: $txt-sidebar;
 
     h2 {
+      padding: 10px 15px;
       font-size: .7rem;
       color: $menu-color;
       text-transform: uppercase;
     }
 
-    p {
-      font-size: .9rem;
-      padding: 5px 10px;
+    &__content {
+      display: flex;
+      flex-direction: column;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: $txt-sidebar;
+        padding: 15px 20px;
+        transition: 0.2s;
+        font-size: 0.9rem;
+        text-decoration: none;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
+
+    button {
+      margin: 20px 15px 15px 15px;
+      @include submitButtons($buttons, white);
     }
   }
 }
