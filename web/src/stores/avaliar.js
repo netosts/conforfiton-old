@@ -3,7 +3,9 @@ import { ref } from 'vue';
 
 
 export const useAvaliarStore = defineStore('avaliar', () => {
-  const types = ref(undefined);
+  const types = ref([]);
+  const student = ref(null);
+  const rmConfig = ref(null);
 
-  return { types }
+  return { types, student, rmConfig };
 });
