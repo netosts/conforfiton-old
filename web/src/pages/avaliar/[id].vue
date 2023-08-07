@@ -135,7 +135,8 @@ onMounted(() => {
           <div class="neuro">
             <TextField v-model="roscaDireta.pesoLevantado" name="roscaDiretaPesoLevantado" type="number"
               label="peso levantado" />
-            <TextField v-model="roscaDireta.reps" name="roscaDiretaReps" type="number" label="repetições" />
+            <TextField v-model="roscaDireta.reps" name="roscaDiretaReps" type="select" :options="repsList"
+              label="repetições" />
             <div class="neuro__result">
               <label>1RM</label>
               <input v-model="roscaDireta.rm" type="number" readonly>
@@ -152,7 +153,8 @@ onMounted(() => {
           <div class="neuro">
             <TextField v-model="puxadaPelaFrente.pesoLevantado" name="puxadaPelaFrentePesoLevantado" type="number"
               label="peso levantado" />
-            <TextField v-model="puxadaPelaFrente.reps" name="puxadaPelaFrenteReps" type="number" label="repetições" />
+            <TextField v-model="puxadaPelaFrente.reps" name="puxadaPelaFrenteReps" type="select" :options="repsList"
+              label="repetições" />
             <div class="neuro__result">
               <label>1RM</label>
               <input v-model="puxadaPelaFrente.rm" type="number" readonly>
@@ -169,7 +171,7 @@ onMounted(() => {
           <div class="neuro">
             <TextField v-model="legPress.pesoLevantado" name="legPressPesoLevantado" type="number"
               label="peso levantado" />
-            <TextField v-model="legPress.reps" name="legPressReps" type="number" label="repetições" />
+            <TextField v-model="legPress.reps" name="legPressReps" type="select" :options="repsList" label="repetições" />
             <div class="neuro__result">
               <label>1RM</label>
               <input v-model="legPress.rm" type="number" readonly>
@@ -186,7 +188,8 @@ onMounted(() => {
           <div class="neuro">
             <TextField v-model="extensaoDeJoelhos.pesoLevantado" name="extensaoDeJoelhosPesoLevantado" type="number"
               label="peso levantado" />
-            <TextField v-model="extensaoDeJoelhos.reps" name="extensaoDeJoelhosReps" type="number" label="repetições" />
+            <TextField v-model="extensaoDeJoelhos.reps" name="extensaoDeJoelhosReps" type="select" :options="repsList"
+              label="repetições" />
             <div class="neuro__result">
               <label>1RM</label>
               <input v-model="extensaoDeJoelhos.rm" type="number" readonly>
@@ -203,7 +206,8 @@ onMounted(() => {
           <div class="neuro">
             <TextField v-model="flexaoDeJoelhos.pesoLevantado" name="flexaoDeJoelhosPesoLevantado" type="number"
               label="peso levantado" />
-            <TextField v-model="flexaoDeJoelhos.reps" name="flexaoDeJoelhosReps" type="number" label="repetições" />
+            <TextField v-model="flexaoDeJoelhos.reps" name="flexaoDeJoelhosReps" type="select" :options="repsList"
+              label="repetições" />
             <div class="neuro__result">
               <label>1RM</label>
               <input v-model="flexaoDeJoelhos.rm" type="number" readonly>
@@ -354,5 +358,4 @@ main {
       @include submitButtons($validation, white);
     }
   }
-}
-</style>
+}</style>
