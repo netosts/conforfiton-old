@@ -71,7 +71,6 @@ onMounted(() => {
     <Form @submit="onSubmit">
       <section v-if="store.types?.includes('Neuromuscular')">
         <h2>Neuromuscular</h2>
-
         <table class="neuro-table">
           <thead>
             <tr>

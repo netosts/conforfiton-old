@@ -39,9 +39,7 @@ const value = ref(props.modelValue);
 watch(value, (newValue) => {
   emit('update:modelValue', newValue);
 
-  if (props.name === 'name') {
-    handleChange(maskName(newValue));
-  } else if (props.name === 'cpf') {
+  if (props.name === 'cpf') {
     handleChange(maskCpf(newValue));
   } else if (props.name === 'rg') {
     handleChange(maskRg(newValue));

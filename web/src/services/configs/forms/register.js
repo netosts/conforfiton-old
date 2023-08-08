@@ -15,6 +15,7 @@ const form = reactive({
   altura: '',
   sexo: '',
   tm_camisa: '',
+  tm_shorts: '',
   foto_aluno: null,
   id_empresa: 1,
   id_personal: 2,

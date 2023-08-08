@@ -13,7 +13,9 @@ import { faMoon } from '@fortawesome/free-regular-svg-icons'
 import { MotionPlugin } from '@vueuse/motion'
 
 // Vee validate
-import { required, cpf, email, minLength, maxLength, between, maxDecimal, password, asymbol } from './services/rules'
+import { required, cpf, email, minLength,
+  maxLength, between, maxDecimal, password,
+  asymbol, name, date } from './services/rules'
 import { defineRule } from 'vee-validate'
 
 // Vue Application
@@ -35,6 +37,8 @@ defineRule('between', (value, [min, max]) => between(value, min, max))
 defineRule('maxDecimal', (value, [limit]) => maxDecimal(value, limit))
 defineRule('password', value => password(value))
 defineRule('asymbol', value => asymbol(value))
+defineRule('name', value => name(value))
+defineRule('date', value => date(value))
 
 library.add(faMoon, faExpand, faMagnifyingGlass, faXmark,
   faCheck, faLocationDot, faPhoneFlip, faEnvelope, faAnglesLeft,

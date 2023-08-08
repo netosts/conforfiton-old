@@ -16,8 +16,13 @@ export const sexoList = [
   'Masculino', 'Feminino'
 ];
 
-export const tmCamisaList = [
-  'PP', 'P', 'M', 'G', 'GG', 'XG'
+export const camisaList = [
+  'PP', 'P', 'M', 'G', 'GG', 'XG', 'XXG'
+];
+
+export const shortsList = [
+  'PP-36/38', 'P-38/40', 'M-40/42', 'G-42/44', 'GG-44/46',
+  'G1-48', 'G2-50', 'G3-52', 'G4-54', 'G5-56'
 ];
 
 export const q4Radio = [

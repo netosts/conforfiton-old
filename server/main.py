@@ -13,7 +13,8 @@ from .cardio.routes import cardio_router
 from .peso.routes import peso_router
 from .student.routes import student_router
 from .user.routes import user_router
-from .rm.routes import rm_router
+from .anamnese.routes import anamnese_router
+from .rm_config.routes import rm_router
 
 from .person.models import Person
 
@@ -41,6 +42,7 @@ app.include_router(person_router)
 app.include_router(cardio_router)
 app.include_router(peso_router)
 app.include_router(student_router)
+app.include_router(anamnese_router)
 app.include_router(rm_router)
 
 # CPF-CNPJ

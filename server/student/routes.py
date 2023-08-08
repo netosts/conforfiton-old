@@ -132,7 +132,7 @@ async def new_student(data: NewStudent):
     if cpf > 0:
         return JSONResponse({
             "error": True,
-            "message": "The provided CPF is already registered in the database."
+            "data": "The provided CPF is already registered in the database."
         }, 409)
 
     # Look for RG of specified UF duplicate
@@ -141,7 +141,7 @@ async def new_student(data: NewStudent):
         if rg > 0:
             return JSONResponse({
                 "error": True,
-                "message": "The provided RG and UF are already registered in the database."
+                "data": "The provided RG and UF are already registered in the database."
             }, 409)
 
     # RG and UF must be together        
@@ -160,7 +160,7 @@ async def new_student(data: NewStudent):
         }, 409)
 
     person = Person()
-    person.nm_pessoa = data.nm_pessoa
+    person.nm_pessoa = data.nm_pessoa.title()
     person.ser = data.ser
     person.tipo_pessoa = data.tipo_pessoa
     person.cpf_cnpj = data.cpf_cnpj
@@ -190,24 +190,16 @@ async def new_student(data: NewStudent):
                 peso.dt_data = data.dt_data
                 peso.save()
 
-            if data.bpm_repouso and data.bpm_maximo != None:
-                cardio = Cardio()
-                cardio.id_pessoa = person.id_pessoa
-                cardio.bpm_repouso = data.bpm_repouso
-                cardio.bpm_maximo = data.bpm_maximo
-                cardio.dt_data = data.dt_data
-                cardio.save()
+            return JSONResponse({
+                "error":False,
+                "data": f"{person.nm_pessoa} foi cadastrado(a) com sucesso."
+            }, 200)
 
         else:
             return JSONResponse({
                 "error":True,
                 "data": f"Houve um erro e {person.nm_pessoa} não foi cadastrado(a)."
             }, 422)
-    
-    return JSONResponse({
-            "error":False,
-            "data": f"{person.nm_pessoa} foi cadastrado(a) com sucesso."
-        }, 200)
 
 
 @student_router.get("/avaliar/{id_pessoa}")

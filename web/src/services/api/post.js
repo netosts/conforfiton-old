@@ -4,7 +4,7 @@ export function postStudent(form) {
   http.post('/student', form).then((res) => {
     console.log('ALUNO CRIADO COM SUCESSO..');
     alert(res.data.data);
-    location.reload();
+    // location.reload();
   }).catch((err) => {
     console.error(err.response.data);
     throw err;
@@ -17,6 +17,16 @@ export function getToken(payload) {
   .then((res) => res.data)
   .catch((err) => {
     console.error(err);
+    throw err;
+  });
+};
+
+
+export function postAnamnese(form, id_pessoa) {
+  http.post(`/anamnese/${id_pessoa}`, form)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error(err.response);
     throw err;
   });
 };

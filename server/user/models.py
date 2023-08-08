@@ -7,5 +7,5 @@ Model.set_connection_resolver(di["db"])
 
 class User(Model, SoftDeletes):
     __table__ = "tbl_auth"
-    __primary_key__= "id_pessoa"
+    __primary_key__= False
     __hidden__ = ["hash", "salt"]

@@ -133,3 +133,50 @@ export function asymbol(value) {
 
   return true;
 }
+
+
+export function name(value) {
+  if (!value) {
+    return true;
+  }
+
+  const regex = /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ\s~]+$/;
+  if (!regex.test(value)) {
+    return "Por favor digite apenas letras.";
+  }
+
+  return true;
+}
+
+// 0054-08-19
+export function date(value) {
+  if (!value) {
+    return true;
+  }
+
+  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+  if (!datePattern.test(value)) {
+    return "Formato de data inválida.";
+  }
+
+  const parts = value.split("-");
+  const year = parseInt(parts[0]);
+  const month = parseInt(parts[1]);
+  const day = parseInt(parts[2]);
+
+  const currentDate = new Date();
+  const inputDate = new Date(year, month - 1, day);
+
+  const maxAgeDate = new Date();
+  maxAgeDate.setFullYear(maxAgeDate.getFullYear() - 120); // Subtract 120 years
+  
+  if (inputDate > currentDate) {
+    return "A data de nascimento não pode ser no futuro.";
+  }
+
+  if (inputDate < maxAgeDate) {
+    return "A idade máxima é de 120 anos.";
+  }
+
+  return true;
+}

@@ -2,7 +2,7 @@
 import re
 from decimal import Decimal
 from pydantic import BaseModel, validator
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class NewStudent(BaseModel):
@@ -22,22 +22,19 @@ class NewStudent(BaseModel):
     altura: int
     sexo: str
     tm_camisa: str = None
-    tm_bermuda: str = None
+    tm_shorts: str = None
     foto_aluno: str = None
     id_empresa: int
     id_personal: int
     # tbl_peso
     peso: float = None
     dt_data: datetime
-    #tbl_fq_cardio
-    bpm_repouso: int = None
-    bpm_maximo: int = None
 
     @validator("*", pre=True, always=True)
-    def check_none(cls, v):
-      if v == "string" or v == "":
+    def check_none(cls, value):
+      if value == "string" or value == "":
         return None
-      return v
+      return value
     
     @validator('nm_pessoa')
     def validate_nm_pessoa(cls, value):
@@ -55,6 +52,24 @@ class NewStudent(BaseModel):
     def validate_rg(cls, value):
       if value is not None and len(value) > 20:
         raise ValueError("Rg can't be more than 20 characters.")
+      return value
+    
+    @validator('dt_nascimento')
+    def validate_dat_of_birth(cls, value):
+      date_pattern = r"^\d{4}-\d{2}-\d{2}$"
+      if not re.match(date_pattern, value):
+        raise ValueError("Date format is invalid.")
+      parts = value.split("-")
+      year = int(parts[0])
+      month = int(parts[1])
+      day = int(parts[2])
+      current_date = datetime.now()
+      input_date = datetime(year, month, day)
+      max_age_date = current_date - timedelta(days=365 * 120)
+      if input_date > current_date:
+        raise ValueError("Age is invalid.")
+      if input_date < max_age_date:
+        raise ValueError("Maximum age exceeded.")
       return value
     
     @validator('telefone')
@@ -89,12 +104,6 @@ class NewStudent(BaseModel):
         peso_decimal = Decimal(str(value))
         if peso_decimal.as_tuple().exponent < -2:
           raise ValueError("Peso must have up to 2 decimal numbers.")
-      return value
-
-    @validator('bpm_maximo', 'bpm_repouso')
-    def validate_bpm(cls, value):
-      if value is not None and (value < 0 or value > 220):
-        raise ValueError("BPM must be between 0bpm and 220bpm.")
       return value
 
     @validator('ds_obs')

@@ -1,7 +1,7 @@
 <script setup>
 import { countCpfDuplicate, countRgUfDuplicate, countEmailDuplicate } from '../../services/api/get';
-import { postStudent } from '../../services/api/post';
-import { ufList, sexoList, tmCamisaList, q4Radio, YesOrNoRadio, days } from '../../services/configs/lists';
+import { postStudent, postAnamnese } from '../../services/api/post';
+import { ufList, sexoList, camisaList, shortsList, q4Radio, YesOrNoRadio, days } from '../../services/configs/lists';
 import { registerSchema } from '../../services/configs/schemas';
 
 import { ref } from 'vue';
@@ -24,12 +24,22 @@ const transformTime = ref('dia');
 // FUNCTIONS
 async function onSubmit(values, { setFieldError, setErrors }) {
   let errors = 0
+
   // REGISTER
-  // CPF Duplicate validation
+  // CPF and Email Duplicate validation
   form.cpf_cnpj = form.cpf_cnpj.replace(/\D/g, '');  // only digits
-  const countedCpf = await countCpfDuplicate(form.cpf_cnpj);
+  const [countedCpf, countedEmail] = await Promise.all([
+    countCpfDuplicate(form.cpf_cnpj),
+    countEmailDuplicate(form.ds_email)
+  ]);
+
   if (countedCpf > 0) {
     setFieldError('cpf', 'O CPF já foi cadastrado.');
+    errors++;
+  }
+
+  if (countedEmail > 0) {
+    setFieldError('email', 'Este email já foi cadastrado.')
     errors++;
   }
 
@@ -49,22 +59,15 @@ async function onSubmit(values, { setFieldError, setErrors }) {
     }
   }
 
-  // Email duplicate validation
-  const countedEmail = await countEmailDuplicate(form.ds_email);
-  if (countedEmail > 0) {
-    setFieldError('email', 'Este email já foi cadastrado.')
-    errors++;
-  }
-
   // ANAMNESE FORM
   // q21 is required if q20 answer was Yes
-  if (form.q20 && (form.q21 === undefined || typeof form.q21 === 'string' && form.q21.trim().length === 0)) {
+  if (form.q20 && (!form.q21 || typeof form.q21 === 'string' && form.q21.trim().length === 0)) {
     setFieldError('q21', 'Se sim, este campo precisa ser preenchido.');
     errors++;
   }
 
   // q21 can't have value if q20 answer is No
-  if (!form.q20 && (form.q21 !== undefined || typeof form.q21 === 'string' && form.q21.trim().length !== 0)) {
+  if (!form.q20 && (typeof form.q21 === 'string' && form.q21.trim().length !== 0)) {
     form.q21 = undefined;
   }
 
@@ -88,7 +91,8 @@ async function onSubmit(values, { setFieldError, setErrors }) {
   form.telefone = form.telefone.replace(/\D/g, '');  // only digits
 
   // Post new student
-  // postStudent(form);
+  postStudent(form);
+  postAnamnese(form, 3);
 
   console.log(form);
   console.log("form submitted");
@@ -155,31 +159,32 @@ function pushToTime() {
           <h2>Informações de Cadastro</h2>
         </div>
         <TextField v-model="form.nm_pessoa" :meta="meta" name="name" type="text" label="Nome completo" required="*"
-          placeholder="Digite o nome do aluno" />
+          placeholder="Digite seu nome completo" />
         <div class="form__section__1-1sm">
           <TextField v-model="form.cpf_cnpj" :meta="meta" name="cpf" type="text" label="CPF" required="*"
-            placeholder="Digite o CPF do aluno" />
+            placeholder="Digite seu CPF" />
           <div class="form__section__1-1sm__1sm">
-            <TextField v-model="form.rg" :meta="meta" name="rg" type="text" label="RG"
-              placeholder="Digite o RG do aluno" />
+            <TextField v-model="form.rg" :meta="meta" name="rg" type="text" label="RG" placeholder="Digite seu RG" />
             <TextField v-model="form.uf_rg" :meta="meta" name="uf" type="select" label="UF" :options="ufList" />
           </div>
         </div>
         <div class="form__section__1-1">
-          <TextField v-model="form.telefone" :meta="meta" name="telefone" type="text" label="Telefone"
+          <TextField v-model="form.telefone" :meta="meta" name="telefone" type="text" label="Telefone" required="*"
             placeholder="(00)00000-0000" />
           <TextField v-model="form.ds_email" :meta="meta" name="email" type="text" label="E-mail" required="*"
-            placeholder="Digite o Email do aluno" />
+            placeholder="Digite seu Email" />
         </div>
-        <div class="form__section__1-1-1">
-          <div class="form__section__1-1-1__date">
-            <label for="date">Data Nascimento</label>
-            <input v-model="form.dt_nascimento" type="date" id="date">
-          </div>
+        <div class="form__section__1-1">
+          <TextField v-model="form.dt_nascimento" :meta="meta" type="date" name="date" label="Data Nascimento"
+            required="*" />
           <TextField v-model="form.sexo" :meta="meta" name="sexo" type="select" label="Sexo Biológico" required="*"
             :options="sexoList" />
+        </div>
+        <div class="form__section__1-1">
           <TextField v-model="form.tm_camisa" :meta="meta" name="camisa" type="select" label="T. Camisa" required="*"
-            :options="tmCamisaList" />
+            :options="camisaList" />
+          <TextField v-model="form.tm_shorts" :meta="meta" name="shorts" type="select" label="T. Shorts" required="*"
+            :options="shortsList" />
         </div>
         <div class="form__section__1-1">
           <TextField v-model="form.altura" :meta="meta" name="altura" type="number" label="Altura(cm)" required="*"
@@ -406,10 +411,6 @@ main {
 
         div {
           flex: 1;
-        }
-
-        &__date {
-          @include inputContainers();
         }
       }
 
