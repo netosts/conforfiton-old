@@ -64,3 +64,9 @@ async def count_rg(rg, uf_rg):  # how many of the specified RG in UF are in the 
 async def count_email(ds_email):  # how many of the specified Email are in the database
     email = Person.where('ds_email', ds_email).count()
     return email
+
+
+@app.get('/test_cid')
+async def test_cid():
+    cid = di["db"].table('tbl_cid').lists('name')
+    return cid.serialize()

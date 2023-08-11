@@ -1,16 +1,19 @@
 <script setup>
-import { getStudentAvaliar, getRmConfig } from '../../services/api/get';
-import { repsList, exerciseList, pontosTotal } from '../../services/configs/lists';
+import { getStudentAvaliar, getRmConfig } from "../../services/api/get";
+import {
+  repsList,
+  exerciseList,
+  pontosTotal,
+} from "../../services/configs/lists";
 
-import { useAvaliarStore } from '../../stores/avaliar';
+import { useAvaliarStore } from "../../stores/avaliar";
 
-import { onMounted, ref } from 'vue';
-import { useRoute, useRouter, definePage } from 'vue-router/auto';
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter, definePage } from "vue-router/auto";
 
-import { Form } from 'vee-validate';
-import TextField from '../../components/TextField.vue';
-import SubmitButton from '../../components/SubmitButton.vue';
-
+import { Form } from "vee-validate";
+import TextField from "../../components/TextField.vue";
+import SubmitButton from "../../components/SubmitButton.vue";
 
 definePage({
   meta: { isStudent: true, requiresAuth: true },
@@ -25,26 +28,25 @@ const store = useAvaliarStore();
 
 // Form variables
 
-
 // FUNCTIONS
 function onSubmit(values) {
   console.log(values);
-  router.push('/print');
-};
+  router.push("/print");
+}
 
 async function initRequests() {
   try {
     student.value = await getStudentAvaliar(route.params.id);
     store.student = student.value;
-    if (store.types.includes('Neuromuscular')) {
+    if (store.types.includes("Neuromuscular")) {
       rmConfig.value = await getRmConfig(student.value.sexo);
       store.rmConfig = rmConfig.value;
     }
   } catch {
-    alert('Houve um erro, o aluno não pôde ser encontrado.');
-    router.push('/');
+    alert("Houve um erro, o aluno não pôde ser encontrado.");
+    router.push("/");
   }
-};
+}
 
 // DOM Mount
 onMounted(() => {
@@ -85,10 +87,19 @@ onMounted(() => {
             <tr v-for="exercise in exerciseList" :key="exercise">
               <td>{{ exercise.title }}</td>
               <td>
-                <TextField v-model="exercise.pesoLevantado" :name="`${exercise.name}PesoLevantado`" type="number" />
+                <TextField
+                  v-model="exercise.pesoLevantado"
+                  :name="`${exercise.name}PesoLevantado`"
+                  type="number"
+                />
               </td>
               <td>
-                <TextField v-model="exercise.reps" :name="`${exercise.name}Reps`" type="select" :options="repsList" />
+                <TextField
+                  v-model="exercise.reps"
+                  :name="`${exercise.name}Reps`"
+                  type="select"
+                  :options="repsList"
+                />
               </td>
               <td>{{ exercise.rm }}</td>
               <td>{{ exercise.pontos }}</td>
@@ -97,7 +108,7 @@ onMounted(() => {
         </table>
 
         <div class="neuro-total">
-          <h3>Total: </h3>
+          <h3>Total:</h3>
           <span>{{ pontosTotal }}</span>
         </div>
       </section>
@@ -116,9 +127,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@import '../../assets/styles/variables';
-@import '../../assets/styles/mixins';
-
+@import "../../assets/styles/variables";
+@import "../../assets/styles/mixins";
 
 main {
   display: flex;
@@ -146,6 +156,7 @@ main {
 
       h1 {
         text-align: center;
+        padding: 0 40px;
       }
     }
 
@@ -168,7 +179,6 @@ main {
       }
     }
   }
-
 
   form {
     display: flex;
@@ -212,11 +222,11 @@ main {
           color: $txt-aside;
 
           &:not(:nth-child(1)) {
-            min-width: 60px;
+            min-width: 50px;
             max-width: 100px;
 
             .register-field {
-              min-width: 60px;
+              min-width: 50px;
             }
           }
         }
