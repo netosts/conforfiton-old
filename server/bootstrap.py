@@ -11,7 +11,8 @@ def bootstrap():
         config = yaml.safe_load(folder)  # safe_load because load is deprecated
         di["config"] = config
 
-        db = DatabaseManager(di["config"]["databases"])  # connect to the database
+        # connect to the database
+        db = DatabaseManager(di["config"]["databases"])
         di["db"] = db
 
     di["SECRET_KEY"] = config["SECRET_KEY"]

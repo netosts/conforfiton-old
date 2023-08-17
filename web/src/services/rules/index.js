@@ -126,7 +126,7 @@ export function asymbol(value) {
     return true;
   }
 
-  const regex = /^[A-Za-z0-9.,;ãáàâéèêíïóôõöúüç\s'"\(\)]+$/u;
+  const regex = /^[A-Za-z0-9.,;ãáàâéèêíïóôõöúüç\s'"()\-\[\]]+$/u;
   if (!regex.test(value)) {
     return "Por favor digite apenas letras e números.";
   }

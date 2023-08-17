@@ -1,12 +1,13 @@
 # pylint: skip-file
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 from kink import di
 
-# bootstrap the config and db inside di[]
+# bootstrap config
+# autopep8: off
+
 from .bootstrap import bootstrap
 bootstrap()
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from .person.routes import person_router
 from .cardio.routes import cardio_router
@@ -17,6 +18,8 @@ from .anamnese.routes import anamnese_router
 from .rm_config.routes import rm_router
 
 from .person.models import Person
+
+# autopep8: on
 
 
 app = FastAPI()
@@ -32,7 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# home
+
 @app.get('/')
 async def home():
     return "Conforfit Database"
@@ -45,28 +48,20 @@ app.include_router(student_router)
 app.include_router(anamnese_router)
 app.include_router(rm_router)
 
-# CPF-CNPJ
-@app.get('/cpf_cnpj/{cpf}')
+
+@app.get('/cpf_cnpj/{cpf}')  # CPF
 async def count_cpf(cpf):  # how many of the specified CPF are in the database
     cpf = Person.where('cpf_cnpj', cpf).count()
     return cpf
 
 
-# RG-UF
-@app.get('/rg/{rg}/{uf_rg}')
+@app.get('/rg/{rg}/{uf_rg}')  # RG in UF
 async def count_rg(rg, uf_rg):  # how many of the specified RG in UF are in the database
     rg = Person.where('rg', rg).where('uf_rg', uf_rg).count()
     return rg
 
 
-# EMAIL
-@app.get('/ds_email/{ds_email}')
+@app.get('/ds_email/{ds_email}')  # EMAIL
 async def count_email(ds_email):  # how many of the specified Email are in the database
     email = Person.where('ds_email', ds_email).count()
     return email
-
-
-@app.get('/test_cid')
-async def test_cid():
-    cid = di["db"].table('tbl_cid').lists('name')
-    return cid.serialize()

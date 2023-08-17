@@ -22,8 +22,8 @@ export function getToken(payload) {
 };
 
 
-export function postAnamnese(form, id_pessoa) {
-  http.post(`/anamnese/${id_pessoa}`, form)
+export function postAnamnese(form) {
+  http.post(`/anamnese`, form)
   .then((res) => res.data)
   .catch((err) => {
     console.error(err.response);

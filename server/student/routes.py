@@ -12,12 +12,14 @@ from ..cardio.models import Cardio
 student_router = APIRouter(prefix='/student')
 
 # FUNCTIONS
+
+
 def type_search(inputFilter):
-        if inputFilter == 'inputName':
-            return "nm_pessoa"
-        elif inputFilter == 'inputCpf':
-            return "cpf_cnpj"
-        
+    if inputFilter == 'inputName':
+        return "nm_pessoa"
+    elif inputFilter == 'inputCpf':
+        return "cpf_cnpj"
+
 
 # Get active Students + input bar value
 @student_router.get('/active/{inputFilter}/{inputBar}/{limit}')
@@ -26,7 +28,8 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
     # tp2 = peso
     # ta = aluno
     limit = int(limit)
-    max_peso = di["db"].raw('tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
+    max_peso = di["db"].raw(
+        'tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
 
     students = di["db"].table('tbl_pessoa as tp') \
                        .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
@@ -37,7 +40,7 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
                        .order_by('tp.created_at', 'desc') \
                        .limit(limit) \
                        .get()
-    
+
     return students.serialize()
 
 
@@ -48,7 +51,8 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit):
     # tp2 = peso
     # ta = aluno
     limit = int(limit)
-    max_peso = di["db"].raw('tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
+    max_peso = di["db"].raw(
+        'tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
 
     students = di["db"].table('tbl_pessoa as tp') \
                        .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
@@ -59,7 +63,7 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit):
                        .order_by('tp.created_at', 'desc') \
                        .limit(limit) \
                        .get()
-    
+
     return students.serialize()
 
 
@@ -70,7 +74,8 @@ async def inputbar_all_students(inputFilter, inputBar, limit):
     # tp2 = peso
     # ta = aluno
     limit = int(limit)
-    max_peso = di["db"].raw('tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
+    max_peso = di["db"].raw(
+        'tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
 
     students = di["db"].table('tbl_pessoa as tp') \
                        .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
@@ -80,7 +85,7 @@ async def inputbar_all_students(inputFilter, inputBar, limit):
                        .order_by('tp.created_at', 'desc') \
                        .limit(limit) \
                        .get()
-    
+
     return students.serialize()
 
 
@@ -90,17 +95,17 @@ async def find_student(id_pessoa):
     newest_peso = Peso.where('id_pessoa', id_pessoa).max('dt_data')
     if newest_peso:
         student = di["db"].table('tbl_pessoa') \
-                        .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
-                        .where('tbl_pessoa.id_pessoa', id_pessoa) \
-                        .join('tbl_peso', 'tbl_pessoa.id_pessoa', '=', 'tbl_peso.id_pessoa') \
-                        .where('tbl_peso.dtData', newest_peso) \
-                        .first()
+            .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
+            .where('tbl_pessoa.id_pessoa', id_pessoa) \
+            .join('tbl_peso', 'tbl_pessoa.id_pessoa', '=', 'tbl_peso.id_pessoa') \
+            .where('tbl_peso.dtData', newest_peso) \
+            .first()
     else:
         student = di["db"].table('tbl_pessoa') \
-                        .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
-                        .where('tbl_pessoa.id_pessoa', id_pessoa) \
-                        .first()
-    
+            .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
+            .where('tbl_pessoa.id_pessoa', id_pessoa) \
+            .first()
+
     if student:
         return student.serialize()
     else:
@@ -108,13 +113,14 @@ async def find_student(id_pessoa):
             "error": True,
             "data": "Student not found."
         }, 404)
-    
+
 
 # Get Credentials of Student using his ID
 @student_router.get('/credentials/{id_pessoa}')
 async def get_student_credentials(id_pessoa):
-    student = Person.where('id_pessoa', id_pessoa).select('id_pessoa', 'nm_pessoa').first()
-    
+    student = Person.where('id_pessoa', id_pessoa).select(
+        'id_pessoa', 'nm_pessoa').first()
+
     if student:
         return student.serialize()
     else:
@@ -144,13 +150,13 @@ async def new_student(data: NewStudent):
                 "data": "The provided RG and UF are already registered in the database."
             }, 409)
 
-    # RG and UF must be together        
+    # RG and UF must be together
     if (data.rg is not None and data.uf_rg is None) or (data.rg is None and data.uf_rg is not None):
         return JSONResponse({
             "error": True,
             "data": "RG and UF must be together."
         }, 422)
-    
+
     # Email duplicate validation
     email = Person.where('ds_email', data.ds_email).count()
     if email > 0:
@@ -191,13 +197,13 @@ async def new_student(data: NewStudent):
                 peso.save()
 
             return JSONResponse({
-                "error":False,
+                "error": False,
                 "data": f"{person.nm_pessoa} foi cadastrado(a) com sucesso."
             }, 200)
 
         else:
             return JSONResponse({
-                "error":True,
+                "error": True,
                 "data": f"Houve um erro e {person.nm_pessoa} não foi cadastrado(a)."
             }, 422)
 
@@ -206,13 +212,13 @@ async def new_student(data: NewStudent):
 async def get_student_for_avaliar_page(id_pessoa):
     newest_peso = Peso.where('id_pessoa', id_pessoa).max('dt_data')
     student = di["db"].table('tbl_pessoa as tp') \
-                    .where('tp.id_pessoa', id_pessoa) \
-                    .select('tp.id_pessoa', 'tp.nm_pessoa', 'ta.sexo', 'tp2.peso') \
-                    .join('tbl_peso as tp2', 'tp.id_pessoa', '=', 'tp2.id_pessoa') \
-                    .where('tp2.dt_data', newest_peso) \
-                    .join('tbl_aluno as ta', 'tp.id_pessoa', '=', 'ta.id_pessoa') \
-                    .first()
-    
+        .where('tp.id_pessoa', id_pessoa) \
+        .select('tp.id_pessoa', 'tp.nm_pessoa', 'ta.sexo', 'tp2.peso', 'ta.altura') \
+        .join('tbl_peso as tp2', 'tp.id_pessoa', '=', 'tp2.id_pessoa') \
+        .where('tp2.dt_data', newest_peso) \
+        .join('tbl_aluno as ta', 'tp.id_pessoa', '=', 'ta.id_pessoa') \
+        .first()
+
     if student:
         return student.serialize()
     else:

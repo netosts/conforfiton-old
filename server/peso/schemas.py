@@ -5,4 +5,4 @@ from datetime import datetime
 
 class NewPeso(BaseModel):
     peso: float
-    dtData: datetime
+    dt_data: datetime

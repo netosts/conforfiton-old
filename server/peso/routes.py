@@ -3,18 +3,20 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from .models import Peso
 from .schemas import NewPeso
-from ..student.models import Student
+from ..person.models import Person
 
 
 peso_router = APIRouter(prefix='/peso')
 
 # Create a new Peso for a specific student using his id
+
+
 @peso_router.post('/{student_id}')
 async def new_peso(student_id, data: NewPeso):
-    student = Student.find(student_id)
+    student = Person.find(student_id)
     if not student:
         return JSONResponse("Student not found", 404)
-    
+
     peso = Peso()
     peso.id_pessoa = student.id_pessoa
     peso.peso = data.peso
