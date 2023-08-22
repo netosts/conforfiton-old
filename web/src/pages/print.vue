@@ -1,6 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
-
+import { onMounted } from "vue";
 
 onMounted(() => {
   window.print();
@@ -22,16 +21,28 @@ onMounted(() => {
         </div>
       </div>
     </section>
+    <section class="presentation">
+      <div class="presentation__background"></div>
+      <div class="presentation__content">
+        <div class="presentation__content__page">
+          <div class="presentation__content__page--bar"></div>
+          <div class="presentation__content__page--number">01</div>
+        </div>
+        <div class="presentation__content__title">
+          <h1>Avaliação</h1>
+          <h1>Física</h1>
+        </div>
+      </div>
+    </section>
   </aside>
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
-
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 section {
-  height: 792px;
+  height: 1100px;
   width: 1600px;
 
   .presentation {

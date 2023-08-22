@@ -46,6 +46,6 @@ export function calcularPontos(student, rm, exercise, exerciseConfig) {
       return closestConfig;
     }, null);
 
-    return findConfig ? findConfig.pontos : null;
+    return findConfig ? findConfig.pontos : 0;
   }
 };

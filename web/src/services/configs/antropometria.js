@@ -25,3 +25,25 @@ export function imc(peso, altura) {
 
   return findImc.classification
 }
+
+const caClass = [
+  { sexo: 'Masculino', threshold: 0 },
+  { sexo: 'Masculino', threshold: 94 },
+  { sexo: 'Masculino', threshold: 102 },
+  { sexo: 'Feminino', threshold: 0 },
+  { sexo: 'Feminino', threshold: 80 },
+  { sexo: 'Feminino', threshold: 88 },
+]
+
+export function ca(value, sexo) {
+  const findCa = caClass.reduce((closest, config) => {
+    if (value >= config.threshold && sexo === config.sexo) {
+      if (!closest || config.threshold >= closest.threshold) {
+        return config;
+      }
+    }
+    return closest
+  }, null)
+
+  return findCa
+}
