@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from .models import Student
 from .schemas import NewStudent
 from ..person.models import Person
-from ..peso.models import Peso
+from ..weight.models import Peso
 from ..cardio.models import Cardio
 
 

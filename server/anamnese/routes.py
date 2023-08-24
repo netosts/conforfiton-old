@@ -14,16 +14,18 @@ anamnese_router = APIRouter(prefix='/anamnese')
 
 @anamnese_router.post('/')
 async def new_anamnese(data: NewAnamnese):
-    id_pessoa = Person.max('id_pessoa')
-    anamnese = Anamnese()
-    if not id_pessoa:
+    person_id = Person.max('person_id')
+
+    if not person_id:
         return JSONResponse(
             {
                 "error": True,
                 "data": "Couldn't find id."
             }, 404)
 
-    anamnese.id_pessoa = id_pessoa
+    anamnese = Anamnese()
+
+    anamnese.person_id = person_id
     anamnese.q1 = data.q1.capitalize()
     anamnese.q2 = data.q2.capitalize()
     anamnese.q3 = data.q3.capitalize()

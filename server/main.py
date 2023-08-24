@@ -10,8 +10,7 @@ from .bootstrap import bootstrap
 bootstrap()
 
 from .person.routes import person_router
-from .cardio.routes import cardio_router
-from .peso.routes import peso_router
+from .weight.routes import peso_router
 from .student.routes import student_router
 from .user.routes import user_router
 from .anamnese.routes import anamnese_router
@@ -42,7 +41,6 @@ async def home():
 
 app.include_router(user_router)
 app.include_router(person_router)
-app.include_router(cardio_router)
 app.include_router(peso_router)
 app.include_router(student_router)
 app.include_router(anamnese_router)

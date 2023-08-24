@@ -6,5 +6,4 @@ Model.set_connection_resolver(di["db"])
 
 
 class Person(Model, SoftDeletes):
-    __table__ = "tbl_pessoa"
-    __primary_key__= "id_pessoa"
+    pass

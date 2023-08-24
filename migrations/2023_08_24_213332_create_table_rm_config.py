@@ -1,21 +1,21 @@
 from orator.migrations import Migration
 
 
-class CreateTblRmConfig(Migration):
+class CreateTableRmConfig(Migration):
 
     def up(self):
         """
         Run the migrations.
         """
-        with self.schema.create('tbl_rm_config') as table:
+        with self.schema.create('rm_config') as table:
             table.increments('id')
-            table.string('sexo', 9)
-            table.string('exercicio', 30)
+            table.string('gender', 6)
+            table.string('exercise', 30)
             table.float('threshold')
-            table.small_integer('pontos')
+            table.small_integer('points')
 
     def down(self):
         """
         Revert the migrations.
         """
-        self.schema.drop('tbl_rm_config')
+        self.schema.drop('rm_config')

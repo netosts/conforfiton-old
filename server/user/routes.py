@@ -44,7 +44,7 @@ def authenticate_user(username: str, password: str):
     if not verify_password(password+":"+user.salt, user.hash):
         return False
     return user
-    
+
 
 # Token FUNCTIONS
 def create_access_token(data: dict, expires_delta: timedelta):
@@ -116,5 +116,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=di["ACCESS_TOKEN_EXP"])
-    access_token = create_access_token(data={"sub": user.username, "id": user.id_pessoa}, expires_delta=access_token_expires)
+    access_token = create_access_token(
+        data={"sub": user.username, "id": user.id_pessoa}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer", "user_id": user.id_pessoa}
