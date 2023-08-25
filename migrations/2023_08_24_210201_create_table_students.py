@@ -11,8 +11,10 @@ class CreateTableStudents(Migration):
             table.integer('person_id').unsigned().unique()
             table.integer('company_id').unsigned()
             table.integer('personal_id').unsigned()
+            table.soft_deletes()
 
-            table.foreign('person_id').references('id').on('persons')
+            table.foreign('person_id').references(
+                'id').on('persons').on_delete('cascade')
             table.foreign('company_id').references('id').on('companies')
             table.foreign('personal_id').references('id').on('personals')
 

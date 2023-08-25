@@ -1,7 +1,7 @@
 # pylint: skip-file
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from .models import RmConfig
+from .model import RmConfig
 
 
 rm_router = APIRouter(prefix='/rm_config')

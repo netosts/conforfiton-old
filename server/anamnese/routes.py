@@ -1,12 +1,12 @@
 # pylint: skip-file
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from .models import Anamnese
-from .schemas import NewAnamnese
-from ..person.models import Person
+from .model import Anamnese
+from .schema import NewAnamnese
+from ..person.model import Person
 
 from fastapi.encoders import jsonable_encoder
-from .schemas import Period
+from .schema import Period
 import json
 
 anamnese_router = APIRouter(prefix='/anamnese')

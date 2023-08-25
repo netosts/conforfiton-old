@@ -10,8 +10,10 @@ class CreateTablePersonals(Migration):
         with self.schema.create('personals') as table:
             table.integer('person_id').unsigned().unique()
             table.integer('company_id').unsigned()
+            table.soft_deletes()
 
-            table.foreign('person_id').references('id').on('persons')
+            table.foreign('person_id').references(
+                'id').on('persons').on_delete('cascade')
             table.foreign('company_id').references('id').on('companies')
 
     def down(self):

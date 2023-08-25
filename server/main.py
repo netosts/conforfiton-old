@@ -16,7 +16,7 @@ from .user.routes import user_router
 from .anamnese.routes import anamnese_router
 from .rm_config.routes import rm_router
 
-from .person.models import Person
+from .person.model import Person
 
 # autopep8: on
 

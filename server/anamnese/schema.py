@@ -1,6 +1,6 @@
 # pylint: skip-file
 from typing import List
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, constr, validator
 from enum import IntEnum
 
 
@@ -48,3 +48,9 @@ class NewAnamnese(BaseModel):
     q25: bool
     q26: constr(max_length=100)
     q27: constr(max_length=255) = None
+
+    @validator("*", pre=True, always=True)
+    def check_none(cls, value):
+        if value == "string" or value == "":
+            return None
+        return value

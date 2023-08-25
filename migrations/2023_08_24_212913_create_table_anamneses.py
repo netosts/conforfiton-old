@@ -39,7 +39,8 @@ class CreateTableAnamneses(Migration):
             table.timestamps()
             table.soft_deletes()
 
-            table.foreign('person_id').references('id').on('persons')
+            table.foreign('person_id').references(
+                'id').on('persons').on_delete('cascade')
 
     def down(self):
         """

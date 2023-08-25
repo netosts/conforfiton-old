@@ -2,11 +2,10 @@
 from kink import di
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from .models import Student
-from .schemas import NewStudent
-from ..person.models import Person
-from ..weight.models import Peso
-from ..cardio.models import Cardio
+from .model import Student
+from .schema import NewStudent
+from ..person.model import Person
+from ..weight.model import Weight
 
 
 student_router = APIRouter(prefix='/student')

@@ -10,8 +10,8 @@ from passlib import pwd
 from passlib.hash import pbkdf2_sha256
 from pydantic import BaseModel
 
-from ..person.models import Person
-from .schemas import NewUser
+from ..person.model import Person
+from .schema import NewUser
 from .models import User
 
 

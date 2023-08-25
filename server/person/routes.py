@@ -1,23 +1,26 @@
 # pylint: skip-file
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from .models import Person
-from .schemas import NewPerson
+from .model import Person
+from ..student.model import Student
+from ..personal.model import Personal
+from .schema import NewPerson
 
 
 person_router = APIRouter(prefix='/person')
 
-@person_router.post('/')  # Create a new person
-async def new_person(data: NewPerson):
+
+@person_router.post('/{role}')
+async def new_person(role, data: NewPerson):
     # Look for CPF duplicate
-    cpf = Person.where('cpf_cnpj', data.cpf_cnpj).count()
+    cpf = Person.where('cpf', data).count()
     if cpf > 0:
         error_message = {
             "error": "Duplicate CPF",
             "message": "The provided CPF is already registered in the database."
         }
         return JSONResponse(content=error_message, status_code=409)
-    
+
     # Look for RG of specified UF duplicate
     if data.rg != None and data.uf_rg != None:
         rg = Person.where('rg', data.rg).where('uf_rg', data.uf_rg).count()
@@ -27,7 +30,7 @@ async def new_person(data: NewPerson):
                 "message": "The provided RG and UF are already registered in the database."
             }
             return JSONResponse(content=error_message, status_code=409)
-        
+
     # Email duplicate validation
     email = Person.where('ds_email', data.ds_email).count()
     if email > 0:

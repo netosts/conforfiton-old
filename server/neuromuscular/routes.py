@@ -1,9 +1,9 @@
 # pylint: skip-file
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from .models import Neuromuscular
-from .schemas import NewNeuromuscular
-from ..person.models import Person
+from .model import Neuromuscular
+from .schema import NewNeuromuscular
+from ..person.model import Person
 
 
 peso_router = APIRouter(prefix='/neurmuscular')

@@ -2,8 +2,8 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from .models import Peso
-from .schemas import NewPeso
-from ..person.models import Person
+from .schema import NewPeso
+from ..person.model import Person
 
 
 peso_router = APIRouter(prefix='/peso')
