@@ -12,16 +12,15 @@ import json
 anamnese_router = APIRouter(prefix='/anamnese')
 
 
-@anamnese_router.post('/')
-async def new_anamnese(data: NewAnamnese):
-    person_id = Person.max('person_id')
+@anamnese_router.post('/{email}')
+async def new_anamnese(email, data: NewAnamnese):
+    person_id = Person.select('id').where('email', email)
 
     if not person_id:
-        return JSONResponse(
-            {
-                "error": True,
-                "data": "Couldn't find id."
-            }, 404)
+        return JSONResponse({
+            "error": True,
+            "data": "Couldn't find id."
+        }, 404)
 
     anamnese = Anamnese()
 

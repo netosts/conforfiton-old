@@ -9,8 +9,9 @@ from kink import di
 from .bootstrap import bootstrap
 bootstrap()
 
+from .global_entity.routes import global_entity_router
 from .person.routes import person_router
-from .weight.routes import peso_router
+from .weight.routes import weight_router
 from .student.routes import student_router
 from .user.routes import user_router
 from .anamnese.routes import anamnese_router
@@ -39,9 +40,10 @@ app.add_middleware(
 async def home():
     return "Conforfit Database"
 
-app.include_router(user_router)
+app.include_router(global_entity_router)
 app.include_router(person_router)
-app.include_router(peso_router)
+app.include_router(user_router)
+app.include_router(weight_router)
 app.include_router(student_router)
 app.include_router(anamnese_router)
 app.include_router(rm_router)

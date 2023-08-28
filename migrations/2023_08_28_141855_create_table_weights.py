@@ -12,6 +12,11 @@ class CreateTableWeights(Migration):
             table.integer('person_id').unsigned()
             table.decimal('weight', 5, 2)
             table.timestamp('created_at')
+            table.soft_deletes()
+            
+            table.foreign('person_id').references(
+                'id').on('persons').on_delete('cascade')
+
 
     def down(self):
         """

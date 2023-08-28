@@ -1,9 +1,9 @@
 from kink import di
-from orator import Model
+from orator import Model, SoftDeletes
 
 
 Model.set_connection_resolver(di["db"])
 
 
-class Weight(Model):
+class Weight(Model, SoftDeletes):
     __timestamps__ = False

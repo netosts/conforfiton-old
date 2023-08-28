@@ -1,8 +1,6 @@
 # pylint: skip-file
 from pydantic import BaseModel
-from datetime import datetime
 
 
-class NewPeso(BaseModel):
+class NewWeight(BaseModel):
     peso: float
-    dt_data: datetime

@@ -1,26 +1,34 @@
 # pylint: skip-file
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from .models import Peso
-from .schema import NewPeso
+
+from datetime import datetime
+
+from .model import Weight
+from .schema import NewWeight
 from ..person.model import Person
 
 
-peso_router = APIRouter(prefix='/peso')
-
-# Create a new Peso for a specific student using his id
+weight_router = APIRouter(prefix='/weight')
 
 
-@peso_router.post('/{student_id}')
-async def new_peso(student_id, data: NewPeso):
-    student = Person.find(student_id)
-    if not student:
-        return JSONResponse("Student not found", 404)
+@weight_router.post('/{person_id}')
+async def new_weight(person_id, data: NewWeight):
+    person = Person.find(person_id)
+    if not person:
+        return JSONResponse("Person not found", 404)
 
-    peso = Peso()
-    peso.id_pessoa = student.id_pessoa
-    peso.peso = data.peso
-    peso.dt_data = data.dt_data
-    peso.save()
-
-    return f"Peso de {student.nm_pessoa} cadastrado com sucesso!"
+    weight = Weight()
+    weight.person_id = person.person_id
+    weight.weight = data.weight
+    weight.created_at = datetime
+    if weight.save():
+        return JSONResponse({
+            "error": False,
+            "data": f"{person.name}'s Weight successfully registered."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Something went wrong while registering {person.name}'s WEIGHT."
+        }, 422)

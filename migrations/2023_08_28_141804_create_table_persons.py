@@ -14,7 +14,7 @@ class CreateTablePersons(Migration):
             table.string('gender', 6).nullable()
             table.string('role', 10)
             table.string('email').unique()
-            table.string('phone_number', 20).unique()
+            table.string('phone_number', 11).unique()
             table.date('birth_date')
             table.small_integer('height').nullable()  # 0 < height < 250
             table.string('shirt_size', 3).nullable()
@@ -27,4 +27,4 @@ class CreateTablePersons(Migration):
         """
         Revert the migrations.
         """
-        self.schema.drop('person')
+        self.schema.drop('persons')

@@ -9,10 +9,14 @@ class CreateTableCompanies(Migration):
         """
         with self.schema.create('companies') as table:
             table.increments('id')
-            table.string('name', 100)
+            table.string('brand_name', 100)
+            table.string('business_name', 100)
             table.char('cnpj', 14).unique()
+            table.boolean('exempt_sr')
+            table.string('state_registration', 14).unique()
+            table.char('uf', 2)
             table.string('email').unique()
-            table.string('phone_number', 20).unique()
+            table.char('phone_number', 11).unique()
             table.timestamps()
             table.soft_deletes()
 
@@ -20,4 +24,4 @@ class CreateTableCompanies(Migration):
         """
         Revert the migrations.
         """
-        self.schema.drop('company')
+        self.schema.drop('companies')

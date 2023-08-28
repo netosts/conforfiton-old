@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from ..person.model import Person
 from .schema import NewUser
-from .models import User
+from .model import User
 
 
 user_router = APIRouter(prefix='/user')
@@ -32,16 +32,17 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(username: str):
-    user = User.where('username', username).first()
+def get_user(email: str):
+    user = Person.select('id', 'email', 'users.salt_password', 'users.hash_password').where('email', email).join(
+        'users', 'users.person_id', '=', 'persons.id').first()
     return user
 
 
-def authenticate_user(username: str, password: str):
-    user = get_user(username)
+def authenticate_user(email: str, password: str):
+    user = get_user(email)
     if not user:
         return False
-    if not verify_password(password+":"+user.salt, user.hash):
+    if not verify_password(password+":"+user.salt_password, user.hash_password):
         return False
     return user
 
@@ -62,11 +63,11 @@ def create_access_token(data: dict, expires_delta: timedelta):
 #     )
 #     try:
 #         payload = jwt.decode(token, di["SECRET_KEY"], algorithms=[di["ALGORITHM"]])
-#         username: str = payload.get("sub")
+#         email: str = payload.get("sub")
 #         user_id: int = payload.get("id")
-#         if username is None or user_id is None:
+#         if email is None or user_id is None:
 #             raise credentials_exception
-#         return {'id': user_id, 'username': username }
+#         return {'id': user_id, 'email': email }
 #     except JWTError:
 #         raise credentials_exception
 
@@ -77,31 +78,31 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 
 # REGISTER
-@user_router.post('/register')
-async def new_user(data: NewUser):
-    vl_person = Person.where('id_pessoa', data.id_pessoa).count()
-    if vl_person == 0:
+@user_router.post('/register/{email}')
+async def new_user(email, data: NewUser):
+    person = Person.select('id', 'name').where(
+        'email', email).first()
+    if not person:
         return JSONResponse({
             "error": True,
             "data": "Person with specified ID does not exist."
         }, 404)
 
     user = User()
-    user.id_pessoa = data.id_pessoa
-    user.username = data.username
+    user.person_id = person.id
     salt = pwd.genword(entropy=56, charset="ascii_62")
-    user.salt = salt
-    user.hash = pwd_context.hash(data.password+":"+salt)
+    user.hash_password = pwd_context.hash(data.password+":"+salt)
+    user.salt_password = salt
 
     if user.save():
         return JSONResponse({
             "error": False,
-            "data": f"{user.username} foi cadastrado(a) com sucesso."
+            "data": f"{person.get('name')} User was successfully registered."
         }, 200)
     else:
         return JSONResponse({
             "error": True,
-            "data": f"Houve um erro e {user.username} não foi cadastrado(a)."
+            "data": f"Something went wrong while registering {person.get('name')}'s User."
         }, 422)
 
 
@@ -112,10 +113,10 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=di["ACCESS_TOKEN_EXP"])
     access_token = create_access_token(
-        data={"sub": user.username, "id": user.id_pessoa}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer", "user_id": user.id_pessoa}
+        data={"sub": user.email, "id": user.id}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.id}

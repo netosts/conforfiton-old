@@ -2,6 +2,9 @@
 from kink import di
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+
+from datetime import datetime
+
 from .model import Student
 from .schema import NewStudent
 from ..person.model import Person
@@ -10,33 +13,30 @@ from ..weight.model import Weight
 
 student_router = APIRouter(prefix='/student')
 
-# FUNCTIONS
-
 
 def type_search(inputFilter):
     if inputFilter == 'inputName':
-        return "nm_pessoa"
+        return "name"
     elif inputFilter == 'inputCpf':
-        return "cpf_cnpj"
+        return "cpf"
 
 
 # Get active Students + input bar value
 @student_router.get('/active/{inputFilter}/{inputBar}/{limit}')
 async def inputbar_active_students(inputFilter, inputBar, limit):
-    # tp = pessoa
-    # tp2 = peso
-    # ta = aluno
+    # p = persons table
+    # w = weights table
+    # s = students table
     limit = int(limit)
     max_peso = di["db"].raw(
-        'tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
+        'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')
 
-    students = di["db"].table('tbl_pessoa as tp') \
-                       .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.id_pessoa', '=', max_peso) \
-                       .select('tp.id_pessoa', 'tp.nm_pessoa', 'tp.dt_nascimento', 'ta.altura', 'ta.sexo', 'tp2.peso') \
-                       .where_null('tp.deleted_at') \
-                       .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
-                       .order_by('tp.created_at', 'desc') \
+    students = di["db"].table('persons as p') \
+                       .join('weights as w', 'p.id', '=', max_peso) \
+                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight') \
+                       .where_null('p.deleted_at') \
+                       .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
+                       .order_by('p.created_at', 'desc') \
                        .limit(limit) \
                        .get()
 
@@ -46,20 +46,20 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
 # Get inactive Students + input bar value
 @student_router.get('/inactive/{inputFilter}/{inputBar}/{limit}')
 async def inputbar_inactive_students(inputFilter, inputBar, limit):
-    # tp = pessoa
-    # tp2 = peso
-    # ta = aluno
+    # p = pessoa
+    # w = peso
+    # s = student
     limit = int(limit)
     max_peso = di["db"].raw(
-        'tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
+        'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')
 
-    students = di["db"].table('tbl_pessoa as tp') \
-                       .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.id_pessoa', '=', max_peso) \
-                       .select('tp.id_pessoa', 'tp.nm_pessoa', 'tp.dt_nascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
-                       .where_not_null('tp.deleted_at') \
-                       .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
-                       .order_by('tp.created_at', 'desc') \
+    students = di["db"].table('persons as p') \
+                       .join('students as s', 's.person_id', '=', 'p.id') \
+                       .left_join('weights as w', 'p.id', '=', max_peso) \
+                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.deleted_at') \
+                       .where_not_null('p.deleted_at') \
+                       .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
+                       .order_by('p.created_at', 'desc') \
                        .limit(limit) \
                        .get()
 
@@ -69,40 +69,39 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit):
 # List all students
 @student_router.get('/{inputFilter}/{inputBar}/{limit}')
 async def inputbar_all_students(inputFilter, inputBar, limit):
-    # tp = pessoa
-    # tp2 = peso
-    # ta = aluno
+    # p = pessoa
+    # w = peso
+    # s = student
     limit = int(limit)
     max_peso = di["db"].raw(
-        'tp2."id_pessoa" and tp2."dt_data" = (select max("dt_data") from tbl_peso where "id_pessoa" = tp2."id_pessoa")')
+        'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')
 
-    students = di["db"].table('tbl_pessoa as tp') \
-                       .join('tbl_aluno as ta', 'ta.id_pessoa', '=', 'tp.id_pessoa') \
-                       .left_join('tbl_peso as tp2', 'tp.id_pessoa', '=', max_peso) \
-                       .select('tp.id_pessoa', 'tp.nm_pessoa', 'tp.dt_nascimento', 'ta.altura', 'ta.sexo', 'tp2.peso', 'tp.deleted_at') \
-                       .where('tp.' + type_search(inputFilter), 'ilike', inputBar + '%') \
-                       .order_by('tp.created_at', 'desc') \
+    students = di["db"].table('persons as p') \
+                       .join('students as s', 's.person_id', '=', 'p.id') \
+                       .left_join('weights as w', 'p.id', '=', max_peso) \
+                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.deleted_at') \
+                       .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
+                       .order_by('p.created_at', 'desc') \
                        .limit(limit) \
                        .get()
 
     return students.serialize()
 
 
-# Find Student by ID
-@student_router.get('/{id_pessoa}')
-async def find_student(id_pessoa):
-    newest_peso = Peso.where('id_pessoa', id_pessoa).max('dt_data')
-    if newest_peso:
-        student = di["db"].table('tbl_pessoa') \
-            .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
-            .where('tbl_pessoa.id_pessoa', id_pessoa) \
-            .join('tbl_peso', 'tbl_pessoa.id_pessoa', '=', 'tbl_peso.id_pessoa') \
-            .where('tbl_peso.dtData', newest_peso) \
+@student_router.get('/{person_id}')
+async def find_student(person_id):
+    newest_weight = Weight.where('person_id', person_id).max('created_at')
+    if newest_weight:
+        student = di["db"].table('persons') \
+            .join('students', 'persons.person_id', '=', 'students.person_id') \
+            .where('persons.person_id', person_id) \
+            .join('weights', 'persons.person_id', '=', 'weights.person_id') \
+            .where('weights.dtDas', newest_weight) \
             .first()
     else:
-        student = di["db"].table('tbl_pessoa') \
-            .join('tbl_aluno', 'tbl_pessoa.id_pessoa', '=', 'tbl_aluno.id_pessoa') \
-            .where('tbl_pessoa.id_pessoa', id_pessoa) \
+        student = di["db"].table('persons') \
+            .join('students', 'persons.person_id', '=', 'students.person_id') \
+            .where('persons.person_id', person_id) \
             .first()
 
     if student:
@@ -110,112 +109,32 @@ async def find_student(id_pessoa):
     else:
         return JSONResponse({
             "error": True,
-            "data": "Student not found."
+            "das": "Student not found."
         }, 404)
 
 
-# Get Credentials of Student using his ID
-@student_router.get('/credentials/{id_pessoa}')
-async def get_student_credentials(id_pessoa):
-    student = Person.where('id_pessoa', id_pessoa).select(
-        'id_pessoa', 'nm_pessoa').first()
+@student_router.get('/credentials/{person_id}')
+async def get_student_credentials(person_id):
+    student = Person.where('person_id', person_id).select(
+        'person_id', 'name').first()
 
     if student:
         return student.serialize()
     else:
         return JSONResponse({
             "error": True,
-            "data": "Student not found."
+            "das": "Student not found."
         }, 404)
 
 
-# Create a new Student
-@student_router.post('/')
-async def new_student(data: NewStudent):
-    # Look for CPF duplicate
-    cpf = Person.where('cpf_cnpj', data.cpf_cnpj).count()
-    if cpf > 0:
-        return JSONResponse({
-            "error": True,
-            "data": "The provided CPF is already registered in the database."
-        }, 409)
-
-    # Look for RG of specified UF duplicate
-    if data.rg != None and data.uf_rg != None:
-        rg = Person.where('rg', data.rg).where('uf_rg', data.uf_rg).count()
-        if rg > 0:
-            return JSONResponse({
-                "error": True,
-                "data": "The provided RG and UF are already registered in the database."
-            }, 409)
-
-    # RG and UF must be together
-    if (data.rg is not None and data.uf_rg is None) or (data.rg is None and data.uf_rg is not None):
-        return JSONResponse({
-            "error": True,
-            "data": "RG and UF must be together."
-        }, 422)
-
-    # Email duplicate validation
-    email = Person.where('ds_email', data.ds_email).count()
-    if email > 0:
-        return JSONResponse({
-            "error": True,
-            "data": "The provided Email is already registered in the database."
-        }, 409)
-
-    person = Person()
-    person.nm_pessoa = data.nm_pessoa.title()
-    person.ser = data.ser
-    person.tipo_pessoa = data.tipo_pessoa
-    person.cpf_cnpj = data.cpf_cnpj
-    person.rg = data.rg
-    person.uf_rg = data.uf_rg
-    person.emp_personal = data.emp_personal
-    person.dt_nascimento = data.dt_nascimento
-    person.ds_obs = data.ds_obs
-    person.ds_email = data.ds_email
-    person.telefone = data.telefone
-
-    if person.save():
-        student = Student()
-        student.id_pessoa = person.id_pessoa
-        student.altura = data.altura
-        student.sexo = data.sexo
-        student.tm_camisa = data.tm_camisa
-        student.foto_aluno = data.foto_aluno
-        student.id_empresa = data.id_empresa
-        student.id_personal = data.id_personal
-
-        if student.save():
-            if data.peso != None:
-                peso = Peso()
-                peso.id_pessoa = person.id_pessoa
-                peso.peso = data.peso
-                peso.dt_data = data.dt_data
-                peso.save()
-
-            return JSONResponse({
-                "error": False,
-                "data": f"{person.nm_pessoa} foi cadastrado(a) com sucesso."
-            }, 200)
-
-        else:
-            return JSONResponse({
-                "error": True,
-                "data": f"Houve um erro e {person.nm_pessoa} não foi cadastrado(a)."
-            }, 422)
-
-
-@student_router.get("/avaliar/{id_pessoa}")
-async def get_student_for_avaliar_page(id_pessoa):
-    newest_peso = Peso.where('id_pessoa', id_pessoa).max('dt_data')
-    student = di["db"].table('tbl_pessoa as tp') \
-        .where('tp.id_pessoa', id_pessoa) \
-        .select('tp.id_pessoa', 'tp.nm_pessoa', 'ta.sexo', 'tp2.peso', 'ta.altura') \
-        .join('tbl_peso as tp2', 'tp.id_pessoa', '=', 'tp2.id_pessoa') \
-        .where('tp2.dt_data', newest_peso) \
-        .join('tbl_aluno as ta', 'tp.id_pessoa', '=', 'ta.id_pessoa') \
+@student_router.get("/avaliar/{person_id}")
+async def get_student_for_avaliar_page(person_id):
+    newest_weight = Weight.where('person_id', person_id).max('created_at')
+    student = di["db"].table('persons as p') \
+        .where('p.id', person_id) \
+        .select('p.id', 'p.name', 'p.gender', 'w.weight', 'p.height') \
+        .join('weights as w', 'p.id', '=', 'w.person_id') \
+        .where('w.created_at', newest_weight) \
         .first()
 
     if student:
@@ -223,37 +142,71 @@ async def get_student_for_avaliar_page(id_pessoa):
     else:
         return JSONResponse({
             "error": True,
-            "data": "Student not found."
+            "das": "Student not found."
         }, 404)
 
 
-# Update Student
-# @student_router.put('/{id_pessoa}')
-# async def update_student(id_pessoa, data: NewStudent):
-#     person = Person.find(id_pessoa)
-#     person.nm_pessoa = data.nm_pessoa
-#     person.ser = data.ser
-#     person.tipo_pessoa = data.tipo_pessoa
-#     person.cpf_cnpj = data.cpf_cnpj
-#     person.rg = data.rg
-#     person.uf_rg = data.uf_rg
-#     person.dt_nascimento = data.dt_nascimento
-#     person.ds_obs = data.ds_obs
-#     person.ds_email = data.ds_email
-#     person.telefone = data.telefone
-#     person.save()
-#     if person.save():
-#         student = Student.find(id_pessoa)
-#         student.altura = data.altura
-#         student.sexo = data.sexo
-#         student.foto_aluno = data.foto_aluno
-#         student.save()
-#         if student.save():
-#             peso = Peso()
-#             peso.id_Pessoa = person.id_pessoa
-#             peso.peso = data.peso
-#             peso.dt_data = data.dt_data
-#             if peso.peso != None or peso.peso > 0:
-#                 peso.save()
+@student_router.post('/')
+async def new_student(data: NewStudent):
+    # CPF duplicate validation
+    cpf = Person.where('cpf', data.cpf).count()
+    if cpf > 0:
+        return JSONResponse({
+            "error": True,
+            "data": "The provided CPF is already registered in the database."
+        }, 409)
 
-#     return f"{person.nm_pessoa} foi atualizado(a) com sucesso!"
+    # Email duplicate validation
+    email = Person.where('email', data.email).count()
+    if email > 0:
+        return JSONResponse({
+            "error": True,
+            "data": "The provided Email is already registered in the database."
+        }, 409)
+
+    # Phone Number duplicate validation
+    phone_number = Person.where('phone_number', data.phone_number).count()
+    if phone_number > 0:
+        return JSONResponse({
+            "error": True,
+            "data": "The provided Phone Number is already registered in the database."
+        }, 409)
+
+    person = Person()
+    person.name = data.name.capitalize()
+    person.cpf = data.cpf
+    person.gender = data.gender
+    person.role = data.role
+    person.email = data.email
+    person.phone_number = data.phone_number
+    person.birth_date = data.birth_date
+    person.height = data.height
+    person.shirt_size = data.shirt_size
+    person.shorts_size = data.shorts_size
+    person.profile_picture = data.profile_picture
+
+    weight = Weight()
+    weight.person_id = person.id
+    weight.weight = data.weight
+    weight.created_at = datetime
+    if not weight.save():
+        return JSONResponse({
+            "error": True,
+            "data": f"Something went wrong while registering {person.name}'s WEIGHT."
+        }, 422)
+
+    student = Student()
+    student.person_id = person.id
+    student.company_id = data.company_id
+    student.personal_id = data.personal_id
+
+    if person.save() and student.save():
+        return JSONResponse({
+            "error": False,
+            "data": f"{person.name} was successfully registered."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Something went wrong and {person.name} could not be registered."
+        }, 422)

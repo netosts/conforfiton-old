@@ -1,53 +1,52 @@
 <script setup>
-import { getToken } from '../services/api/post';
-import { setExpToken } from '../services/api/token';
+import { getToken } from "../services/api/post";
+import { setExpToken } from "../services/api/token";
 
-import { definePage } from 'vue-router/auto';
-import { reactive } from 'vue';
+import { definePage } from "vue-router/auto";
+import { reactive } from "vue";
 
-import TextField from '../components/TextField.vue';
-import { Form } from 'vee-validate';
-
+import TextField from "../components/TextField.vue";
+import { Form } from "vee-validate";
 
 definePage({
   beforeEnter: () => {
-    const logged = localStorage.getItem('user')
-    if (logged) return { path: '/' };
-  }
+    const logged = localStorage.getItem("user");
+    if (logged) return { path: "/" };
+  },
 });
 
 const login = reactive({
-  username: undefined,
+  email: undefined,
   password: undefined,
 });
 
 const schema = {
-  username: 'required|maxLength:30',
-  password: 'required|password|maxLength:30'
+  email: "required|maxLength:30",
+  password: "required|password|maxLength:30",
 };
 
-async function onSubmit(values, { setErrors }) {
+async function onSubmit(_, { setErrors }) {
   try {
     // Using OAuth2PasswordRequestForm
     // data need to be in form_data format
-    const payload = new FormData()
-    payload.append('username', login.username);
-    payload.append('password', login.password);
+    const payload = new FormData();
+    payload.append("username", login.email);
+    payload.append("password", login.password);
 
     const data = await getToken(payload);
 
     setExpToken(data.access_token, 3 * 60 * 60 * 1000); // Set expiry by milliseconds
-    localStorage.setItem('user', data.user_id);
+    localStorage.setItem("user", data.user_id);
 
     location.reload();
   } catch (e) {
     console.error(e);
     setErrors({
-      'username': ' ',
-      'password': 'Usuário ou senha inválido.'
+      email: " ",
+      password: "Usuário ou senha inválido.",
     });
-  };
-};
+  }
+}
 </script>
 
 <template>
@@ -57,13 +56,23 @@ async function onSubmit(values, { setErrors }) {
         <h1>LOGIN</h1>
       </div>
       <div class="login__credentials">
-        <div class="login__credentials__username">
-          <TextField v-model="login.username" name="username" type="text" label="Usuário"
-            placeholder="Digite o usuário" />
+        <div class="login__credentials__email">
+          <TextField
+            v-model="login.email"
+            name="email"
+            type="text"
+            label="Email"
+            placeholder="Digite o email"
+          />
         </div>
         <div class="login__credentials__password">
-          <TextField v-model="login.password" name="password" type="password" label="Senha"
-            placeholder="Digite a senha" />
+          <TextField
+            v-model="login.password"
+            name="password"
+            type="password"
+            label="Senha"
+            placeholder="Digite a senha"
+          />
         </div>
       </div>
       <div class="login__buttons">
@@ -74,9 +83,8 @@ async function onSubmit(values, { setErrors }) {
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
-
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 aside {
   display: flex;
