@@ -11,6 +11,7 @@ class CreateTableStudents(Migration):
             table.integer('person_id').unsigned().unique()
             table.integer('company_id').unsigned().nullebla()
             table.integer('personal_id').unsigned().nullable()
+            table.text('note').nullable()
             table.soft_deletes()
 
             table.foreign('person_id').references(

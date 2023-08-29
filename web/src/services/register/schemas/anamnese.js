@@ -1,16 +1,4 @@
-export const registerSchema = {
-  name: 'required|maxLength:100|name',
-  cpf: 'required|cpf|maxLength:11',
-  rg: 'maxLength:20',
-  telefone: 'required|minLength:11|maxLength:11',
-  email: 'required|email|maxLength:80',
-  date: 'required|date',
-  sexo: 'required',
-  camisa: 'required',
-  shorts: 'required',
-  altura: 'required|between:0,250',
-  peso: 'required|between:0,600|maxDecimal:2',
-  ds_obs: 'maxLength:300',
+export const schema = {
   q1: 'required|maxLength:255|asymbol',
   q2: 'required|maxLength:100|asymbol',
   q3: 'required|maxLength:100|asymbol',
@@ -38,4 +26,4 @@ export const registerSchema = {
   q25: 'required',
   q26: 'required|maxLength:100|asymbol',
   q27: 'maxLength:255|asymbol',
-};
+}

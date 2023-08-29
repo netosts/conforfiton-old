@@ -18,8 +18,8 @@ class CreateTablePersons(Migration):
             table.date('birth_date')
             table.small_integer('height').nullable()  # 0 < height < 250
             table.string('shirt_size', 3).nullable()
-            table.string('shorts_size', 3).nullable()
-            table.text('profile_picture').nullable()
+            table.string('shorts_size', 8).nullable()
+            table.string('address_picture').nullable()
             table.timestamps()
             table.soft_deletes()
 

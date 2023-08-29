@@ -1,32 +1,35 @@
 import http from './http';
 
-export function postStudent(form) {
-  http.post('/student', form).then((res) => {
+export async function postStudent(form) {
+  try {
+    const response = await http.post('/student', form);
     console.log('ALUNO CRIADO COM SUCESSO..');
-    alert(res.data.data);
-    // location.reload();
-  }).catch((err) => {
+    return response.data;
+  } catch (err) {
     console.error(err.response.data);
+    alert(`${err.response.status}(${err.response.statusText}): ALUNO NÃO FOI CRIADO`);
     throw err;
-  });
-};
+  }
+}
 
 
-export function getToken(payload) {
-  return http.post('/user/token', payload)
-  .then((res) => res.data)
-  .catch((err) => {
+export async function getToken(payload) {
+  try {
+    const response = await http.post('/user/token', payload);
+    return response.data;
+  } catch (err) {
     console.error(err);
     throw err;
-  });
-};
+  }
+}
 
-
-export function postAnamnese(form) {
-  http.post(`/anamnese`, form)
-  .then((res) => res.data)
-  .catch((err) => {
+export async function postAnamnese(form, email) {
+  try {
+    const response = await http.post(`/anamnese/${email}`, form);
+    return response.data;
+  } catch (err) {
     console.error(err.response);
+    alert(`${err.response.status}(${err.response.statusText}): ANAMNESE NÃO FOI CRIADA`);
     throw err;
-  });
-};
+  }
+}

@@ -49,19 +49,13 @@ app.include_router(anamnese_router)
 app.include_router(rm_router)
 
 
-@app.get('/cpf_cnpj/{cpf}')  # CPF
+@app.get('/cpf/{cpf}')  # CPF
 async def count_cpf(cpf):  # how many of the specified CPF are in the database
-    cpf = Person.where('cpf_cnpj', cpf).count()
+    cpf = Person.where('cpf', cpf).count()
     return cpf
 
 
-@app.get('/rg/{rg}/{uf_rg}')  # RG in UF
-async def count_rg(rg, uf_rg):  # how many of the specified RG in UF are in the database
-    rg = Person.where('rg', rg).where('uf_rg', uf_rg).count()
-    return rg
-
-
-@app.get('/ds_email/{ds_email}')  # EMAIL
-async def count_email(ds_email):  # how many of the specified Email are in the database
-    email = Person.where('ds_email', ds_email).count()
+@app.get('/email/{email}')  # EMAIL
+async def count_email(email):  # how many of the specified Email are in the database
+    email = Person.where('email', email).count()
     return email

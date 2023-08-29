@@ -1,10 +1,12 @@
 import { reactive } from 'vue';
 
-const form = reactive({
+const storedValues = sessionStorage.getItem('registerStudent')
+
+const defaultValues = {
   name: undefined,
   cpf: undefined,
   gender: undefined,
-  role: 'Studeent',
+  role: 'Student',
   email: undefined,
   phone_number: undefined,
   birth_date: undefined,
@@ -13,10 +15,11 @@ const form = reactive({
   shorts_size: undefined,
   profile_picture: null,
   weight: undefined,
+  created_at: undefined,
   company_id: undefined,
   personal_id: undefined,
-  ...Object.fromEntries(Array.from({ length: 27 }, (_, i) => [`q${i + 1}`, i + 1 === 13 ? [] : undefined])),
-  q4: { treinando: undefined, tempo: undefined },
-});
+}
 
-export { form };
+const parsedValues = storedValues ? JSON.parse(storedValues) : defaultValues
+
+export const form = reactive(parsedValues);

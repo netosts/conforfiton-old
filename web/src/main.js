@@ -5,8 +5,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
 import { faExpand, faMagnifyingGlass, faXmark,
-   faCheck, faLocationDot, faPhoneFlip, faEnvelope,
-    faAnglesLeft, faHouse, faPlus, faPrint, faFeather } from '@fortawesome/free-solid-svg-icons'
+   faCheck, faLocationDot, faPhoneFlip, faEnvelope, faRotateRight,
+    faAnglesLeft, faAnglesRight, faChevronLeft, faHouse, faPlus, faPrint, faFeather } from '@fortawesome/free-solid-svg-icons'
 import { faMoon } from '@fortawesome/free-regular-svg-icons'
 
 // Vue Motion plugin
@@ -42,7 +42,7 @@ defineRule('date', value => date(value))
 
 library.add(faMoon, faExpand, faMagnifyingGlass, faXmark,
   faCheck, faLocationDot, faPhoneFlip, faEnvelope, faAnglesLeft,
-  faHouse, faPlus, faPrint, faFeather)
+  faHouse, faPlus, faPrint, faFeather, faAnglesRight, faChevronLeft, faRotateRight)
 
 // Use Vue Router and Vue Motion plugins and Pinia
 app.use(MotionPlugin)

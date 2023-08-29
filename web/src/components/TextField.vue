@@ -1,13 +1,12 @@
 <script setup>
-import { ref, watch, toRef } from 'vue';
-import { ErrorMessage, Field, useField } from 'vee-validate';
-import { maskName, maskCpf, maskRg, maskTelefone } from '../services/validators/masks';
-
+import { ref, watch, toRef } from "vue";
+import { ErrorMessage, Field, useField } from "vee-validate";
+import { maskCpf, maskTelefone } from "../services/validators/masks";
 
 const props = defineProps({
   type: {
     type: String,
-    default: 'text',
+    default: "text",
   },
   name: {
     type: String,
@@ -21,78 +20,116 @@ const props = defineProps({
   span: String,
   placeholder: String,
   meta: Object,
-  rules: [String, Object, Array],
   options: Array,
   checked: String,
   radios: Array,
   rows: {
     type: String,
-    default: '3',
+    default: "3",
   },
   tabindex: String,
   modelValue: [String, Number, Boolean, Object],
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 const value = ref(props.modelValue);
 
 watch(value, (newValue) => {
-  emit('update:modelValue', newValue);
+  emit("update:modelValue", newValue);
 
-  if (props.name === 'cpf') {
+  if (props.name === "cpf") {
     handleChange(maskCpf(newValue));
-  } else if (props.name === 'rg') {
-    handleChange(maskRg(newValue));
-  } else if (props.name === 'telefone') {
+  } else if (props.name === "phone_number") {
     handleChange(maskTelefone(newValue));
   } else {
     handleChange(newValue);
   }
 });
 
-const name = toRef(props, 'name');
+const name = toRef(props, "name");
 
-const {
-  errorMessage,
-  handleChange,
-  meta,
-} = useField(name);
+const { errorMessage, handleChange, meta } = useField(name);
 </script>
 
 <template>
-  <div class="register-field"
-    :class="{ 'has-error': !!errorMessage && meta.touched, success: !errorMessage && meta.touched && value !== '' }">
+  <div
+    class="register-field"
+    :class="{
+      'has-error': !!errorMessage && meta.touched,
+      success: !errorMessage && meta.touched && value,
+    }"
+  >
     <div class="label-span">
       <label :for="name">{{ label }} </label>
       <span class="required" v-show="!!required">{{ required }}</span>
       <span class="span" v-show="!!span">{{ span }}</span>
     </div>
 
-    <Field v-if="type === 'select'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
-      @update:model-value="value = $event" :tabindex="tabindex">
-      <option v-for="option, index in options" :key="index" :value="option">
-        {{ option }}</option>
+    <Field
+      v-if="type === 'select'"
+      :name="name"
+      :value="value"
+      @update:model-value="value = $event"
+      :tabindex="tabindex"
+      v-slot="{ field }"
+    >
+      <select v-bind="field" :id="name">
+        <option v-for="(option, index) in options" :key="index" :value="option">
+          {{ option }}
+        </option>
+      </select>
     </Field>
 
-    <Field v-else-if="type === 'textarea'" :name="name" :id="name" :as="type" :rules="rules" :placeholder="placeholder"
-      :rows="rows" @update:model-value="value = $event" :tabindex="tabindex" />
+    <Field
+      v-else-if="type === 'textarea'"
+      :name="name"
+      :id="name"
+      :as="type"
+      :placeholder="placeholder"
+      :rows="rows"
+      @update:model-value="value = $event"
+      :tabindex="tabindex"
+    />
 
-    <div v-else-if="type === 'radio'" v-for="radio in radios" :key="radio" class="radio-container">
-      <Field :name="name" :type="type" :id="name + radio.label" :rules="rules" :value="radio.value"
-        @update:model-value="value = $event" />
+    <div
+      v-else-if="type === 'radio'"
+      v-for="radio in radios"
+      :key="radio"
+      class="radio-container"
+    >
+      <Field
+        :name="name"
+        :type="type"
+        :id="name + radio.label"
+        :value="radio.value"
+        @update:model-value="value = $event"
+      />
       <label :for="name + radio.label">{{ radio.label }}</label>
     </div>
 
-    <Field v-else :name="name" :id="name" :type="type" :rules="rules" :placeholder="placeholder"
-      @update:model-value="value = $event" :tabindex="tabindex" />
+    <Field
+      v-else
+      :value="value"
+      @update:model-value="value = $event"
+      :name="name"
+      :tabindex="tabindex"
+      v-slot="{ field }"
+    >
+      <input
+        v-bind="field"
+        :type="type"
+        :id="name"
+        :placeholder="placeholder"
+      />
+    </Field>
 
     <ErrorMessage :name="name" as="p" class="error-msg" v-show="meta.touched" />
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 .label-span {
   display: flex;
@@ -107,7 +144,6 @@ const {
   }
 
   .span {
-
     font-size: 0.78rem;
     font-weight: 500;
     color: $txt-subtitle;
@@ -142,11 +178,10 @@ textarea {
 
 .error-msg {
   margin-left: 0px;
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 .register-field.has-error {
-
   input,
   select,
   textarea {
@@ -155,7 +190,6 @@ textarea {
 }
 
 .register-field.success {
-
   input,
   select,
   textarea {

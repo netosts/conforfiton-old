@@ -97,12 +97,12 @@ async def new_user(email, data: NewUser):
     if user.save():
         return JSONResponse({
             "error": False,
-            "data": f"{person.get('name')} User was successfully registered."
+            "data": f"{person.name} User was successfully registered."
         }, 200)
     else:
         return JSONResponse({
             "error": True,
-            "data": f"Something went wrong while registering {person.get('name')}'s User."
+            "data": f"Something went wrong while registering {person.name}'s User."
         }, 422)
 
 

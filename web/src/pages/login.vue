@@ -109,6 +109,10 @@ aside {
     flex-direction: column;
     gap: 30px;
     width: 350px;
+    padding: 16px;
+    background-color: white;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
 
     &__title {
       text-align: center;

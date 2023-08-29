@@ -8,7 +8,6 @@ from .model import Person
 from ..student.model import Student
 from ..personal.model import Personal
 from ..weight.model import Weight
-from .schema import NewPerson
 
 person_router = APIRouter(prefix='/person')
 
@@ -49,7 +48,7 @@ person_router = APIRouter(prefix='/person')
 #     person.birth_date = data.birth_date
 #     person.shirt_size = data.shirt_size
 #     person.shorts_size = data.shorts_size
-#     person.profile_picture = data.profile_picture
+#     person.address_picture = data.address_picture
 
 #     user = User()
 #     user.person_id = person.id

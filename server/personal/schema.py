@@ -1,14 +1,10 @@
 # pylint: skip-file
 import re
-from decimal import Decimal
 from enum import Enum
-from pydantic import BaseModel, validator, constr, Field
-from datetime import date, timedelta, datetime
+from pydantic import BaseModel, validator
+from datetime import timedelta, datetime
 
-
-class Genders(str, Enum):
-    Male = 'Male'
-    Female = 'Female'
+from ..base_model.types import name, cpf, Genders, email, phone_number, birth_date, shirt_size, shorts_size
 
 
 class Roles(str, Enum):
@@ -16,20 +12,16 @@ class Roles(str, Enum):
 
 
 class NewPersonal(BaseModel):
-    name: constr(max_length=100, strip_whitespace=True)
-    cpf: constr(min_length=11, max_length=11)
+    name: name
+    cpf: cpf
     gender: Genders
     role: Roles
-    email: constr(
-        max_length=255,
-        strip_whitespace=True,
-        regex=r'(?:[a-z0-9+!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'
-    )
-    phone_number: constr(max_length=20, strip_whitespace=True)
-    birth_date: date
-    shirt_size: constr(max_length=3, strip_whitespace=True)
-    shorts_size: constr(max_length=3, strip_whitespace=True)
-    profile_picture: str = None
+    email: email
+    phone_number: phone_number
+    birth_date: birth_date
+    shirt_size: shirt_size
+    shorts_size: shorts_size
+    address_picture: str = None
 
     company_id: int = None
 
@@ -55,12 +47,4 @@ class NewPersonal(BaseModel):
             raise ValueError("Age is invalid.")
         if input_date < max_age_date:
             raise ValueError("Maximum age exceeded.")
-        return value
-
-    @validator('weight')
-    def validate_weight(cls, value):
-        if value is not None:
-            peso_decimal = Decimal(str(value))
-            if peso_decimal.as_tuple().exponent < -2:
-                raise ValueError("Weight must have up to 2 decimal numbers.")
         return value

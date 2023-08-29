@@ -1,6 +1,6 @@
 # pylint: skip-file
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class NewWeight(BaseModel):
-    peso: float
+    weight: float = Field(ge=0, le=600)

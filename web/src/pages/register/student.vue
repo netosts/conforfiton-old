@@ -1,259 +1,213 @@
 <script setup>
-import { ufList, sexoList, camisaList } from "../../services/configs/lists";
+import { countCpfDuplicate, countEmailDuplicate } from "@/services/api/get";
+import { genderList, shirtList, shortsList } from "@/services/register/lists";
 
-import { reactive } from "vue";
-import { definePage } from "vue-router/auto";
+import { translateGender } from "@/services/register/helpers";
+
+import { definePage, useRouter } from "vue-router/auto";
+
+import { schema } from "@/services/register/schemas/student";
+import { form } from "@/services/register/forms/student";
 
 import { Form } from "vee-validate";
-import TextField from "../../components/TextField.vue";
-import SubmitButton from "../../components/SubmitButton.vue";
+import TextField from "@/components/TextField.vue";
 
 definePage({
   meta: { requiresAuth: true },
 });
 
 // VARIABLES
-
-// Form variables
-const form = reactive({
-  nm_pessoa: "",
-  ser: "Aluno",
-  tipo_pessoa: "PF",
-  cpf_cnpj: "",
-  rg: "",
-  uf_rg: "",
-  emp_personal: false,
-  dt_nascimento: "",
-  ds_obs: "",
-  ds_email: "",
-  telefone: "",
-  altura: "",
-  sexo: "",
-  tm_camisa: "",
-  foto_aluno: null,
-  id_empresa: 1,
-  id_personal: 2,
-  peso: "",
-  dt_data: "",
-});
-
-// Validation schema
-const schema = {
-  name: "required|maxLength:100",
-  cpf: "required|cpf|maxLength:11",
-  rg: "maxLength:20",
-  telefone: "minLength:11|maxLength:11",
-  email: "required|email|maxLength:80",
-  sexo: "required",
-  camisa: "required",
-  altura: "required|between:0,250|maxDecimal:1",
-  peso: "required|between:0,600|maxDecimal:2",
-  ds_obs: "maxLength:300",
-};
+const router = useRouter();
 
 // FUNCTIONS
-async function onSubmit(values, { setFieldError, setErrors }) {
-  console.log("CRIANDO ALUNO...");
+async function onSubmit(_, { setFieldError }) {
+  // Transform values
+  form.phone_number = form.phone_number.replace(/\D/g, ""); // only digits
+  form.cpf = form.cpf.replace(/\D/g, ""); // only digits
+  form.gender = translateGender(form.gender); // from pt to en
+
+  // REGISTER
+  // CPF and Email Duplicate validation
+  const [countedCpf, countedEmail] = await Promise.all([
+    countCpfDuplicate(form.cpf),
+    countEmailDuplicate(form.email),
+  ]);
 
   let errors = 0;
 
-  // CPF Duplicate validation
-  form.cpf_cnpj = form.cpf_cnpj.replace(/\D/g, ""); // only digits
-  const countedCpf = await countCpfDuplicate(form.cpf_cnpj);
   if (countedCpf > 0) {
     setFieldError("cpf", "O CPF já foi cadastrado.");
     errors++;
   }
 
-  // RG and UF must be together
-  if (
-    (form.rg !== "" && form.uf_rg === "") ||
-    (form.uf_rg !== "" && form.rg === "")
-  ) {
-    setErrors({
-      rg: "O RG e UF precisam ser cadastrados juntos.",
-      uf: " ",
-    });
-    errors++;
-  } else if (form.rg !== "" && form.uf_rg !== "") {
-    // RG in UF Duplicate validation
-    const countedRgUf = await countRgUfDuplicate(form.rg, form.uf_rg);
-    if (countedRgUf > 0) {
-      setFieldError("rg", `O RG já foi cadastrado em ${form.uf_rg}.`);
-      errors++;
-    }
-  }
-
-  // Email duplicate validation
-  const countedEmail = await countEmailDuplicate(form.ds_email);
   if (countedEmail > 0) {
     setFieldError("email", "Este email já foi cadastrado.");
     errors++;
   }
 
-  if (errors > 0) {
-    // only proceed without errors
-    return;
+  // SUBMIT
+  // Save informations in session storage
+  try {
+    console.log(form);
+    sessionStorage.setItem("registerStudent", JSON.stringify(form));
+    router.push("/register/anamnese");
+  } catch (e) {
+    console.error(e);
+    throw e;
   }
+}
 
-  // Get the current date and time and use as dt_data
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString();
-  // Format problematic values before posting
-  form.dt_data = formattedDate;
-  form.rg = form.rg.replace(/\D/g, ""); // only digits
-  form.telefone = form.telefone.replace(/\D/g, ""); // only digits
+function onReset() {
+  try {
+    sessionStorage.removeItem("registerStudent");
+    location.reload();
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+}
 
-  // Post new student
-  postStudent(form);
+async function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 </script>
 
 <template>
   <main>
     <div class="top">
-      <RouterLink to="/" class="voltar">
+      <RouterLink to="/" class="back">
         <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
       </RouterLink>
       <h1>Bem-Vindo</h1>
     </div>
 
-    <Form
-      @submit="onSubmit"
-      :validation-schema="schema"
-      v-slot="{ meta }"
-      class="form"
-    >
+    <Form @submit="onSubmit" v-slot="{ meta }" class="form">
       <section class="form__section">
         <div class="form__section__title">
-          <h2>Informações de Cadastro</h2>
+          <h2>Preencha as Informações de Cadastro</h2>
         </div>
         <TextField
-          v-model="form.nm_pessoa"
+          v-model="form.name"
           :meta="meta"
           name="name"
           type="text"
           label="Nome completo"
-          required="*"
-          placeholder="Digite o nome do aluno"
+          placeholder="Digite seu nome completo"
         />
         <div class="form__section__1-1sm">
           <TextField
-            v-model="form.cpf_cnpj"
+            v-model="form.cpf"
             :meta="meta"
             name="cpf"
             type="text"
             label="CPF"
-            required="*"
-            placeholder="Digite o CPF do aluno"
+            placeholder="Digite seu CPF"
           />
-          <div class="form__section__1-1sm__1sm">
-            <TextField
-              v-model="form.rg"
-              :meta="meta"
-              name="rg"
-              type="text"
-              label="RG"
-              placeholder="Digite o RG do aluno"
-            />
-            <TextField
-              v-model="form.uf_rg"
-              :meta="meta"
-              name="uf"
-              type="select"
-              label="UF"
-              :options="ufList"
-            />
-          </div>
         </div>
         <div class="form__section__1-1">
           <TextField
-            v-model="form.telefone"
+            v-model="form.phone_number"
             :meta="meta"
-            name="telefone"
+            name="phone_number"
             type="text"
             label="Telefone"
             placeholder="(00)00000-0000"
           />
           <TextField
-            v-model="form.ds_email"
+            v-model="form.email"
             :meta="meta"
             name="email"
             type="text"
-            label="E-mail"
-            required="*"
-            placeholder="Digite o Email do aluno"
-          />
-        </div>
-        <div class="form__section__1-1-1">
-          <div class="form__section__1-1-1__date">
-            <label for="date">Data Nascimento</label>
-            <input v-model="form.dt_nascimento" type="date" id="date" />
-          </div>
-          <TextField
-            v-model="form.sexo"
-            :meta="meta"
-            name="sexo"
-            type="select"
-            label="Sexo Biológico"
-            required="*"
-            :options="sexoList"
-          />
-          <TextField
-            v-model="form.tm_camisa"
-            :meta="meta"
-            name="camisa"
-            type="select"
-            label="T. Camisa"
-            required="*"
-            :options="camisaList"
+            label="Email"
+            placeholder="Digite seu Email"
           />
         </div>
         <div class="form__section__1-1">
           <TextField
-            v-model="form.altura"
+            v-model="form.birth_date"
             :meta="meta"
-            name="altura"
+            type="date"
+            name="birth_date"
+            label="Data Nascimento"
+          />
+          <TextField
+            v-model="form.gender"
+            :meta="meta"
+            name="gender"
+            type="select"
+            label="Sexo Biológico"
+            :options="genderList"
+          />
+        </div>
+        <div class="form__section__1-1">
+          <TextField
+            v-model="form.shirt_size"
+            :meta="meta"
+            name="shirt_size"
+            type="select"
+            label="T. Camisa"
+            :options="shirtList"
+          />
+          <TextField
+            v-model="form.shorts_size"
+            :meta="meta"
+            name="shorts_size"
+            type="select"
+            label="T. Shorts"
+            :options="shortsList"
+          />
+        </div>
+        <div class="form__section__1-1">
+          <TextField
+            v-model="form.height"
+            :meta="meta"
+            name="height"
             type="number"
-            label="Altura(cm)"
-            required="*"
+            label="Altura"
+            span="(cm)"
             placeholder="Ex: 180"
           />
           <TextField
-            v-model="form.peso"
+            v-model="form.weight"
             :meta="meta"
-            name="peso"
+            name="weight"
             type="number"
-            label="Peso(kg)"
-            required="*"
+            label="Peso"
+            span="(kg)"
             placeholder="Ex: 90,30"
           />
         </div>
-        <TextField
-          v-model="form.ds_obs"
-          :meta="meta"
-          name="dsObs"
-          type="textarea"
-          label="Observação"
-          placeholder="Digite aqui se tiver alguma observação"
-        />
+        <div class="submitbox">
+          <button type="button" class="reset" @click="onReset">
+            <font-awesome-icon icon="fa-solid fa-rotate-right" size="xl" />
+            Reiniciar
+          </button>
+          <div
+            class="submitbox__submit"
+            :class="{
+              'submitbox__submit--disabled': meta ? !meta.valid : null,
+            }"
+          >
+            <button type="submit" class="submitbox__submit__btn">
+              Continuar
+              <font-awesome-icon icon="fa-solid fa-angles-right" size="xl" />
+            </button>
+          </div>
+        </div>
       </section>
-
-      <div class="form__section">
-        <SubmitButton msg="Concluir" :reset="true" :meta="meta" />
-      </div>
     </Form>
   </main>
 </template>
 
 <style lang="scss" scoped>
-@import "../../assets/styles/variables";
-@import "../../assets/styles/mixins";
+@import "@/assets/styles/variables";
+@import "@/assets/styles/mixins";
 
 main {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin: 30px;
 
   .top {
     display: flex;
@@ -265,9 +219,9 @@ main {
     color: $txt-aside;
     box-shadow: $box-shadow;
 
-    .voltar {
+    .back {
       position: absolute;
-      top: 12px;
+      top: 40px;
       @include tool();
       color: $buttons;
     }
@@ -307,6 +261,10 @@ main {
         display: flex;
         gap: 20px;
 
+        @include mq(xs-s) {
+          flex-direction: column;
+        }
+
         div {
           flex: 1;
         }
@@ -316,7 +274,7 @@ main {
         display: flex;
         gap: 20px;
 
-        @include mq(m) {
+        @include mq(s) {
           flex-direction: column;
         }
 
@@ -329,6 +287,11 @@ main {
           display: grid;
           gap: 20px;
           grid-template-columns: 1fr 80px;
+
+          @include mq(xs) {
+            display: flex;
+            flex-direction: column;
+          }
         }
       }
 
@@ -336,15 +299,106 @@ main {
         display: flex;
         gap: 20px;
 
+        @include mq(s) {
+          flex-direction: column;
+        }
+
         div {
           flex: 1;
         }
+      }
 
-        &__date {
-          @include inputContainers();
+      .q4time {
+        display: flex;
+        gap: 20px;
+
+        .register-field {
+          flex: 1;
+        }
+
+        &__select {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          flex: 1;
+
+          select {
+            @include createInput();
+          }
+        }
+      }
+
+      table {
+        border-collapse: collapse;
+        border: 1px solid $input-border;
+
+        th,
+        td {
+          border: 1px solid $input-border;
+          padding: 8px;
+          text-align: center;
+        }
+
+        th {
+          background-color: $buttons;
+          color: white;
+        }
+
+        td {
+          font-weight: 500;
+          color: $txt-aside;
+        }
+      }
+
+      .final {
+        margin: 10px;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .submitbox {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+
+        &__submit {
+          display: flex;
+
+          @include mq(xs) {
+            flex: 1;
+          }
+
+          &__btn {
+            @include submitButtons($buttons, white);
+            @include mq(xs) {
+              flex: 1;
+            }
+          }
+
+          &--disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+
+            .submitbox__submit__btn {
+              pointer-events: none;
+            }
+          }
+        }
+
+        .reset {
+          @include submitButtons($profile-pic, $txt-title);
+          @include mq(xs) {
+            flex: 1;
+          }
         }
       }
     }
   }
+}
+
+.input--disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>

@@ -46,7 +46,7 @@ async def new_personal(data: NewPersonal):
     person.birth_date = data.birth_date
     person.shirt_size = data.shirt_size
     person.shorts_size = data.shorts_size
-    person.profile_picture = data.profile_picture
+    person.address_picture = data.address_picture
 
     personal = Personal()
     personal.person_id = person.id

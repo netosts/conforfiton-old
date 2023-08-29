@@ -173,7 +173,7 @@ async def new_student(data: NewStudent):
         }, 409)
 
     person = Person()
-    person.name = data.name.capitalize()
+    person.name = data.name.title()
     person.cpf = data.cpf
     person.gender = data.gender
     person.role = data.role
@@ -183,24 +183,24 @@ async def new_student(data: NewStudent):
     person.height = data.height
     person.shirt_size = data.shirt_size
     person.shorts_size = data.shorts_size
-    person.profile_picture = data.profile_picture
+    person.address_picture = data.address_picture
+    if person.save():
+        weight = Weight()
+        weight.person_id = person.id
+        weight.weight = data.weight
+        weight.created_at = data.created_at
+        if not weight.save():
+            return JSONResponse({
+                "error": True,
+                "data": f"Something went wrong while registering {person.name}'s WEIGHT."
+            }, 422)
 
-    weight = Weight()
-    weight.person_id = person.id
-    weight.weight = data.weight
-    weight.created_at = datetime
-    if not weight.save():
-        return JSONResponse({
-            "error": True,
-            "data": f"Something went wrong while registering {person.name}'s WEIGHT."
-        }, 422)
+        student = Student()
+        student.person_id = person.id
+        student.company_id = 1
+        student.personal_id = 1
 
-    student = Student()
-    student.person_id = person.id
-    student.company_id = data.company_id
-    student.personal_id = data.personal_id
-
-    if person.save() and student.save():
+    if student.save():
         return JSONResponse({
             "error": False,
             "data": f"{person.name} was successfully registered."

@@ -1,10 +1,9 @@
 <script setup>
-import SideBar from './components/SideBar.vue';
-import TopBar from './components/TopBar.vue';
+import SideBar from "./components/SideBar.vue";
+import TopBar from "./components/TopBar.vue";
 
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router/auto';
-
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router/auto";
 
 // VARIABLES
 const route = useRoute();
@@ -14,12 +13,10 @@ const hideBars = ref(false);
 const sidebarIsActive = ref(null);
 // Handle Emits
 const handleSidebar = (emittedValue) => {
-  return sidebarIsActive.value = emittedValue;
+  return (sidebarIsActive.value = emittedValue);
 };
 
-const hiders = [
-  '/login', '/print', '/register'
-];
+const hiders = ["/login", "/print", "/register", "/register/anamnese"];
 
 watch(route, () => {
   if (hiders.includes(route.path)) {
@@ -32,14 +29,21 @@ watch(route, () => {
 
 <template>
   <SideBar v-show="!hideBars" @sidebarIsActive="handleSidebar" />
-  <TopBar v-show="!hideBars" :class="sidebarIsActive ? 'header__sidebar-active' : null" />
-  <RouterView :class="{ 'main__sidebar-active': sidebarIsActive && !hideBars, 'main': !hideBars }" />
+  <TopBar
+    v-show="!hideBars"
+    :class="sidebarIsActive ? 'header__sidebar-active' : null"
+  />
+  <RouterView
+    :class="{
+      'main__sidebar-active': sidebarIsActive && !hideBars,
+      main: !hideBars,
+    }"
+  />
 </template>
 
 <style lang="scss" scoped>
-@import './assets/styles/variables';
-@import './assets/styles/mixins';
-
+@import "./assets/styles/variables";
+@import "./assets/styles/mixins";
 
 header {
   position: fixed;
@@ -47,7 +51,7 @@ header {
   right: 0;
   left: 75px;
   z-index: 1;
-  transition: .2s;
+  transition: 0.2s;
 
   @include mq(l-xl) {
     left: 75px;
@@ -75,8 +79,7 @@ header {
     left: 25px;
   }
 
-  ;
-  transition: .2s;
+  transition: 0.2s;
 
   @include mq(m) {
     margin: {
