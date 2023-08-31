@@ -1,9 +1,8 @@
-import { encrypt, decrypt } from '../validators/encryption';
-
+import { encrypt, decrypt } from "../validators/encryption";
 
 export function getExpToken() {
   try {
-    const itemStr = localStorage.getItem('token');
+    const itemStr = localStorage.getItem("token");
     if (!itemStr) {
       return null;
     }
@@ -12,10 +11,10 @@ export function getExpToken() {
     const now = new Date();
 
     const decryptedExp = decrypt(item.expiry);
-    const numericExp = Number(decryptedExp);  // make sure expiry time is number, if not, remove token
+    const numericExp = Number(decryptedExp); // make sure expiry time is number, if not, remove token
 
     if (!numericExp || now.getTime() > numericExp) {
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
       return null;
     }
     return item.value;
@@ -23,23 +22,23 @@ export function getExpToken() {
     console.error(e);
     return null;
   }
-};
+}
 
 export function setExpToken(tokenValue, ttl) {
-  const now = new Date()
+  const now = new Date();
   const item = {
     value: tokenValue,
     expiry: now.getTime() + ttl,
-  }
+  };
   // Encrypt the expiry timestamp before assigning it to the item object
   item["expiry"] = encrypt(item.expiry);
 
-  localStorage.setItem('token', JSON.stringify(item));
-};
+  localStorage.setItem("token", JSON.stringify(item));
+}
 
 export function getUserIdSession() {
   try {
-    const itemStr = sessionStorage.getItem('u:u');
+    const itemStr = sessionStorage.getItem("u:u");
     if (!itemStr) {
       return null;
     }
@@ -47,10 +46,10 @@ export function getUserIdSession() {
     const item = JSON.parse(itemStr);
 
     const decryptedId = decrypt(item);
-    const numberedId = Number(decryptedId)
+    const numberedId = Number(decryptedId);
 
-    if (typeof numberedId !== 'number') {
-      localStorage.removeItem('u:u');
+    if (typeof numberedId !== "number") {
+      localStorage.removeItem("u:u");
       return null;
     }
     return decryptedId;
@@ -58,17 +57,17 @@ export function getUserIdSession() {
     console.error(e);
     return null;
   }
-};
+}
 
 export function setUserIdSession(id) {
   const item = encrypt(id);
 
-  sessionStorage.setItem('u:u', JSON.stringify(item));
-};
+  sessionStorage.setItem("u:u", JSON.stringify(item));
+}
 
 export function getUserIdLocal() {
   try {
-    const itemStr = localStorage.getItem('user');
+    const itemStr = localStorage.getItem("user");
     if (!itemStr) {
       return null;
     }
@@ -76,10 +75,10 @@ export function getUserIdLocal() {
     const item = JSON.parse(itemStr);
 
     const decryptedId = decrypt(item);
-    const numberedId = Number(decryptedId)
+    const numberedId = Number(decryptedId);
 
-    if (typeof numberedId !== 'number') {
-      localStorage.removeItem('user');
+    if (typeof numberedId !== "number") {
+      localStorage.removeItem("user");
       return null;
     }
     return decryptedId;
@@ -87,10 +86,10 @@ export function getUserIdLocal() {
     console.error(e);
     return null;
   }
-};
+}
 
 export function setUserIdLocal(id) {
   const item = encrypt(id);
 
-  localStorage.setItem('user', JSON.stringify(item));
-};
+  localStorage.setItem("user", JSON.stringify(item));
+}

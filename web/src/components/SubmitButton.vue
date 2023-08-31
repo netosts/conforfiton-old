@@ -7,22 +7,26 @@ const props = defineProps({
 
 function onReset() {
   location.reload();
-};
+}
 </script>
 
 <template>
   <div class="submitbox">
-    <div class="submitbox__submit" :class="{ 'submitbox__submit--disabled': meta ? !meta.valid : null }">
+    <div
+      class="submitbox__submit"
+      :class="{ 'submitbox__submit--disabled': meta ? !meta.valid : null }"
+    >
       <button type="submit" class="submitbox__submit__btn">{{ msg }}</button>
     </div>
-    <button v-if="reset" type="button" class="reset" @click="onReset">Reiniciar</button>
+    <button v-if="reset" type="button" class="reset" @click="onReset">
+      Reiniciar
+    </button>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
-
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 .submitbox {
   display: flex;

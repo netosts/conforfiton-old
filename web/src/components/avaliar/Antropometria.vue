@@ -11,6 +11,7 @@ const store = useAvaliarStore();
 
 function onSubmit(values) {
   console.log(values);
+  console.log(antropometria);
 }
 </script>
 
@@ -25,20 +26,40 @@ function onSubmit(values) {
           <p>IMC: {{ antropometria.imc }}</p>
           <p>Classificação: {{ antropometria.imcClass }}</p>
         </div>
+
+        <div class="antropometria__containers">
+          <h3>Circunferência Abdominal</h3>
+          <div class="antropometria__containers__1-1">
+            <div class="antropometria__containers__1-1--1">
+              <TextField
+                v-model="antropometria.ca"
+                type="number"
+                name="ca"
+                label="Circunferência Abdominal"
+                span="(cm)"
+              />
+            </div>
+            <div class="antropometria__containers__1-1--2">
+              <p>Classificação: {{ antropometria.caClass }}</p>
+              <pre>{{ antropometria.caRisk }}</pre>
+            </div>
+          </div>
+        </div>
+
         <div class="antropometria__containers">
           <h3>Relação Cintura Quadril</h3>
           <div class="antropometria__containers__1-1">
             <div class="antropometria__containers__1-1--1">
               <TextField
                 v-model="antropometria.waist"
-                type="text"
+                type="number"
                 name="waist"
                 label="Circunferência de Cintura"
                 span="(cm)"
               />
               <TextField
                 v-model="antropometria.hip"
-                type="text"
+                type="number"
                 name="hip"
                 label="Circunferência de Quadril"
                 span="(cm)"
@@ -47,6 +68,57 @@ function onSubmit(values) {
             <div class="antropometria__containers__1-1--2">
               <p>RCQ: {{ antropometria.rcq }}</p>
               <p>Classificação: {{ antropometria.rcqClass }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="antropometria__containers">
+          <h3>Relação Circunferência Abdominal Estatura</h3>
+          <p>Classificação: {{ antropometria.rcaeClass }}</p>
+        </div>
+
+        <div class="antropometria__containers">
+          <h3>Índice de Adposidade Corporal</h3>
+          <p>IAC: {{ antropometria.iac }}</p>
+          <p>Classificação: {{ antropometria.iacClass }}</p>
+        </div>
+
+        <div class="antropometria__containers">
+          <h3>Porcentagem de Gordura</h3>
+          <div class="antropometria__containers__1-1">
+            <div class="antropometria__containers__1-1--1">
+              <TextField
+                v-model="antropometria.pgA"
+                type="number"
+                name="pgA"
+                :label="
+                  store.student?.gender === 'Male'
+                    ? 'Biceps Direito Relaxado'
+                    : 'Abdominal'
+                "
+                span="(cm)"
+              />
+              <TextField
+                v-model="antropometria.pgB"
+                type="number"
+                name="pgB"
+                :label="store.student?.gender === 'Male' ? 'Abdominal' : 'Coxa'"
+                span="(cm)"
+              />
+              <TextField
+                v-model="antropometria.pgC"
+                type="number"
+                name="pgC"
+                :label="
+                  store.student?.gender === 'Male'
+                    ? 'Antebraço Direito'
+                    : 'Antebraço Direito'
+                "
+                span="(cm)"
+              />
+            </div>
+            <div class="antropometria__containers__1-1--2">
+              <p>%G: {{ antropometria.pg }}</p>
             </div>
           </div>
         </div>

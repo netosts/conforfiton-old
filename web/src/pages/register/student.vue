@@ -1,36 +1,38 @@
 <script setup>
-import { countCpfDuplicate, countEmailDuplicate } from "@/services/api/get";
+import {
+  countCpfDuplicate,
+  countEmailDuplicate,
+  countPhoneDuplicate,
+} from "@/services/api/get";
+import { postStudent } from "@/services/api/post";
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
+import { translateGender } from "@/services/helpers";
+import { getUserIdSession } from "@/services/api/token";
 
-import { translateGender } from "@/services/register/helpers";
-
-import { definePage, useRouter } from "vue-router/auto";
+import { definePage } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/student";
 import { form } from "@/services/register/forms/student";
 
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
+import SubmitButton from "@/components/SubmitButton.vue";
 
 definePage({
   meta: { requiresAuth: true },
 });
 
-// VARIABLES
-const router = useRouter();
-
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {
   // Transform values
-  form.phone_number = form.phone_number.replace(/\D/g, ""); // only digits
   form.cpf = form.cpf.replace(/\D/g, ""); // only digits
-  form.gender = translateGender(form.gender); // from pt to en
+  form.phone_number = form.phone_number.replace(/\D/g, ""); // only digits
 
-  // REGISTER
-  // CPF and Email Duplicate validation
-  const [countedCpf, countedEmail] = await Promise.all([
+  // CPF, Email and Phone DUPLICATE VALIDATION
+  const [countedCpf, countedEmail, countedPhone] = await Promise.all([
     countCpfDuplicate(form.cpf),
     countEmailDuplicate(form.email),
+    countPhoneDuplicate(form.phone_number),
   ]);
 
   let errors = 0;
@@ -41,34 +43,38 @@ async function onSubmit(_, { setFieldError }) {
   }
 
   if (countedEmail > 0) {
-    setFieldError("email", "Este email já foi cadastrado.");
+    setFieldError("email", "O Email já foi cadastrado.");
     errors++;
   }
 
+  if (countedPhone > 0) {
+    setFieldError("phone_number", "O Telefone já foi cadastrado.");
+    errors++;
+  }
+
+  if (errors > 0) {
+    return;
+  }
+
   // SUBMIT
-  // Save informations in session storage
   try {
-    console.log(form);
-    sessionStorage.setItem("registerStudent", JSON.stringify(form));
-    router.push("/register/anamnese");
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
-}
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString();
 
-function onReset() {
-  try {
-    sessionStorage.removeItem("registerStudent");
+    const userId = getUserIdSession();
+
+    form.gender = translateGender(form.gender); // from pt to en
+    form.created_at = formattedDate;
+    form.personal_id = userId;
+
+    await postStudent(form);
+
+    alert(`${form.name} cadastrado com sucesso!`);
     location.reload();
-  } catch (e) {
-    console.error(e);
-    throw e;
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
-}
-
-async function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 </script>
 
@@ -81,10 +87,15 @@ async function delay(ms) {
       <h1>Bem-Vindo</h1>
     </div>
 
-    <Form @submit="onSubmit" v-slot="{ meta }" class="form">
+    <Form
+      @submit="onSubmit"
+      :validation-schema="schema"
+      v-slot="{ meta }"
+      class="form"
+    >
       <section class="form__section">
         <div class="form__section__title">
-          <h2>Preencha as Informações de Cadastro</h2>
+          <h2>Cadastrar Aluno sem Anamnese</h2>
         </div>
         <TextField
           v-model="form.name"
@@ -177,23 +188,7 @@ async function delay(ms) {
             placeholder="Ex: 90,30"
           />
         </div>
-        <div class="submitbox">
-          <button type="button" class="reset" @click="onReset">
-            <font-awesome-icon icon="fa-solid fa-rotate-right" size="xl" />
-            Reiniciar
-          </button>
-          <div
-            class="submitbox__submit"
-            :class="{
-              'submitbox__submit--disabled': meta ? !meta.valid : null,
-            }"
-          >
-            <button type="submit" class="submitbox__submit__btn">
-              Continuar
-              <font-awesome-icon icon="fa-solid fa-angles-right" size="xl" />
-            </button>
-          </div>
-        </div>
+        <SubmitButton msg="Cadastrar" :meta="meta" />
       </section>
     </Form>
   </main>
@@ -221,12 +216,13 @@ main {
 
     .back {
       position: absolute;
-      top: 40px;
+      top: 11px;
       @include tool();
       color: $buttons;
     }
 
     h1 {
+      padding: 0 40px;
       text-align: center;
       text-transform: uppercase;
     }
@@ -355,50 +351,7 @@ main {
         font-weight: 500;
         text-align: center;
       }
-
-      .submitbox {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 20px;
-
-        &__submit {
-          display: flex;
-
-          @include mq(xs) {
-            flex: 1;
-          }
-
-          &__btn {
-            @include submitButtons($buttons, white);
-            @include mq(xs) {
-              flex: 1;
-            }
-          }
-
-          &--disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-
-            .submitbox__submit__btn {
-              pointer-events: none;
-            }
-          }
-        }
-
-        .reset {
-          @include submitButtons($profile-pic, $txt-title);
-          @include mq(xs) {
-            flex: 1;
-          }
-        }
-      }
     }
   }
-}
-
-.input--disabled {
-  opacity: 0.5;
-  pointer-events: none;
 }
 </style>

@@ -42,12 +42,12 @@ async function onSubmit(_, { setFieldError }) {
   }
 
   if (countedEmail > 0) {
-    setFieldError("email", "Este email já foi cadastrado.");
+    setFieldError("email", "O Email já foi cadastrado.");
     errors++;
   }
 
   if (countedPhone > 0) {
-    setFieldError("phone_number", "Este telefone já foi cadastrado.");
+    setFieldError("phone_number", "O Telefone já foi cadastrado.");
     errors++;
   }
 
@@ -405,10 +405,5 @@ main {
       }
     }
   }
-}
-
-.input--disabled {
-  opacity: 0.5;
-  pointer-events: none;
 }
 </style>

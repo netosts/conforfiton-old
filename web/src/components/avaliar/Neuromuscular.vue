@@ -1,21 +1,45 @@
 <script setup>
+import { postNeuromuscular } from "@/services/api/post";
+
 import {
   repsList,
   exerciseList,
   total,
 } from "@/services/avaliar/neuromuscular/lists";
+import { createNeuromuscularForm } from "@/services/avaliar/neuromuscular/helpers";
+
+import { useRoute } from "vue-router/auto";
+
+import { schema } from "@/services/avaliar/neuromuscular/schema";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
 
-function onSubmit(values) {
-  console.log(values);
+import { useAvaliarStore } from "@/stores/avaliar";
+
+const route = useRoute();
+const store = useAvaliarStore();
+
+async function onSubmit() {
+  try {
+    const form = await createNeuromuscularForm(exerciseList, total);
+    await postNeuromuscular(form, route.params.id);
+
+    alert("Neuromuscular salvo com sucesso");
+
+    // Remove Neuromuscular from the screen
+    const indexToRemove = store.types.indexOf("Neuromuscular");
+    store.types.splice(indexToRemove, 1);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 </script>
 
 <template>
   <section>
-    <Form @submit="onSubmit">
+    <Form @submit="onSubmit" :validation-schema="schema" v-slot="meta">
       <h2 class="avaliar--title">Neuromuscular</h2>
       <table class="neuro-table">
         <thead>
@@ -35,6 +59,7 @@ function onSubmit(values) {
                 v-model="exercise.lifted"
                 :name="`${exercise.name}_lifted`"
                 type="number"
+                :meta="meta"
               />
             </td>
             <td>
@@ -43,6 +68,7 @@ function onSubmit(values) {
                 :name="`${exercise.name}_reps`"
                 type="select"
                 :options="repsList"
+                :meta="meta"
               />
             </td>
             <td>{{ exercise.rm }}</td>
@@ -57,7 +83,7 @@ function onSubmit(values) {
       </div>
 
       <div class="submit--btn">
-        <SubmitButton msg="Salvar" />
+        <SubmitButton msg="Salvar" :meta="meta.meta" />
       </div>
     </Form>
   </section>

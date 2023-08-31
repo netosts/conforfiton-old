@@ -1,5 +1,10 @@
 <script setup>
 import { onMounted } from "vue";
+import { definePage } from "vue-router/auto";
+
+definePage({
+  meta: { requiresAuth: true },
+});
 
 function print() {
   window.print();

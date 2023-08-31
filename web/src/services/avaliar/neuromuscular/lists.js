@@ -63,5 +63,5 @@ export const exerciseList = reactive([
 export const total = computed(() => {
   const points = exerciseList.map(exercise => exercise.points)
   const total = points.reduce((total, points) => total + points, 0)
-  return total ? total : null
+  return total ? total : 0
 });

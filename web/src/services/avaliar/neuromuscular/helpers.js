@@ -1,3 +1,23 @@
+export function createNeuromuscularForm(exerciseList, total) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString();
+  const form = {
+    total_points: total.value,
+    created_at: formattedDate,
+  };
+  const properties = ["lifted", "reps", "rm", "points"];
+
+  for (const exercise of exerciseList) {
+    for (const item of properties) {
+      const propName = exercise.name + "_" + item;
+      const propValue = exercise[item];
+      form[propName] = propValue;
+    }
+  }
+
+  return form;
+}
+
 export function calcular1RM(pesoLevantado, reps) {
   const table = {
     1: 100,
@@ -13,23 +33,21 @@ export function calcular1RM(pesoLevantado, reps) {
     11: 70,
     12: 67,
     15: 65,
-  }
+  };
 
   if (pesoLevantado === undefined || reps === undefined) {
-    return ;
+    return;
   }
 
-  return Number((pesoLevantado * 100 / table[reps]).toFixed(1));
-};
-
+  return Number(((pesoLevantado * 100) / table[reps]).toFixed(1));
+}
 
 function calcularForcaRelativa(RM, pesoCorporal) {
   if (RM === undefined || pesoCorporal === undefined) {
-    return ;
+    return;
   }
   return RM / pesoCorporal;
-};
-
+}
 
 export function calcularPontos(student, rm, exercise, exerciseConfig) {
   if (student && rm) {
@@ -46,4 +64,4 @@ export function calcularPontos(student, rm, exercise, exerciseConfig) {
 
     return findConfig ? findConfig.points : 0;
   }
-};
+}
