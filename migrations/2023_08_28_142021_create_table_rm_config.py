@@ -10,7 +10,7 @@ class CreateTableRmConfig(Migration):
         with self.schema.create('rm_config') as table:
             table.increments('id')
             table.string('gender', 6)
-            table.string('exercise', 30)
+            table.string('exercise', 13)
             table.float('threshold')
             table.small_integer('points')
 

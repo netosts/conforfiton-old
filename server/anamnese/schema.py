@@ -5,9 +5,9 @@ from enum import IntEnum
 
 
 class Period(IntEnum):
-    MANHA = 1
-    TARDE = 2
-    NOITE = 3
+    MORNING = 1
+    AFTERNOON = 2
+    NIGHT = 3
 
 
 class JsonQ4(BaseModel):

@@ -32,7 +32,8 @@ async def inputbar_active_students(inputFilter, inputBar, limit):
         'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')
 
     students = di["db"].table('persons as p') \
-                       .join('weights as w', 'p.id', '=', max_peso) \
+                       .join('students as s', 's.person_id', '=', 'p.id') \
+                       .left_join('weights as w', 'p.id', '=', max_peso) \
                        .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight') \
                        .where_null('p.deleted_at') \
                        .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
@@ -115,8 +116,8 @@ async def find_student(person_id):
 
 @student_router.get('/credentials/{person_id}')
 async def get_student_credentials(person_id):
-    student = Person.where('person_id', person_id).select(
-        'person_id', 'name').first()
+    student = Person.where('id', person_id).select(
+        'id', 'name').first()
 
     if student:
         return student.serialize()
@@ -132,7 +133,7 @@ async def get_student_for_avaliar_page(person_id):
     newest_weight = Weight.where('person_id', person_id).max('created_at')
     student = di["db"].table('persons as p') \
         .where('p.id', person_id) \
-        .select('p.id', 'p.name', 'p.gender', 'w.weight', 'p.height') \
+        .select('p.id', 'p.name', 'p.gender', 'w.weight', 'p.height', 'p.birth_date') \
         .join('weights as w', 'p.id', '=', 'w.person_id') \
         .where('w.created_at', newest_weight) \
         .first()
@@ -197,8 +198,7 @@ async def new_student(data: NewStudent):
 
         student = Student()
         student.person_id = person.id
-        student.company_id = 1
-        student.personal_id = 1
+        student.personal_id = data.personal_id
 
     if student.save():
         return JSONResponse({

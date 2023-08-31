@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from ..person.model import Person
+from ..personal.model import Personal
 from .schema import NewGlobalEntity
 
 global_entity_router = APIRouter(prefix='/global_entity')
@@ -34,10 +35,17 @@ async def new_global_entity(data: NewGlobalEntity):
     person.birth_date = data.birth_date
 
     if person.save():
-        return JSONResponse({
-            "error": False,
-            "data": f"{person.name} was successfully registered."
-        }, 200)
+        if data.role == 'Admin':
+            personal = Personal()
+            personal.person_id = person.id
+            personal.company_id = 1
+            personal.cref = None
+            personal.status = 'Accepted'
+            if personal.save():
+                return JSONResponse({
+                    "error": False,
+                    "data": f"{person.name} was successfully registered."
+                }, 200)
     else:
         return JSONResponse({
             "error": True,

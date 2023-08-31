@@ -23,7 +23,9 @@ class NewPersonal(BaseModel):
     shorts_size: shorts_size
     address_picture: str = None
 
-    company_id: int = None
+    company_id: int
+    cref: str
+    status: str
 
     @validator("*", pre=True, always=True)
     def check_none(cls, value):

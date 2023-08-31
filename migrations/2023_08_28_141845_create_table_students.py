@@ -9,14 +9,12 @@ class CreateTableStudents(Migration):
         """
         with self.schema.create('students') as table:
             table.integer('person_id').unsigned().unique()
-            table.integer('company_id').unsigned().nullebla()
-            table.integer('personal_id').unsigned().nullable()
+            table.integer('personal_id').unsigned()
             table.text('note').nullable()
             table.soft_deletes()
 
             table.foreign('person_id').references(
                 'id').on('persons').on_delete('cascade')
-            table.foreign('company_id').references('id').on('companies')
             table.foreign('personal_id').references(
                 'person_id').on('personals')
 

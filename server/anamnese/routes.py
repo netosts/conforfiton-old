@@ -14,9 +14,9 @@ anamnese_router = APIRouter(prefix='/anamnese')
 
 @anamnese_router.post('/{email}')
 async def new_anamnese(email, data: NewAnamnese):
-    person_id = Person.select('id').where('email', email)
+    person = Person.select('id').where('email', email).first()
 
-    if not person_id:
+    if not person:
         return JSONResponse({
             "error": True,
             "data": "Couldn't find id."
@@ -24,7 +24,7 @@ async def new_anamnese(email, data: NewAnamnese):
 
     anamnese = Anamnese()
 
-    anamnese.person_id = person_id
+    anamnese.person_id = person.id
     anamnese.q1 = data.q1.capitalize()
     anamnese.q2 = data.q2.capitalize()
     anamnese.q3 = data.q3.capitalize()

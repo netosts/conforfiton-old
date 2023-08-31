@@ -28,9 +28,7 @@ class NewStudent(BaseModel):
     weight: float = Field(ge=0, le=600)
     created_at: datetime
 
-    # id of company and/or personal
-    company_id: int = None
-    personal_id: int = None
+    personal_id: int
 
     @validator("*", pre=True, always=True)
     def check_none(cls, value):

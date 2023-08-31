@@ -10,8 +10,8 @@ class CreateTablePersonals(Migration):
         with self.schema.create('personals') as table:
             table.integer('person_id').unsigned().unique()
             table.integer('company_id').unsigned()
-            table.char('cref', 11).unique()
-            table.string('status', 8)  # PENDING | DENIED | ACCEPTED
+            table.char('cref', 11).unique().nullable()
+            table.string('status', 8).nullable()  # PENDING | DENIED | ACCEPTED
             table.soft_deletes()
 
             table.foreign('person_id').references(

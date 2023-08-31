@@ -10,6 +10,7 @@ from ..base_model.types import name, email, phone_number, birth_date
 class Roles(str, Enum):
     Admin = 'Admin'
     Guest = 'Guest'
+    Owner = 'Owner'
 
 
 class NewGlobalEntity(BaseModel):
