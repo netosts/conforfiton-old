@@ -1,5 +1,7 @@
 <script setup>
 import { getStudentAvaliar, getRmConfig } from "@/services/api/get";
+import { translateGender } from "@/services/helpers";
+import { formatAge } from "@/services/validators/formats";
 
 import { useAvaliarStore } from "@/stores/avaliar";
 
@@ -21,11 +23,12 @@ const store = useAvaliarStore();
 async function initRequests() {
   try {
     store.student = await getStudentAvaliar(route.params.id);
+    store.student["age"] = formatAge(store.student.birth_date);
     if (store.types.includes("Neuromuscular")) {
-      store.rmConfig = await getRmConfig(store.student.sexo);
+      store.rmConfig = await getRmConfig(store.student.gender);
     }
   } catch {
-    alert("Houve um erro, o aluno não pôde ser encontrado.");
+    alert("Houve um erro e o aluno não pôde ser encontrado.");
     router.push("/");
   }
 }
@@ -43,13 +46,14 @@ onMounted(() => {
         <RouterLink to="/" class="voltar">
           <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
         </RouterLink>
-        <h1>{{ store.student?.nm_pessoa }}</h1>
+        <h1>{{ store.student?.name }}</h1>
       </div>
 
       <div class="student__details">
-        <p>Peso: {{ store.student?.peso }}kg</p>
-        <p>Sexo: {{ store.student?.sexo }}</p>
-        <p>Altura: {{ store.student?.altura }}</p>
+        <p>Peso: {{ store.student?.weight }}kg</p>
+        <p>Sexo: {{ translateGender(store.student?.gender) }}</p>
+        <p>Altura: {{ store.student?.height }}cm</p>
+        <p>Idade: {{ store.student?.age }}</p>
       </div>
     </section>
 

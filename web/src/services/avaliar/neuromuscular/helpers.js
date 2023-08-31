@@ -33,19 +33,17 @@ function calcularForcaRelativa(RM, pesoCorporal) {
 
 export function calcularPontos(student, rm, exercise, exerciseConfig) {
   if (student && rm) {
-    const forcaRelativa = calcularForcaRelativa(rm, student.peso);
+    const forcaRelativa = calcularForcaRelativa(rm, student.weight);
 
-    const sortedConfig = exerciseConfig.sort((a, b) => a.threshold - b.threshold);
-
-    const findConfig = sortedConfig.reduce((closestConfig, config) => {
-      if (config.exercicio === exercise && forcaRelativa >= config.threshold) {
-        if (!closestConfig || config.threshold > closestConfig.threshold) {
+    const findConfig = exerciseConfig.reduce((closestConfig, config) => {
+      if (config.exercise === exercise && forcaRelativa >= config.threshold) {
+        if (!closestConfig || config.threshold >= closestConfig.threshold) {
           return config;
         }
       }
       return closestConfig;
     }, null);
 
-    return findConfig ? findConfig.pontos : 0;
+    return findConfig ? findConfig.points : 0;
   }
 };

@@ -1,11 +1,15 @@
 <script setup>
-import { getToken } from "../services/api/post";
-import { setExpToken } from "../services/api/token";
+import { getToken } from "@/services/api/post";
+import {
+  setExpToken,
+  setUserIdSession,
+  setUserIdLocal,
+} from "@/services/api/token";
 
 import { definePage } from "vue-router/auto";
 import { reactive } from "vue";
 
-import TextField from "../components/TextField.vue";
+import TextField from "@/components/TextField.vue";
 import { Form } from "vee-validate";
 
 definePage({
@@ -36,7 +40,8 @@ async function onSubmit(_, { setErrors }) {
     const data = await getToken(payload);
 
     setExpToken(data.access_token, 3 * 60 * 60 * 1000); // Set expiry by milliseconds
-    localStorage.setItem("user", data.user_id);
+    setUserIdLocal(data.user_id);
+    setUserIdSession(data.user_id);
 
     location.reload();
   } catch (e) {
@@ -75,6 +80,9 @@ async function onSubmit(_, { setErrors }) {
           />
         </div>
       </div>
+      <div class="login__register">
+        <RouterLink to="/login/register"> Criar conta </RouterLink>
+      </div>
       <div class="login__buttons">
         <button type="submit" class="submit">LOGIN</button>
       </div>
@@ -83,8 +91,8 @@ async function onSubmit(_, { setErrors }) {
 </template>
 
 <style lang="scss" scoped>
-@import "../assets/styles/variables";
-@import "../assets/styles/mixins";
+@import "@/assets/styles/variables";
+@import "@/assets/styles/mixins";
 
 aside {
   display: flex;
@@ -107,7 +115,7 @@ aside {
     margin: auto;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 10px;
     width: 350px;
     padding: 16px;
     background-color: white;
@@ -122,6 +130,19 @@ aside {
       display: flex;
       flex-direction: column;
       gap: 10px;
+    }
+
+    &__register {
+      display: flex;
+
+      a {
+        color: $buttons;
+        transition: 0.2s;
+      }
+
+      a:hover {
+        color: $validation;
+      }
     }
 
     &__buttons {

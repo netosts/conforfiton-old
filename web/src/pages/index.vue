@@ -1,11 +1,12 @@
 <script setup>
-import http from '../services/api/http';
-import Avaliar from '../components/Avaliar.vue';
+import http from "../services/api/http";
+import Avaliar from "../components/Avaliar.vue";
 
-import { definePage } from 'vue-router/auto'
-import { ref, onMounted, watch } from 'vue';
-import { formatAge } from '../services/validators/formats';
+import { translateGender } from "@/services/helpers";
 
+import { definePage } from "vue-router/auto";
+import { ref, onMounted, watch } from "vue";
+import { formatAge } from "../services/validators/formats";
 
 definePage({
   meta: { requiresAuth: true },
@@ -15,9 +16,9 @@ definePage({
 const bodyElement = ref(null);
 const students = ref([]);
 const isAvaliarActive = ref(false);
-const studentsFilter = ref('ativos');
-const inputBar = ref('');
-const inputFilter = ref('inputName');
+const studentsFilter = ref("ativos");
+const inputBar = ref("");
+const inputFilter = ref("inputName");
 
 // Send Props
 const studentId = ref(null);
@@ -25,92 +26,107 @@ const studentName = ref(null);
 
 // Handle Emits
 const handleAvaliar = (emittedValue) => {
-  return isAvaliarActive.value = emittedValue;
+  return (isAvaliarActive.value = emittedValue);
 };
 
 // FUNCTIONS
-function toggleAvaliar(id_pessoa, nm_pessoa) {
+function toggleAvaliar(id, name) {
   isAvaliarActive.value = !isAvaliarActive.value;
-  bodyElement.value.style.overflow = isAvaliarActive.value ? 'hidden' : 'auto';
-  studentId.value = id_pessoa;
-  studentName.value = nm_pessoa;
-};
+  bodyElement.value.style.overflow = isAvaliarActive.value ? "hidden" : "auto";
+  studentId.value = id;
+  studentName.value = name;
+}
 
 // Axios Functions
 // Get students from database
 function getActiveStudents(value, limit) {
-  if (inputBar.value === '') {
-    value = '%';
+  if (inputBar.value === "") {
+    value = "%";
   }
-  http.get(`/student/active/${inputFilter.value}/${value}/${limit}`).then((res) => {
-    students.value = res.data;
-  }).catch((err) => {
-    console.error(err);
-  });
-};
+  http
+    .get(`/student/active/${inputFilter.value}/${value}/${limit}`)
+    .then((res) => {
+      students.value = res.data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
 
 function getInactiveStudents(value, limit) {
-  if (inputBar.value === '') {
-    value = '%';
+  if (inputBar.value === "") {
+    value = "%";
   }
-  http.get(`/student/inactive/${inputFilter.value}/${value}/${limit}`).then((res) => {
-    students.value = res.data;
-  }).catch((err) => {
-    console.error(err);
-  });
-};
+  http
+    .get(`/student/inactive/${inputFilter.value}/${value}/${limit}`)
+    .then((res) => {
+      students.value = res.data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
 
 function getAllStudents(value, limit) {
-  if (inputBar.value === '') {
-    value = '%';
+  if (inputBar.value === "") {
+    value = "%";
   }
-  http.get(`/student/${inputFilter.value}/${value}/${limit}`).then((res) => {
-    students.value = res.data;
-  }).catch((err) => {
-    console.error(err);
-  });
-};
+  http
+    .get(`/student/${inputFilter.value}/${value}/${limit}`)
+    .then((res) => {
+      students.value = res.data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
 
 // WATCHES
-function filterNget() {  // Show students based on filter
-  if (studentsFilter.value === 'ativos') {
-    getActiveStudents('%', 5);
-  } else if (studentsFilter.value === 'desativados') {
-    getInactiveStudents('%', 5);
-  } else if (studentsFilter.value === 'todos') {
-    getAllStudents('%', 5);
+function filterNget() {
+  // Show students based on filter
+  if (studentsFilter.value === "ativos") {
+    getActiveStudents("%", 5);
+  } else if (studentsFilter.value === "desativados") {
+    getInactiveStudents("%", 5);
+  } else if (studentsFilter.value === "todos") {
+    getAllStudents("%", 5);
   }
-};
+}
 
-watch(inputBar, (newValue) => {  // Show students based on input bar + filter
-  if (studentsFilter.value === 'ativos' && newValue !== '') {
+watch(inputBar, (newValue) => {
+  // Show students based on input bar + filter
+  if (studentsFilter.value === "ativos" && newValue !== "") {
     getActiveStudents(newValue, 100);
-  } else if (studentsFilter.value === 'ativos' && newValue === '') {
-    getActiveStudents('%', 5);
+  } else if (studentsFilter.value === "ativos" && newValue === "") {
+    getActiveStudents("%", 5);
   }
-  if (studentsFilter.value === 'desativados' && newValue !== '') {
+  if (studentsFilter.value === "desativados" && newValue !== "") {
     getInactiveStudents(newValue, 100);
-  } else if (studentsFilter.value === 'desativados' && newValue === '') {
-    getInactiveStudents('%', 5);
+  } else if (studentsFilter.value === "desativados" && newValue === "") {
+    getInactiveStudents("%", 5);
   }
-  if (studentsFilter.value === 'todos' && newValue !== '') {
+  if (studentsFilter.value === "todos" && newValue !== "") {
     getAllStudents(newValue, 100);
-  } else if (studentsFilter.value === 'todos' && newValue === '') {
-    getAllStudents('%', 5);
+  } else if (studentsFilter.value === "todos" && newValue === "") {
+    getAllStudents("%", 5);
   }
 });
 
 // DOM Mounted
 onMounted(() => {
-  getActiveStudents('%', 5);
+  getActiveStudents("%", 100);
   bodyElement.value = document.body;
 });
 </script>
 
 <template>
   <main>
-    <Avaliar :studentName="studentName" :studentId="studentId" @isAvaliarActive="handleAvaliar"
-      v-show="isAvaliarActive" />
+    <Avaliar
+      :studentName="studentName"
+      :studentId="studentId"
+      @isAvaliarActive="handleAvaliar"
+      v-show="isAvaliarActive"
+    />
 
     <div class="searchbox">
       <div class="searchbox__title">
@@ -122,8 +138,17 @@ onMounted(() => {
 
       <div class="searchbox__input">
         <div class="searchbox__input__db">
-          <font-awesome-icon class="searchbox__input__db__icon" icon="fa-solid fa-magnifying-glass" size="sm" />
-          <input v-model="inputBar" type="text" id="searchDb" placeholder="Procurar alunos no banco de dados...">
+          <font-awesome-icon
+            class="searchbox__input__db__icon"
+            icon="fa-solid fa-magnifying-glass"
+            size="sm"
+          />
+          <input
+            v-model="inputBar"
+            type="text"
+            id="searchDb"
+            placeholder="Procurar alunos no banco de dados..."
+          />
         </div>
         <select v-model="inputFilter">
           <option value="inputName">Nome</option>
@@ -143,20 +168,33 @@ onMounted(() => {
     <div class="students">
       <section v-for="student in students" :key="student" class="student">
         <div class="student__container">
-          <RouterLink :to="`/student/${student.id_pessoa}`">
+          <RouterLink :to="`/student/${student.id}`">
             <div class="student__container__profile">
               <div class="student__container__profile__picture">
                 <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
               </div>
               <div class="student__container__profile__info">
                 <div class="student__container__profile__info__name">
-                  <p>{{ student.nm_pessoa }}</p>
+                  <p>{{ student.name }}</p>
                 </div>
                 <div class="student__container__profile__info__content">
-                  <p>Sexo: <strong>{{ student.sexo }}</strong> | </p>
-                  <p>Idade: <strong>{{ student.dt_nascimento ? formatAge(student.dt_nascimento) : '' }}</strong> | </p>
-                  <p>Altura: <strong>{{ student.altura }}cm</strong> | </p>
-                  <p>Peso: <strong>{{ student.peso ? student.peso + 'kg' : '' }}</strong></p> |
+                  <p>
+                    Sexo:
+                    <strong>{{ translateGender(student.gender) }}</strong> |
+                  </p>
+                  <p>
+                    Idade:
+                    <strong>{{ formatAge(student.birth_date) }}</strong>
+                    |
+                  </p>
+                  <p>
+                    Altura: <strong>{{ student.height }}cm</strong> |
+                  </p>
+                  <p>
+                    Peso:
+                    <strong>{{ student.weight + "kg" }}</strong>
+                  </p>
+                  |
                   <p>Desempenho: Bom</p>
                 </div>
               </div>
@@ -164,7 +202,9 @@ onMounted(() => {
           </RouterLink>
           <div class="student__container__button">
             <div class="student__container__button__box">
-              <button @click="toggleAvaliar(student.id_pessoa, student.nm_pessoa)">Avaliar</button>
+              <button @click="toggleAvaliar(student.id, student.name)">
+                Avaliar
+              </button>
             </div>
           </div>
         </div>
@@ -174,9 +214,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
-
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 main {
   display: flex;
@@ -287,9 +326,10 @@ main {
         align-items: center;
         flex-wrap: wrap;
         gap: 20px;
-        padding: 16px;
 
         a {
+          flex: 1;
+          padding: 16px;
           text-decoration: none;
           transition: 0.2s;
 
@@ -307,7 +347,7 @@ main {
             width: 60px;
             height: 60px;
             border-radius: $border-radius;
-            background-image: url('../assets/images/default-profile-picture2.jpg');
+            background-image: url("../assets/images/default-profile-picture2.jpg");
             background-size: cover;
           }
 
@@ -321,7 +361,6 @@ main {
               font-weight: 600;
               color: $txt-title;
             }
-
 
             &__content {
               display: flex;
@@ -338,9 +377,9 @@ main {
         }
 
         &__button {
-
+          margin-right: 16px;
           button {
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
             border-radius: $border-radius;
             background-color: $validation;

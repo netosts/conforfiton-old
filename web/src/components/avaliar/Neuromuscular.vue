@@ -1,5 +1,9 @@
 <script setup>
-import { repsList, exerciseList, pontosTotal } from "@/services/configs/lists";
+import {
+  repsList,
+  exerciseList,
+  total,
+} from "@/services/avaliar/neuromuscular/lists";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
@@ -24,32 +28,32 @@ function onSubmit(values) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="exercise in exerciseList" :key="exercise">
+          <tr v-for="(exercise, id) in exerciseList" :key="id">
             <td>{{ exercise.title }}</td>
             <td>
               <TextField
-                v-model="exercise.pesoLevantado"
-                :name="`${exercise.name}PesoLevantado`"
+                v-model="exercise.lifted"
+                :name="`${exercise.name}_lifted`"
                 type="number"
               />
             </td>
             <td>
               <TextField
                 v-model="exercise.reps"
-                :name="`${exercise.name}Reps`"
+                :name="`${exercise.name}_reps`"
                 type="select"
                 :options="repsList"
               />
             </td>
             <td>{{ exercise.rm }}</td>
-            <td>{{ exercise.pontos }}</td>
+            <td>{{ exercise.points }}</td>
           </tr>
         </tbody>
       </table>
 
       <div class="neuro-total">
         <h3>Total:</h3>
-        <span>{{ pontosTotal }}</span>
+        <span>{{ total }}</span>
       </div>
 
       <div class="submit--btn">

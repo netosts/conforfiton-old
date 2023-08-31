@@ -16,7 +16,13 @@ const handleSidebar = (emittedValue) => {
   return (sidebarIsActive.value = emittedValue);
 };
 
-const hiders = ["/login", "/print", "/register", "/register/anamnese"];
+const hiders = [
+  "/login",
+  "/login/register",
+  "/print",
+  "/register",
+  "/register/anamnese",
+];
 
 watch(route, () => {
   if (hiders.includes(route.path)) {

@@ -1,5 +1,9 @@
 <script setup>
-import { countCpfDuplicate, countEmailDuplicate } from "@/services/api/get";
+import {
+  countCpfDuplicate,
+  countEmailDuplicate,
+  countPhoneDuplicate,
+} from "@/services/api/get";
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
 
 import { definePage, useRouter } from "vue-router/auto";
@@ -20,13 +24,14 @@ const router = useRouter();
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {
   // Transform values
-  form.phone_number = form.phone_number.replace(/\D/g, ""); // only digits
-  form.cpf = form.cpf.replace(/\D/g, ""); // only digits
+  const digitsCpf = form.cpf.replace(/\D/g, ""); // only digits
+  const digitsPhone = form.phone_number.replace(/\D/g, ""); // only digits
 
-  // CPF and Email Duplicate validation
-  const [countedCpf, countedEmail] = await Promise.all([
-    countCpfDuplicate(form.cpf),
+  // CPF, Email and Phone DUPLICATE VALIDATION
+  const [countedCpf, countedEmail, countedPhone] = await Promise.all([
+    countCpfDuplicate(digitsCpf),
     countEmailDuplicate(form.email),
+    countPhoneDuplicate(digitsPhone),
   ]);
 
   let errors = 0;
@@ -38,6 +43,11 @@ async function onSubmit(_, { setFieldError }) {
 
   if (countedEmail > 0) {
     setFieldError("email", "Este email já foi cadastrado.");
+    errors++;
+  }
+
+  if (countedPhone > 0) {
+    setFieldError("phone_number", "Este telefone já foi cadastrado.");
     errors++;
   }
 
@@ -65,10 +75,6 @@ function onReset() {
     throw e;
   }
 }
-
-async function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 </script>
 
 <template>
@@ -80,7 +86,12 @@ async function delay(ms) {
       <h1>Bem-Vindo</h1>
     </div>
 
-    <Form @submit="onSubmit" v-slot="{ meta }" class="form">
+    <Form
+      @submit="onSubmit"
+      :validation-schema="schema"
+      v-slot="{ meta }"
+      class="form"
+    >
       <section class="form__section">
         <div class="form__section__title">
           <h2>Preencha as Informações de Cadastro</h2>

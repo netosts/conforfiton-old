@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getExpToken } from './token';
+import { getExpToken, getUserIdSession, getUserIdLocal } from './token';
 
 const http = axios.create({
   baseURL: 'http://localhost:8000',
@@ -8,10 +8,12 @@ const http = axios.create({
 
 http.interceptors.request.use((request)=>{
   const token = getExpToken();
-  const user = localStorage.getItem('user');
-  if (!token && user) {
+  const user1 = getUserIdLocal();
+  const user2 = getUserIdSession();
+  if ((!token && user1) || (user1 != user2)) {
     localStorage.removeItem('user');
-    location.reload();
+    sessionStorage.removeItem('u:u')
+    // location.reload();
   }
   return request;
 });

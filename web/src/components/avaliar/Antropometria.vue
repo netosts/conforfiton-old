@@ -1,8 +1,13 @@
 <script setup>
-import { repsList, exerciseList, pontosTotal } from "@/services/configs/lists";
+import { antropometria } from "@/services/avaliar/antropometria/lists";
+
+import { useAvaliarStore } from "@/stores/avaliar";
+
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
+
+const store = useAvaliarStore();
 
 function onSubmit(values) {
   console.log(values);
@@ -13,43 +18,38 @@ function onSubmit(values) {
   <section>
     <Form @submit="onSubmit">
       <h2 class="avaliar--title">Antropometria</h2>
-      <table class="neuro-table">
-        <thead>
-          <tr>
-            <th>Exercício</th>
-            <th>Peso L.</th>
-            <th>Reps</th>
-            <th>1RM</th>
-            <th>Pontos</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="exercise in exerciseList" :key="exercise">
-            <td>{{ exercise.title }}</td>
-            <td>
-              <TextField
-                v-model="exercise.pesoLevantado"
-                :name="`${exercise.name}PesoLevantado`"
-                type="number"
-              />
-            </td>
-            <td>
-              <TextField
-                v-model="exercise.reps"
-                :name="`${exercise.name}Reps`"
-                type="select"
-                :options="repsList"
-              />
-            </td>
-            <td>{{ exercise.rm }}</td>
-            <td>{{ exercise.pontos }}</td>
-          </tr>
-        </tbody>
-      </table>
 
-      <div class="neuro-total">
-        <h3>Total:</h3>
-        <span>{{ pontosTotal }}</span>
+      <div class="antropometria">
+        <div class="antropometria__containers">
+          <h3>Índice de Massa Corporal</h3>
+          <p>IMC: {{ antropometria.imc }}</p>
+          <p>Classificação: {{ antropometria.imcClass }}</p>
+        </div>
+        <div class="antropometria__containers">
+          <h3>Relação Cintura Quadril</h3>
+          <div class="antropometria__containers__1-1">
+            <div class="antropometria__containers__1-1--1">
+              <TextField
+                v-model="antropometria.waist"
+                type="text"
+                name="waist"
+                label="Circunferência de Cintura"
+                span="(cm)"
+              />
+              <TextField
+                v-model="antropometria.hip"
+                type="text"
+                name="hip"
+                label="Circunferência de Quadril"
+                span="(cm)"
+              />
+            </div>
+            <div class="antropometria__containers__1-1--2">
+              <p>RCQ: {{ antropometria.rcq }}</p>
+              <p>Classificação: {{ antropometria.rcqClass }}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="submit--btn">
@@ -83,52 +83,38 @@ section {
       color: $txt-title;
     }
 
-    .neuro-table {
-      margin: 0px 10px;
-      border-collapse: collapse;
-      border: 1px solid $input-border;
+    .antropometria {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px;
 
-      th,
-      td {
+      &__containers {
+        padding: 10px;
         border: 1px solid $input-border;
-        padding: 8px;
-        text-align: center;
-      }
 
-      th {
-        color: $txt-aside;
-      }
+        h3 {
+          font-weight: 600;
+          color: $txt-aside;
+        }
 
-      td {
-        font-weight: 500;
-        color: $txt-aside;
+        p {
+          color: $txt-aside;
+        }
 
-        &:not(:nth-child(1)) {
-          min-width: 50px;
-          max-width: 100px;
+        &__1-1 {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          &--1 {
+            display: flex;
+            gap: 20px;
 
-          .register-field {
-            min-width: 50px;
+            .register-field {
+              flex: 1;
+            }
           }
         }
-      }
-    }
-
-    .neuro-total {
-      display: flex;
-      margin: 0 10px 10px 10px;
-      border: 1px solid $input-border;
-
-      h3 {
-        padding: 0 10px;
-        font-size: 1.2rem;
-      }
-
-      span {
-        flex: 1;
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: $logo-color;
       }
     }
 

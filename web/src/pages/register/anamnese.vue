@@ -2,9 +2,10 @@
 import { postStudent, postAnamnese } from "../../services/api/post";
 import { q4Radio, YesOrNoRadio, days } from "../../services/register/lists";
 
-import { translateGender } from "@/services/register/helpers";
+import { getUserIdSession } from "@/services/api/token";
+import { translateGender, translateDays } from "@/services/register/helpers";
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { definePage } from "vue-router/auto";
 
 import { schema } from "../../services/register/schemas/anamnese";
@@ -58,16 +59,23 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
+    const studentForm = JSON.parse(sessionStorage.getItem("registerStudent"));
+
+    const userId = getUserIdSession();
+
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();
 
-    const studentForm = JSON.parse(sessionStorage.getItem("registerStudent"));
+    studentForm.cpf = studentForm.cpf.replace(/\D/g, "");
+    studentForm.phone_number = studentForm.phone_number.replace(/\D/g, "");
     studentForm.gender = translateGender(studentForm.gender); // from pt to en
     studentForm.created_at = formattedDate;
+    studentForm.personal_id = userId;
 
     await postStudent(studentForm);
     await postAnamnese(form, studentForm.email);
-    console.log("form submitted");
+
+    alert("Cadastro realizado com sucesso!");
   } catch (err) {
     console.error(err);
     throw err;
@@ -77,7 +85,7 @@ async function onSubmit(_, { setFieldError }) {
 function pushToTable(value) {
   const formQ = form.q13;
   if (!formQ.length) {
-    formQ.push({ day: value.day, periods: [value.value] });
+    formQ.push({ day: translateDays(value.day), periods: [value.value] });
     return;
   }
   const hasDay = formQ.some((item) => item.day === value.day);
@@ -95,12 +103,11 @@ function pushToTable(value) {
       formQ[index].periods.push(value.value);
     }
   } else {
-    formQ.push({ day: value.day, periods: [value.value] });
+    formQ.push({ day: translateDays(value.day), periods: [value.value] });
   }
 }
 
 function disableCheckbox(value) {
-  // console.log('Big O Alert!');
   const formQ = form.q13;
   const hasDay = formQ.some((item) => item.day === value);
   if (formQ.length >= form.q12 && !hasDay) {
@@ -120,14 +127,19 @@ function pushToTime() {
   }
 }
 
-async function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+onMounted(() => {
+  form.q13 = [];
+});
 </script>
 
 <template>
   <main>
-    <Form @submit="onSubmit" v-slot="{ meta }" class="form">
+    <Form
+      @submit="onSubmit"
+      :validation-schema="schema"
+      v-slot="{ meta }"
+      class="form"
+    >
       <section class="form__section">
         <div class="form__section__title">
           <RouterLink to="/register" class="back">

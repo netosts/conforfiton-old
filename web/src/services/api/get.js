@@ -60,6 +60,16 @@ export async function countEmailDuplicate(email) {
   });
 };
 
+// Return how many of the specified Phone number are in the database
+export async function countPhoneDuplicate(phone_number) {
+  return http.get(`/phone_number/${phone_number}`)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error(err);
+    throw err;
+  });
+};
+
 // Check if token is valid
 // export function getAuthorization(http, token) {
 //   return http.get('/user/verify', {

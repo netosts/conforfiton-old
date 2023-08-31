@@ -16,7 +16,6 @@ const defaultValues = {
   profile_picture: null,
   weight: undefined,
   created_at: undefined,
-  company_id: undefined,
   personal_id: undefined,
 }
 

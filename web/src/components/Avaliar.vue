@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { Form, Field } from 'vee-validate';
-import { useAvaliarStore } from '../stores/avaliar';
+import { ref, onMounted } from "vue";
+import { Form, Field } from "vee-validate";
+import { useAvaliarStore } from "../stores/avaliar";
 
-import { useRouter } from 'vue-router/auto';
+import { useRouter } from "vue-router/auto";
 
 // VARIABLES
 const bodyElement = ref(null);
@@ -11,7 +11,7 @@ const router = useRouter();
 const store = useAvaliarStore();
 
 // Emits
-const emit = defineEmits(['isAvaliarActive']);
+const emit = defineEmits(["isAvaliarActive"]);
 
 // Props
 const props = defineProps({
@@ -21,15 +21,15 @@ const props = defineProps({
 
 // FUNCTIONS
 function closeAvaliar() {
-  emit('isAvaliarActive', false);
-  bodyElement.value.style.overflow = 'auto';
-};
+  emit("isAvaliarActive", false);
+  bodyElement.value.style.overflow = "auto";
+}
 
 function onSubmit(values) {
   store.types = values.avaliar;
-  bodyElement.value.style.overflow = 'auto';
+  bodyElement.value.style.overflow = "auto";
   router.push(`/avaliar/${props.studentId}`);
-};
+}
 
 // DOM Mount
 onMounted(() => {
@@ -54,11 +54,21 @@ onMounted(() => {
         <div class="container__content">
           <div class="container__content__checkbox">
             <label for="neuromuscular">Neuromuscular</label>
-            <Field name="avaliar" id="neuromuscular" type="checkbox" value="Neuromuscular" />
+            <Field
+              name="avaliar"
+              id="neuromuscular"
+              type="checkbox"
+              value="Neuromuscular"
+            />
           </div>
           <div class="container__content__checkbox">
             <label for="antropometria">Antropometria</label>
-            <Field name="avaliar" id="antropometria" type="checkbox" value="Antropometria" />
+            <Field
+              name="avaliar"
+              id="antropometria"
+              type="checkbox"
+              value="Antropometria"
+            />
           </div>
           <div class="container__content__checkbox">
             <label for="cardio">Cardio</label>
@@ -66,7 +76,12 @@ onMounted(() => {
           </div>
         </div>
         <div class="container__submit">
-          <div class="submit" :class="{ 'submit--disabled': !values.avaliar?.length ? true : false }">
+          <div
+            class="submit"
+            :class="{
+              'submit--disabled': !values.avaliar?.length ? true : false,
+            }"
+          >
             <button type="submit" class="submit__btn">Avaliar</button>
           </div>
         </div>
@@ -76,9 +91,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
-
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 aside {
   display: flex;
@@ -136,7 +150,7 @@ aside {
           background-color: transparent;
           color: rgba(85, 85, 85, 0.588);
           cursor: pointer;
-          transition: .2s;
+          transition: 0.2s;
 
           &:hover {
             color: $txt-aside;
