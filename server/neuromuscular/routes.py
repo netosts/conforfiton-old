@@ -1,56 +1,66 @@
 # pylint: skip-file
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+
 from .model import Neuromuscular
 from .schema import NewNeuromuscular
 from ..person.model import Person
 
 
-peso_router = APIRouter(prefix='/neurmuscular')
-
-# Create a new Neuromuscular for a specific student using his id
+neuromuscular_router = APIRouter(prefix='/neuromuscular')
 
 
-@peso_router.post('/{student_id}')
-async def new_neuromuscular(student_id, data: NewNeuromuscular):
-    student = Person.find(student_id)
-    if not student:
+@neuromuscular_router.post('/{person_id}')
+async def new_neuromuscular(person_id, data: NewNeuromuscular):
+    person = Person.select('id', 'name').where('id', person_id).first()
+    if not person:
         return JSONResponse("Student not found", 404)
 
     neuromuscular = Neuromuscular()
-    neuromuscular.id_pessoa = student.id_pessoa
 
-    neuromuscular.pl_bench_press = data.pl_bench_press
-    neuromuscular.pl_direct_thread = data.pl_direct_thread
-    neuromuscular.pl_pull_front = data.pl_pull_front
-    neuromuscular.pl_leg_press = data.pl_leg_press
-    neuromuscular.pl_knee_extension = data.pl_knee_extension
-    neuromuscular.pl_knee_bending = data.pl_knee_bending
+    neuromuscular.person_id = person.id
 
-    neuromuscular.reps_bench_press = data.reps_bench_press
-    neuromuscular.reps_direct_thread = data.reps_direct_thread
-    neuromuscular.reps_pull_front = data.reps_pull_front
-    neuromuscular.reps_leg_press = data.reps_leg_press
-    neuromuscular.reps_knee_extension = data.reps_knee_extension
-    neuromuscular.reps_knee_bending = data.reps_knee_bending
+    neuromuscular.bench_press_lifted = data.bench_press_lifted
+    neuromuscular.bench_press_reps = data.bench_press_reps
+    neuromuscular.bench_press_rm = data.bench_press_rm
+    neuromuscular.bench_press_points = data.bench_press_points
 
-    neuromuscular.rm_bench_press = data.rm_bench_press
-    neuromuscular.rm_direct_thread = data.rm_direct_thread
-    neuromuscular.rm_pull_front = data.rm_pull_front
-    neuromuscular.rm_leg_press = data.rm_leg_press
-    neuromuscular.rm_knee_extension = data.rm_knee_extension
-    neuromuscular.rm_knee_bending = data.rm_knee_bending
+    neuromuscular.barbell_curl_lifted = data.barbell_curl_lifted
+    neuromuscular.barbell_curl_reps = data.barbell_curl_reps
+    neuromuscular.barbell_curl_rm = data.barbell_curl_rm
+    neuromuscular.barbell_curl_points = data.barbell_curl_points
 
-    neuromuscular.pontos_bench_press = data.pontos_bench_press
-    neuromuscular.pontos_direct_thread = data.pontos_direct_thread
-    neuromuscular.pontos_pull_front = data.pontos_pull_front
-    neuromuscular.pontos_leg_press = data.pontos_leg_press
-    neuromuscular.pontos_knee_extension = data.pontos_knee_extension
-    neuromuscular.pontos_knee_bending = data.pontos_knee_bending
+    neuromuscular.pull_down_lifted = data.pull_down_lifted
+    neuromuscular.pull_down_reps = data.pull_down_reps
+    neuromuscular.pull_down_rm = data.pull_down_rm
+    neuromuscular.pull_down_points = data.pull_down_points
 
-    neuromuscular.total_pontos = data.total_pontos
+    neuromuscular.leg_press_lifted = data.leg_press_lifted
+    neuromuscular.leg_press_reps = data.leg_press_reps
+    neuromuscular.leg_press_rm = data.leg_press_rm
+    neuromuscular.leg_press_points = data.leg_press_points
 
+    neuromuscular.leg_extension_lifted = data.leg_extension_lifted
+    neuromuscular.leg_extension_reps = data.leg_extension_reps
+    neuromuscular.leg_extension_rm = data.leg_extension_rm
+    neuromuscular.leg_extension_points = data.leg_extension_points
+
+    neuromuscular.leg_curl_lifted = data.leg_curl_lifted
+    neuromuscular.leg_curl_reps = data.leg_curl_reps
+    neuromuscular.leg_curl_rm = data.leg_curl_rm
+    neuromuscular.leg_curl_points = data.leg_curl_points
+
+    neuromuscular.total_points = data.total_points
     neuromuscular.created_at = data.created_at
-    neuromuscular.save()
 
-    return f"Neuromuscular de {student.nm_pessoa} cadastrado com sucesso!"
+    neuromuscular.save()
+    if neuromuscular.save():
+        return JSONResponse({
+            "error": False,
+            "data": f"{person.name}'s Neuromsucular successfully registered."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Something went wrong while registering {person.name}'s Neuromuscular."
+        }, 422)

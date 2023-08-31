@@ -1,6 +1,7 @@
 # pylint: skip-file
 from enum import Enum
 from pydantic import constr
+from datetime import datetime
 
 
 class Genders(str, Enum):
@@ -24,3 +25,5 @@ phone_number = constr(
 birth_date = str
 shirt_size = constr(max_length=3, strip_whitespace=True)
 shorts_size = constr(max_length=8, strip_whitespace=True)
+
+created_at = datetime

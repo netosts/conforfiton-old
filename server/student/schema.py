@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel, validator, Field
 from datetime import timedelta, datetime
 
-from ..base_model.types import name, cpf, Genders, email, phone_number, birth_date, shirt_size, shorts_size
+from ..base_model.types import name, cpf, Genders, email, phone_number, birth_date, shirt_size, shorts_size, created_at
 
 
 class Roles(str, Enum):
@@ -26,7 +26,7 @@ class NewStudent(BaseModel):
 
     height: int = Field(ge=0, le=250)
     weight: float = Field(ge=0, le=600)
-    created_at: datetime
+    created_at: created_at
 
     personal_id: int
 

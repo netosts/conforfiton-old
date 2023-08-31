@@ -1,37 +1,40 @@
 # pylint: skip-file
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, Field
+
+from ..base_model.types import created_at
 
 
 class NewNeuromuscular(BaseModel):
-    
-    pl_bench_press: int
-    pl_direct_thread: int
-    pl_pull_front: int
-    pl_leg_press: int
-    pl_knee_extension: int
-    pl_knee_bending: int
-    
-    reps_bench_press: int
-    reps_direct_thread: int
-    reps_pull_front: int
-    reps_leg_press: int
-    reps_knee_extension: int
-    reps_knee_bending: int
-    
-    rm_bench_press: float
-    rm_direct_thread: float
-    rm_pull_front: float
-    rm_leg_press: float
-    rm_knee_extension: float
-    rm_knee_bending: float
-    
-    pontos_bench_press: int
-    pontos_direct_thread: int
-    pontos_pull_front: int
-    pontos_leg_press: int
-    pontos_knee_extension: int
-    pontos_knee_bending: int
-    
-    total_pontos: int
-    created_at: datetime
+    bench_press_lifted: int = Field(ge=0, le=800)
+    bench_press_reps: int = Field(ge=0, le=15)
+    bench_press_rm: float = Field(ge=0, le=1231)
+    bench_press_points: int = Field(ge=0, le=10)
+
+    barbell_curl_lifted: int = Field(ge=0, le=100)
+    barbell_curl_reps: int = Field(ge=0, le=15)
+    barbell_curl_rm: float = Field(ge=0, le=154)
+    barbell_curl_points: int = Field(ge=0, le=10)
+
+    pull_down_lifted: int = Field(ge=0, le=200)
+    pull_down_reps: int = Field(ge=0, le=15)
+    pull_down_rm: float = Field(ge=0, le=304)
+    pull_down_points: int = Field(ge=0, le=10)
+
+    leg_press_lifted: int = Field(ge=0, le=1000)
+    leg_press_reps: int = Field(ge=0, le=15)
+    leg_press_rm: float = Field(ge=0, le=1539)
+    leg_press_points: int = Field(ge=0, le=10)
+
+    leg_extension_lifted: int = Field(ge=0, le=300)
+    leg_extension_reps: int = Field(ge=0, le=15)
+    leg_extension_rm: float = Field(ge=0, le=462)
+    leg_extension_points: int = Field(ge=0, le=10)
+
+    leg_curl_lifted: int = Field(ge=0, le=250)
+    leg_curl_reps: int = Field(ge=0, le=15)
+    leg_curl_rm: float = Field(ge=0, le=385)
+    leg_curl_points: int = Field(ge=0, le=10)
+
+    total_points: int = Field(ge=0, le=60)
+
+    created_at: created_at
