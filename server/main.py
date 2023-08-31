@@ -41,12 +41,12 @@ app.add_middleware(
 async def home():
     return "Conforfit Database"
 
-app.include_router(global_entity_router)
 app.include_router(company_router)
-app.include_router(person_router)
+app.include_router(global_entity_router)
 app.include_router(user_router)
-app.include_router(weight_router)
+app.include_router(person_router)
 app.include_router(student_router)
+app.include_router(weight_router)
 app.include_router(anamnese_router)
 app.include_router(rm_router)
 

@@ -15,8 +15,9 @@ def bootstrap():
         db = DatabaseManager(di["config"]["databases"])
         di["db"] = db
 
+    # JWT Auth injections
     di["SECRET_KEY"] = config["SECRET_KEY"]
     di["ALGORITHM"] = config["ALGORITHM"]
     di["ACCESS_TOKEN_EXP"] = config["ACCESS_TOKEN_EXPIRE_MINUTES"]
-
+    # Cors Middleware ORIGINS
     di["ORIGINS"] = config["ORIGINS"]
