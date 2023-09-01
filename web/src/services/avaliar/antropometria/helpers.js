@@ -1,4 +1,11 @@
-import { imcConfig, caConfig, rcqConfig, iacConfig, pgConfig } from "./configs";
+import {
+  imcConfig,
+  caConfig,
+  rcqConfig,
+  iacConfig,
+  pgMaleConfig,
+  pgFemaleConfig,
+} from "./configs";
 
 export function calculateImc(weight, height) {
   const meters = height / 100;
@@ -106,8 +113,16 @@ export function iacClass(iac, gender) {
   return findClass ? findClass.classification : null;
 }
 
-function pgConstant(cm, type) {
-  const items = pgConfig
+function pgConstantMale(cm, type) {
+  const items = pgMaleConfig
+    .filter((item) => item.type === type)
+    .sort((a, b) => b.threshold - a.threshold);
+  const findItem = items.find((item) => cm >= item.threshold);
+  return findItem ? findItem.constant : null;
+}
+
+function pgConstantFemale(cm, type) {
+  const items = pgFemaleConfig
     .filter((item) => item.type === type)
     .sort((a, b) => b.threshold - a.threshold);
   const findItem = items.find((item) => cm >= item.threshold);
@@ -115,17 +130,24 @@ function pgConstant(cm, type) {
 }
 
 export function calculatePg(a, b, c, gender) {
-  a = pgConstant(a, "A");
-  b = pgConstant(b, "B");
-  c = pgConstant(c, "C");
-
-  console.log(a, b, c, gender);
+  if (gender === "Male") {
+    a = pgConstantMale(a, "A");
+    b = pgConstantMale(b, "B");
+    c = pgConstantMale(c, "C");
+  } else if (gender === "Female") {
+    a = pgConstantFemale(a, "A");
+    b = pgConstantFemale(b, "B");
+    c = pgConstantFemale(c, "C");
+  }
 
   if (a && b && c) {
-    return gender === "Male"
-      ? a + b - c - 10.2
-      : gender === "Female"
-      ? a + b - c - 19.6
-      : null;
+    const result =
+      gender === "Male"
+        ? a + b - c - 10.2
+        : gender === "Female"
+        ? a + b - c - 19.6
+        : 0;
+
+    return result > 0 ? String(result.toFixed(1)) + "%" : null;
   }
 }

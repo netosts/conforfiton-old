@@ -13,7 +13,7 @@ http.interceptors.request.use((request) => {
   if ((!token && user1) || user1 != user2) {
     localStorage.removeItem("user");
     sessionStorage.removeItem("u:u");
-    // location.reload();
+    location.reload();
   }
   return request;
 });
