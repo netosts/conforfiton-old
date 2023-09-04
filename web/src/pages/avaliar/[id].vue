@@ -1,5 +1,9 @@
 <script setup>
-import { getStudentAvaliar, getRmConfig } from "@/services/api/get";
+import {
+  getStudentAvaliar,
+  getRmConfig,
+  getAntropometriaProtocol,
+} from "@/services/api/get";
 import { translateGender } from "@/services/helpers";
 import { formatAge } from "@/services/validators/formats";
 
@@ -26,6 +30,11 @@ async function initRequests() {
     store.student["age"] = formatAge(store.student.birth_date);
     if (store.types.includes("Neuromuscular")) {
       store.rmConfig = await getRmConfig(store.student.gender);
+    }
+    if (store.types.includes("Antropometria")) {
+      store.antropometria_protocol = await getAntropometriaProtocol(
+        store.student?.id
+      );
     }
   } catch {
     alert("Houve um erro e o aluno não pôde ser encontrado.");

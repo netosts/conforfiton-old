@@ -2,6 +2,7 @@
 import http from "../services/api/http";
 import Avaliar from "../components/Avaliar.vue";
 
+import { getUserIdSession } from "@/services/api/token";
 import { translateGender } from "@/services/helpers";
 
 import { definePage } from "vue-router/auto";
@@ -43,8 +44,11 @@ function getActiveStudents(value, limit) {
   if (inputBar.value === "") {
     value = "%";
   }
+  const personal_id = getUserIdSession();
   http
-    .get(`/student/active/${inputFilter.value}/${value}/${limit}`)
+    .get(
+      `/student/active/${inputFilter.value}/${value}/${limit}/${personal_id}`
+    )
     .then((res) => {
       students.value = res.data;
     })
@@ -57,8 +61,11 @@ function getInactiveStudents(value, limit) {
   if (inputBar.value === "") {
     value = "%";
   }
+  const personal_id = getUserIdSession();
   http
-    .get(`/student/inactive/${inputFilter.value}/${value}/${limit}`)
+    .get(
+      `/student/inactive/${inputFilter.value}/${value}/${limit}/${personal_id}`
+    )
     .then((res) => {
       students.value = res.data;
     })
@@ -71,8 +78,9 @@ function getAllStudents(value, limit) {
   if (inputBar.value === "") {
     value = "%";
   }
+  const personal_id = getUserIdSession();
   http
-    .get(`/student/${inputFilter.value}/${value}/${limit}`)
+    .get(`/student/${inputFilter.value}/${value}/${limit}/${personal_id}`)
     .then((res) => {
       students.value = res.data;
     })

@@ -89,3 +89,24 @@ export async function countPhoneDuplicate(phone_number) {
 //       throw err;
 //     });
 // };
+
+// Get protocol used in antropometry valuation
+export async function getAntropometriaProtocol(id) {
+  return http
+    .get(`/student/antropometria_protocol/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}
+
+export async function getPersonalCredentials(id) {
+  return http
+    .get(`/personal/credentials/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}

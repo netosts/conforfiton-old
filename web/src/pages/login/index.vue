@@ -1,5 +1,6 @@
 <script setup>
 import { getToken } from "@/services/api/post";
+import { getPersonalCredentials } from "@/services/api/get";
 import {
   setExpToken,
   setUserIdSession,
@@ -43,7 +44,13 @@ async function onSubmit(_, { setErrors }) {
     setUserIdLocal(data.user_id);
     setUserIdSession(data.user_id);
 
-    location.reload();
+    const credentials = await getPersonalCredentials(data.user_id);
+
+    console.log(credentials);
+
+    localStorage.setItem("credentials", JSON.stringify(credentials));
+
+    // location.reload();
   } catch (e) {
     console.error(e);
     setErrors({

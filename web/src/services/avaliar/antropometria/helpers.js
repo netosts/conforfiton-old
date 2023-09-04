@@ -5,6 +5,8 @@ import {
   iacConfig,
   pgMaleConfig,
   pgFemaleConfig,
+  pgConfigElder,
+  pgConfig,
 } from "./configs";
 
 export function calculateImc(weight, height) {
@@ -28,9 +30,9 @@ export function imcClass(imc) {
   return findClass ? findClass.classification : null;
 }
 
-export function caClass(ca, gender) {
+export function caClass(abs, gender) {
   const findClass = caConfig.reduce((closest, config) => {
-    if (ca >= config.threshold && gender === config.gender) {
+    if (abs >= config.threshold && gender === config.gender) {
       if (!closest || config.threshold >= closest.threshold) {
         return config;
       }
@@ -41,9 +43,9 @@ export function caClass(ca, gender) {
   return findClass ? findClass.classification : null;
 }
 
-export function caRisk(ca, gender) {
+export function caRisk(abs, gender) {
   const risk =
-    gender === "Male" ? ca - 102 : gender === "Female" ? ca - 88 : null;
+    gender === "Male" ? abs - 102 : gender === "Female" ? abs - 88 : null;
 
   if (!risk || risk < 1) {
     return null;
@@ -86,9 +88,9 @@ export function rcqClass(rcq, gender, age) {
   return findClass ? findClass.classification : null;
 }
 
-export function rcaeClass(ca, height) {
-  if (!ca) return null;
-  const rcae = ca / height;
+export function rcaeClass(abs, height) {
+  if (!abs) return null;
+  const rcae = abs / height;
   return rcae > 0.5 ? "Risco elevado" : "Risco baixo";
 }
 
@@ -148,6 +150,115 @@ export function calculatePg(a, b, c, gender) {
         ? a + b - c - 19.6
         : 0;
 
-    return result > 0 ? String(result.toFixed(1)) + "%" : null;
+    return result > 0 ? result.toFixed(1) : "Abaixo de 0";
   }
+}
+
+export function weltman(abs, weight, height, gender) {
+  const male = 0.31457 * abs - 0.10969 * weight + 10.8336;
+  const female = 0.11077 * abs - 0.17666 * height + 0.187 * weight + 51.03301;
+
+  return gender === "Male"
+    ? male.toFixed(1)
+    : gender === "Female"
+    ? female.toFixed(1)
+    : null;
+}
+
+export function jacksonPollock3(
+  chest,
+  abs,
+  thighs,
+  triceps,
+  suprailiac,
+  subscapularis,
+  age,
+  gender,
+  formula
+) {
+  if (age >= 60) {
+    return (triceps + subscapularis + suprailiac).toFixed(1);
+  }
+  let density;
+  if (gender === "Male") {
+    density =
+      1.10938 -
+      0.0008267 * (chest + abs + thighs) +
+      0.0000016 * (chest + abs + thighs) ** 2 -
+      0.0002574 * age;
+  } else if (gender === "Female") {
+    density =
+      1.0994992 -
+      0.0009929 * (triceps + suprailiac + thighs) +
+      0.0000023 * (triceps + suprailiac + thighs) ** 2 -
+      0.0001392 * age;
+  } else {
+    return null;
+  }
+
+  const siri = (4.95 / density - 4.5) * 100;
+  const brozek = (5.47 / density - 4.142) * 100;
+
+  return formula === "Siri"
+    ? siri.toFixed(1)
+    : formula === "Brozek"
+    ? brozek.toFixed(1)
+    : null;
+}
+
+export function falkner(triceps, subscapularis, suprailiac, abs) {
+  const calculus = (triceps + subscapularis + suprailiac + abs) * 0.153 + 5.783;
+  return calculus > 0 ? calculus.toFixed(1) : null;
+}
+
+export function jacksonPollock7(
+  chest,
+  midaxillary,
+  triceps,
+  subscapularis,
+  abs,
+  suprailiac,
+  thighs,
+  age,
+  gender,
+  formula
+) {
+  let density;
+  if (gender === "Male") {
+    density =
+      1.112 -
+      0.00043499 *
+        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) +
+      0.00000055 *
+        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) **
+          2 -
+      0.00028826 * age;
+  } else if (gender === "Female") {
+    density =
+      1.097 -
+      0.00046971 *
+        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) +
+      0.00000056 *
+        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) **
+          2 -
+      0.00012828 * age;
+  }
+
+  const siri = (4.95 / density - 4.5) * 100;
+  const brozek = (5.47 / density - 4.142) * 100;
+
+  return formula === "Siri"
+    ? siri.toFixed(1)
+    : formula === "Brozek"
+    ? brozek.toFixed(1)
+    : null;
+}
+
+export function pgClass(pg, gender, age) {
+  const config = age >= 60 ? pgConfigElder : pgConfig;
+  const items = config
+    .filter((item) => item.gender === gender)
+    .sort((a, b) => b.threshold - a.threshold);
+  const findItem = items.find((item) => pg >= item.threshold);
+  return findItem ? findItem.classification : null;
 }

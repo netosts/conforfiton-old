@@ -8,8 +8,7 @@ export const useAvaliarStore = defineStore("avaliar", () => {
 
   const rmConfig = ref(null);
 
-  const rcqCintura = ref(null);
-  const rcqQuadril = ref(null);
+  const antropometria_protocol = ref("Default");
 
-  return { types, student, rmConfig, rcqCintura, rcqQuadril };
+  return { types, student, rmConfig, antropometria_protocol };
 });

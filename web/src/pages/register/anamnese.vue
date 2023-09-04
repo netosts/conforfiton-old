@@ -3,10 +3,10 @@ import { postStudent, postAnamnese } from "../../services/api/post";
 import { q4Radio, YesOrNoRadio, days } from "../../services/register/lists";
 
 import { getUserIdSession } from "@/services/api/token";
-import { translateGender, translateDays } from "@/services/register/helpers";
+import { translateGender, translateDays } from "@/services/helpers";
 
 import { ref, onMounted } from "vue";
-import { definePage } from "vue-router/auto";
+import { definePage, useRouter } from "vue-router/auto";
 
 import { schema } from "../../services/register/schemas/anamnese";
 import { form } from "../../services/register/forms/anamnese";
@@ -19,6 +19,7 @@ definePage({
   meta: { requiresAuth: true },
 });
 
+const router = useRouter();
 // VARIABLES
 const q4Calc = ref(null);
 const transformTime = ref("dia");
@@ -72,10 +73,15 @@ async function onSubmit(_, { setFieldError }) {
     studentForm.created_at = formattedDate;
     studentForm.personal_id = userId;
 
+    console.log(studentForm);
+
     await postStudent(studentForm);
     await postAnamnese(form, studentForm.email);
 
     alert("Cadastro realizado com sucesso!");
+
+    sessionStorage.setItem("submitted", true);
+    location.reload();
   } catch (err) {
     console.error(err);
     throw err;
@@ -128,6 +134,10 @@ function pushToTime() {
 }
 
 onMounted(() => {
+  if (sessionStorage.getItem("submitted")) {
+    sessionStorage.setItem("submitted", false);
+    router.push("/");
+  }
   form.q13 = [];
 });
 </script>

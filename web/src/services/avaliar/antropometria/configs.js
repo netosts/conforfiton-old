@@ -496,3 +496,37 @@ export const pgFemaleConfig = [
   { type: "C", threshold: 50.16, constant: 85.13 },
   { type: "C", threshold: 50.8, constant: 86.21 },
 ];
+
+export const pgConfigElder = [
+  { gender: "Male", age: 60, threshold: 0, classification: "Abaixo" },
+  { gender: "Male", age: 60, threshold: 15, classification: "Regular" },
+  { gender: "Male", age: 60, threshold: 19.6, classification: "Acima" },
+  { gender: "Male", age: 60, threshold: 23.1, classification: "Muito acima" },
+  { gender: "Male", age: 70, threshold: 0, classification: "Abaixo" },
+  { gender: "Male", age: 70, threshold: 13.5, classification: "Regular" },
+  { gender: "Male", age: 70, threshold: 18.1, classification: "Acima" },
+  { gender: "Male", age: 70, threshold: 22.1, classification: "Muito acima" },
+  { gender: "Female", age: 60, threshold: 0, classification: "Abaixo" },
+  { gender: "Female", age: 60, threshold: 17, classification: "Regular" },
+  { gender: "Female", age: 60, threshold: 20.8, classification: "Acima" },
+  { gender: "Female", age: 60, threshold: 24.7, classification: "Muito acima" },
+  { gender: "Female", age: 70, threshold: 0, classification: "Abaixo" },
+  { gender: "Female", age: 70, threshold: 14.9, classification: "Regular" },
+  { gender: "Female", age: 70, threshold: 18.8, classification: "Acima" },
+  { gender: "Female", age: 70, threshold: 23.3, classification: "Muito acima" },
+];
+
+export const pgConfig = [
+  { gender: "Male", threshold: 0, classification: "Abaixo do normal" },
+  { gender: "Male", threshold: 12, classification: "Normal" },
+  { gender: "Male", threshold: 18, classification: "Acima do normal" },
+  { gender: "Male", threshold: 25.1, classification: "Tendência à obesidade" },
+  { gender: "Female", threshold: 0, classification: "Abaixo do normal" },
+  { gender: "Female", threshold: 16, classification: "Normal" },
+  { gender: "Female", threshold: 15, classification: "Acima do normal" },
+  {
+    gender: "Female",
+    threshold: 33.1,
+    classification: "Tendência à obesidade",
+  },
+];

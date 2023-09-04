@@ -1,20 +1,20 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from "vue";
 
 // Get the refs
-const sidebar = ref('');
+const sidebar = ref("");
 const sidebarIsActive = ref(null);
 // define the emit
-const emit = defineEmits(['sidebarIsActive']);
+const emit = defineEmits(["sidebarIsActive"]);
 
 // Functions
 function toggleSidebar() {
-  if (sidebar.value.classList.contains('sidebar-active')) {
+  if (sidebar.value.classList.contains("sidebar-active")) {
     sidebarIsActive.value = false;
   } else {
     sidebarIsActive.value = true;
   }
-};
+}
 // toggle sidebar when window resize
 function windowResizeSidebar() {
   if (window.innerWidth >= 1050) {
@@ -22,30 +22,35 @@ function windowResizeSidebar() {
   } else {
     sidebarIsActive.value = false;
   }
-};
+}
 
 function logout() {
-  localStorage.removeItem('user');
+  localStorage.removeItem("user");
+  sessionStorage.removeItem("u:u");
   location.reload();
-};
+}
 
 // DOM Mount Functions
 onMounted(() => {
-  window.addEventListener('resize', windowResizeSidebar);
+  window.addEventListener("resize", windowResizeSidebar);
   windowResizeSidebar();
 });
 onUnmounted(() => {
-  window.removeEventListener('resize', windowResizeSidebar);
+  window.removeEventListener("resize", windowResizeSidebar);
 });
 
 // Watch for changes and then send emit
 watch(sidebarIsActive, (newValue) => {
-  emit('sidebarIsActive', newValue);
+  emit("sidebarIsActive", newValue);
 });
 </script>
 
 <template>
-  <aside class="sidebar" :class="sidebarIsActive ? 'sidebar-active' : null" ref="sidebar">
+  <aside
+    class="sidebar"
+    :class="sidebarIsActive ? 'sidebar-active' : null"
+    ref="sidebar"
+  >
     <div class="menu-button" @click="toggleSidebar">
       <div class="line__1"></div>
       <div class="line__2"></div>
@@ -60,9 +65,7 @@ watch(sidebarIsActive, (newValue) => {
           <div class="logo__title">
             <h1>Confor<span>Fit</span></h1>
           </div>
-          <div class="logo__subtitle">
-            Soluções Esportivas
-          </div>
+          <div class="logo__subtitle">Soluções Esportivas</div>
         </RouterLink>
       </div>
       <div class="menu" v-show="sidebarIsActive">
@@ -96,8 +99,8 @@ watch(sidebarIsActive, (newValue) => {
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/styles/variables';
-@import '../assets/styles/mixins';
+@import "../assets/styles/variables";
+@import "../assets/styles/mixins";
 
 .sidebar {
   display: grid;
@@ -108,7 +111,7 @@ watch(sidebarIsActive, (newValue) => {
   z-index: 2;
   width: 250px;
   height: 100%;
-  transition: .2s;
+  transition: 0.2s;
   transform: translateX(-70%);
 
   @include mq(s) {
@@ -137,7 +140,7 @@ watch(sidebarIsActive, (newValue) => {
     height: 50px;
     border-radius: 50%;
     cursor: pointer;
-    transition: .3s;
+    transition: 0.3s;
 
     &:hover {
       gap: 5px;
@@ -193,7 +196,7 @@ watch(sidebarIsActive, (newValue) => {
     }
 
     &__subtitle {
-      font-size: .5rem;
+      font-size: 0.5rem;
       color: $txt-subtitle;
       margin-top: -8px;
       text-transform: uppercase;
@@ -206,7 +209,7 @@ watch(sidebarIsActive, (newValue) => {
 
     h2 {
       padding: 10px 15px;
-      font-size: .7rem;
+      font-size: 0.7rem;
       color: $menu-color;
       text-transform: uppercase;
     }
