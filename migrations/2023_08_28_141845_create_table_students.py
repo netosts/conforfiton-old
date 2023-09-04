@@ -10,6 +10,7 @@ class CreateTableStudents(Migration):
         with self.schema.create('students') as table:
             table.integer('person_id').unsigned().unique()
             table.integer('personal_id').unsigned()
+            table.string('antropometria_protocol', 21).nullable()
             table.text('note').nullable()
             table.soft_deletes()
 

@@ -62,3 +62,16 @@ async def new_personal(data: NewPersonal):
             "error": True,
             "data": f"Something went wrong and {person.name} could not be registered."
         }, 422)
+
+
+@personal_router.get('/credentials/{person_id}')
+async def get_personal_credentials(person_id):
+    personal = Person.select('name', 'role') \
+                     .join('personals as pr', 'person_id', '=', 'persons.id') \
+                     .where('person_id', person_id).first()
+    if not personal:
+        return JSONResponse({
+            'error': True,
+            'data': 'Personal not found.'
+        }, 404)
+    return personal.serialize()

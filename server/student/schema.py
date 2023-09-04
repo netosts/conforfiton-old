@@ -2,7 +2,7 @@
 import re
 from decimal import Decimal
 from enum import Enum
-from pydantic import BaseModel, validator, Field
+from pydantic import BaseModel, validator, Field, constr
 from datetime import timedelta, datetime
 
 from ..base_model.types import name, cpf, Genders, email, phone_number, birth_date, shirt_size, shorts_size, created_at
@@ -61,3 +61,7 @@ class NewStudent(BaseModel):
             if peso_decimal.as_tuple().exponent < -2:
                 raise ValueError("Weight must have up to 2 decimal numbers.")
         return value
+
+
+class UpdateAntropometria(BaseModel):
+    antropometria_protocol: constr(max_length=21, strip_whitespace=True)

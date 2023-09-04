@@ -18,6 +18,7 @@ from .user.routes import user_router
 from .anamnese.routes import anamnese_router
 from .rm_config.routes import rm_router
 from .neuromuscular.routes import neuromuscular_router
+from .personal.routes import personal_router
 
 from .person.model import Person
 
@@ -51,6 +52,7 @@ app.include_router(weight_router)
 app.include_router(anamnese_router)
 app.include_router(rm_router)
 app.include_router(neuromuscular_router)
+app.include_router(personal_router)
 
 
 @app.get('/cpf/{cpf}')  # CPF
