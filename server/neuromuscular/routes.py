@@ -6,7 +6,6 @@ from .model import Neuromuscular
 from .schema import NewNeuromuscular
 from ..person.model import Person
 
-
 neuromuscular_router = APIRouter(prefix='/neuromuscular')
 
 

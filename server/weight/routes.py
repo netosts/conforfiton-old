@@ -1,4 +1,5 @@
 # pylint: skip-file
+from kink import di
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -19,9 +20,9 @@ async def new_weight(person_id, data: NewWeight):
         return JSONResponse("Person not found", 404)
 
     weight = Weight()
-    weight.person_id = person.person_id
+    weight.person_id = person.id
     weight.weight = data.weight
-    weight.created_at = datetime
+    weight.created_at = data.created_at
     if weight.save():
         return JSONResponse({
             "error": False,
@@ -32,3 +33,9 @@ async def new_weight(person_id, data: NewWeight):
             "error": True,
             "data": f"Something went wrong while registering {person.name}'s WEIGHT."
         }, 422)
+
+
+@weight_router.delete('/{weight_id}')
+async def remove_weight(weight_id):
+    weight = Weight.where('id', weight_id).delete()  # HARD REMOVE
+    return weight
