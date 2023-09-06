@@ -530,3 +530,157 @@ export const pgConfig = [
     classification: "Tendência à obesidade",
   },
 ];
+
+export const filterConfig = [
+  {
+    gender: "Male",
+    area: "right_biceps_circumference",
+    protocols: ["Default"],
+  },
+  {
+    gender: "Male",
+    area: "right_forearm_circumference",
+    protocols: ["Default"],
+  },
+  {
+    gender: "Female",
+    area: "right_forearm_circumference",
+    protocols: ["Default"],
+  },
+  {
+    gender: "Female",
+    area: "thighs_circumference",
+    protocols: ["Default"],
+  },
+  {
+    gender: "Male",
+    area: "chest_skinfold",
+    protocols: [
+      "JacksonPollock3Siri",
+      "JacksonPollock3Brozek",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Female",
+    area: "chest_skinfold",
+    protocols: ["JacksonPollock7Siri", "JacksonPollock7Brozek"],
+  },
+  {
+    gender: "Male",
+    area: "abdominal_skinfold",
+    protocols: [
+      "Falkner",
+      "JacksonPollock3Siri",
+      "JacksonPollock3Brozek",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Female",
+    area: "abdominal_skinfold",
+    protocols: ["Falkner", "JacksonPollock7Siri", "JacksonPollock7Brozek"],
+  },
+  {
+    gender: "Male",
+    area: "thighs_skinfold",
+    protocols: [
+      "JacksonPollock3Siri",
+      "JacksonPollock3Brozek",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Female",
+    area: "thighs_skinfold",
+    protocols: [
+      "Default",
+      "JacksonPollock3Siri",
+      "JacksonPollock3Brozek",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Male",
+    area: "triceps_skinfold",
+    protocols: [
+      "Falkner",
+      "Idoso3Dobras",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Female",
+    area: "triceps_skinfold",
+    protocols: [
+      "JacksonPollock3Siri",
+      "JacksonPollock3Brozek",
+      "Falkner",
+      "Idoso3Dobras",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Male",
+    area: "suprailiac_skinfold",
+    protocols: [
+      "Falkner",
+      "Idoso3Dobras",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Female",
+    area: "suprailiac_skinfold",
+    protocols: [
+      "JacksonPollock3Siri",
+      "JacksonPollock3Brozek",
+      "Falkner",
+      "Idoso3Dobras",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Male",
+    area: "subscapularis_skinfold",
+    protocols: [
+      "Falkner",
+      "Idoso3Dobras",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Female",
+    area: "subscapularis_skinfold",
+    protocols: [
+      "Falkner",
+      "Idoso3Dobras",
+      "JacksonPollock7Siri",
+      "JacksonPollock7Brozek",
+    ],
+  },
+  {
+    gender: "Male",
+    area: "midaxillary_skinfold",
+    protocols: ["JacksonPollock7Siri", "JacksonPollock7Brozek"],
+  },
+  {
+    gender: "Female",
+    area: "midaxillary_skinfold",
+    protocols: ["JacksonPollock7Siri", "JacksonPollock7Brozek"],
+  },
+  {
+    gender: "Male",
+    area: "iliac_circumference",
+    protocols: ["IdosoTranWeltman"],
+  },
+];

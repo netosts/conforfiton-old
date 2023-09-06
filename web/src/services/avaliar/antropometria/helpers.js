@@ -7,6 +7,7 @@ import {
   pgFemaleConfig,
   pgConfigElder,
   pgConfig,
+  filterConfig,
 } from "./configs";
 
 export function calculateImc(weight, height) {
@@ -52,12 +53,12 @@ export function caRisk(abs, gender) {
   }
 
   const riskTable = {
-    dc: String(risk * 3) + "%",
-    diabetes_ii: String(risk * 2.7) + "%",
-    hypertension: String(risk * 1.8) + "%",
-    cancer: String(risk * 4) + "%",
-    depression: String(risk * 1.4) + "%",
-    metabolic_syndrome: String(risk * 2.5) + "%",
+    dc: String((risk * 3).toFixed(1)) + "%",
+    diabetes_ii: String((risk * 2.7).toFixed(1)) + "%",
+    hypertension: String((risk * 1.8).toFixed(1)) + "%",
+    cancer: String((risk * 4.0).toFixed(1)) + "%",
+    depression: String((risk * 1.4).toFixed(1)) + "%",
+    metabolic_syndrome: String((risk * 2.5).toFixed(1)) + "%",
   };
 
   return riskTable;
@@ -269,7 +270,7 @@ export function idoso3Dobras(triceps, subscapularis, suprailiac) {
 export function idosoTranWeltman(
   abs,
   hip,
-  suprailiac,
+  iliac_circumference,
   weight,
   height,
   age,
@@ -279,7 +280,7 @@ export function idosoTranWeltman(
     -47.371817 +
     0.57914807 * abs +
     0.25189114 * hip +
-    0.21366088 * suprailiac -
+    0.21366088 * iliac_circumference -
     0.35595404 * weight;
   const female =
     1.168297 -
@@ -294,4 +295,18 @@ export function idosoTranWeltman(
     : gender === "Female"
     ? female.toFixed(1)
     : null;
+}
+
+export function filterShow(gender, area, storeProtocol) {
+  if (!storeProtocol) return null;
+  const filteredConfig = filterConfig.filter(
+    (item) => item.gender === gender && item.area === area
+  )[0];
+
+  if (filteredConfig) {
+    return filteredConfig.protocols.some((item) =>
+      storeProtocol.includes(item)
+    );
+  }
+  return false;
 }

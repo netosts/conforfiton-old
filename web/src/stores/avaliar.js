@@ -8,7 +8,7 @@ export const useAvaliarStore = defineStore("avaliar", () => {
 
   const rmConfig = ref(null);
 
-  const antropometria_protocol = ref("Default");
+  const antropometria_protocol = ref(null);
 
   return { types, student, rmConfig, antropometria_protocol };
 });

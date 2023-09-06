@@ -1,7 +1,7 @@
 <script setup>
 import {
-  antropometria,
   antropometriaList,
+  results,
   protocolsList,
 } from "@/services/avaliar/antropometria/lists";
 
@@ -9,7 +9,7 @@ import { updateAntropometriaProtocol } from "@/services/api/put";
 
 import { useAvaliarStore } from "@/stores/avaliar";
 
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 import { schema } from "@/services/avaliar/antropometria/schema";
 import { Form } from "vee-validate";
@@ -24,7 +24,8 @@ const protocolButton = ref(true);
 function onSubmit(values) {
   try {
     console.log(values);
-    console.log(antropometria);
+    console.log(antropometriaList);
+    console.log(results);
 
     alert("Antropometria salvo com sucesso");
 
@@ -40,7 +41,7 @@ function onSubmit(values) {
 function renameProtocol(value) {
   if (!value) return "Sem protocolo";
   const findProtocol = protocolsList.value.find((item) => item.value === value);
-  return findProtocol.value;
+  return findProtocol.name;
 }
 
 function openSelect() {
@@ -81,33 +82,13 @@ async function updateProtocol() {
             >
               {{ protocol.name }}
             </option>
-            <!-- <option value="Weltman">Weltman</option>
-            <option value="JacksonPollock3Siri">
-              Jackson e Pollock 3 [Siri]
-            </option>
-            <option value="JacksonPollock3Brozek">
-              Jackson e Pollock 3 [Brozek]
-            </option>
-            <option value="Falkner">Falkner</option>
-            <option value="JacksonPollock7Siri">JacksonPollock 7 [Siri]</option>
-            <option value="JacksonPollock7Brozek">
-              JacksonPollock 7 [Brozek]
-            </option>
-            <option value="Idoso3Dobras">
-              JacksonPollock 7 [Brozek]
-            </option>
-            <option value="IdosoTranWeltman">
-              JacksonPollock 7 [Brozek]
-            </option> -->
           </select>
         </div>
       </div>
 
       <div class="antropometria" v-show="!!store.antropometria_protocol">
         <div class="antropometria__containers">
-          <h3 class="antropometria__containers--cm">
-            Circunferências (centímetros)
-          </h3>
+          <h3 class="antropometria__containers--cm">Medidas</h3>
           <div class="antropometria__containers--grid">
             <div v-for="(item, id) in antropometriaList" :key="id">
               <TextField
@@ -115,6 +96,7 @@ async function updateProtocol() {
                 type="number"
                 :name="item.name"
                 :label="item.label"
+                :span="item.span"
                 :meta="meta"
               />
             </div>
@@ -124,38 +106,38 @@ async function updateProtocol() {
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Índice de Massa Corporal</h3>
-            <p>IMC: {{ antropometria.imc_result }}</p>
-            <p>Classificação: {{ antropometria.imc_class }}</p>
+            <p>IMC: {{ results.imc_result }}</p>
+            <p>Classificação: {{ results.imc_class }}</p>
           </div>
           <div class="antropometria__containers">
             <h3>Circunferência Abdominal</h3>
-            <p>Classificação: {{ antropometria.ca_class }}</p>
-            <pre>{{ antropometria.ca_risk }}</pre>
+            <p>Classificação: {{ results.ca_class }}</p>
+            <pre>{{ results.ca_risk }}</pre>
           </div>
         </div>
 
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Relação Cintura Quadril</h3>
-            <p>RCQ: {{ antropometria.rcq_result }}</p>
-            <p>Classificação: {{ antropometria.rcq_class }}</p>
+            <p>RCQ: {{ results.rcq_result }}</p>
+            <p>Classificação: {{ results.rcq_class }}</p>
           </div>
           <div class="antropometria__containers">
             <h3>Relação Circunferência Abdominal Estatura</h3>
-            <p>Classificação: {{ antropometria.rcae_class }}</p>
+            <p>Classificação: {{ results.rcae_class }}</p>
           </div>
         </div>
 
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Índice de Adposidade Corporal</h3>
-            <p>IAC: {{ antropometria.iac_result }}</p>
-            <p>Classificação: {{ antropometria.iac_class }}</p>
+            <p>IAC: {{ results.iac_result }}</p>
+            <p>Classificação: {{ results.iac_class }}</p>
           </div>
           <div class="antropometria__containers">
             <h3>Porcentagem de Gordura</h3>
-            <p>Gordura: {{ antropometria.pg_result }}%</p>
-            <p>Classificação: {{ antropometria.pg_class }}</p>
+            <p>Gordura: {{ results.pg_result }}%</p>
+            <p>Classificação: {{ results.pg_class }}</p>
           </div>
         </div>
         <SubmitButton msg="Salvar" :meta="meta.meta" />

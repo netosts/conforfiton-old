@@ -16,63 +16,223 @@ import {
   pgClass,
   idoso3Dobras,
   idosoTranWeltman,
+  filterShow,
 } from "./helpers";
 
-import { reactive, computed, ref } from "vue";
+import { reactive, computed } from "vue";
 import { useAvaliarStore } from "@/stores/avaliar";
 
 const store = useAvaliarStore();
 
-export const antropometria = reactive({
-  abs: undefined,
-  waist: undefined,
-  hip: undefined,
-  thighs: undefined,
-  right_biceps: undefined,
-  right_forearm: undefined,
-  chest: undefined,
-  triceps: undefined,
-  suprailiac: undefined,
-  subscapularis: undefined,
-  midaxillary: undefined,
-  iliac_circumference: undefined,
+const form = reactive({
+  abdominal_circumference: {
+    value: undefined,
+    name: "abdominal_circumference",
+    label: "Abdômen",
+    span: "(perímetro)",
+    show: true,
+  },
+  waist_circumference: {
+    value: undefined,
+    name: "waist_circumference",
+    label: "Cintura",
+    span: "(perímetro)",
+    show: true,
+  },
+  hip_circumference: {
+    value: undefined,
+    name: "hip_circumference",
+    label: "Quadril",
+    span: "(perímetro)",
+    show: true,
+  },
+  thighs_circumference: {
+    value: undefined,
+    name: "thighs_circumference",
+    label: "Coxa",
+    span: "(perímetro)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.thighs_circumference.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  right_biceps_circumference: {
+    value: undefined,
+    name: "right_biceps_circumference",
+    label: "Bíceps Direito",
+    span: "(perímetro)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.right_biceps_circumference.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  right_forearm_circumference: {
+    value: undefined,
+    name: "right_forearm_circumference",
+    label: "Antebraço Direito",
+    span: "(perímetro)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.right_forearm_circumference.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  chest_skinfold: {
+    value: undefined,
+    name: "chest_skinfold",
+    label: "Peitoral",
+    span: "(dobra cutânea)",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.chest_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  triceps_skinfold: {
+    value: undefined,
+    name: "triceps_skinfold",
+    label: "Tríceps",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.triceps_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  suprailiac_skinfold: {
+    value: undefined,
+    name: "suprailiac_skinfold",
+    label: "Suprailíaca",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.suprailiac_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  subscapularis_skinfold: {
+    value: undefined,
+    name: "subscapularis_skinfold",
+    label: "Subescapular",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.subscapularis_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  midaxillary_skinfold: {
+    value: undefined,
+    name: "midaxiallry",
+    label: "Axilar Média",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.midaxillary_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  abdominal_skinfold: {
+    value: undefined,
+    name: "abdominal_skinfold",
+    label: "Abdominal",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.abdominal_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  thighs_skinfold: {
+    value: undefined,
+    name: "thighs_skinfold",
+    label: "Coxa",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.thighs_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  iliac_circumference: {
+    value: undefined,
+    name: "iliac_circumference",
+    label: "Perímetro ilíaco",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.iliac_circumference.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+});
+
+export const antropometriaList = computed(() => {
+  return Object.values(form).filter((item) => item.show);
+});
+
+export const results = reactive({
   imc_result: computed(() =>
     calculateImc(store.student?.weight, store.student?.height)
   ),
-  imc_class: computed(() => imcClass(antropometria.imc)),
-  ca_class: computed(() => caClass(antropometria.abs, store.student?.gender)),
-  ca_risk: computed(() => caRisk(antropometria.abs, store.student?.gender)),
+  imc_class: computed(() => imcClass(results.imc_result)),
+  ca_class: computed(() =>
+    caClass(form.abdominal_circumference.value, store.student?.gender)
+  ),
+  ca_risk: computed(() =>
+    caRisk(form.abdominal_circumference.value, store.student?.gender)
+  ),
   rcq_result: computed(() =>
-    calculateRcq(antropometria.waist, antropometria.hip)
+    calculateRcq(form.waist_circumference.value, form.hip_circumference.value)
   ),
   rcq_class: computed(() =>
-    rcqClass(
-      antropometria.rcq_result,
-      store.student?.gender,
-      store.student?.age
-    )
+    rcqClass(results.rcq_result, store.student?.gender, store.student?.age)
   ),
   rcae_class: computed(() =>
-    rcaeClass(antropometria.abs, store.student?.height)
+    rcaeClass(form.abdominal_circumference.value, store.student?.height)
   ),
   iac_result: computed(() =>
-    calculateIac(antropometria.hip, store.student?.height)
+    calculateIac(form.hip_circumference.value, store.student?.height)
   ),
   iac_class: computed(() =>
-    iacClass(antropometria.iac_result, store.student?.gender)
+    iacClass(results.iac_result, store.student?.gender)
   ),
   pg_result: computed(() => {
     if (store.antropometria_protocol === "Default") {
       return calculatePg(
-        antropometria.right_biceps,
-        antropometria.abs,
-        antropometria.right_forearm,
-        antropometria.thighs,
+        form.right_biceps_circumference.value,
+        form.abdominal_circumference.value,
+        form.right_forearm_circumference.value,
+        form.thighs_circumference.value,
         store.student?.gender
       );
     } else if (store.antropometria_protocol === "Weltman") {
       return weltman(
-        antropometria.abs,
+        form.abdominal_circumference.value,
         store.student?.weight,
         store.student?.height,
         store.student?.gender
@@ -84,21 +244,21 @@ export const antropometria = reactive({
       const searchStr = "JacksonPollock3";
       const formula = store.antropometria_protocol.substring(searchStr.length);
       return jacksonPollock3(
-        antropometria.chest,
-        antropometria.abs,
-        antropometria.thighs,
-        antropometria.triceps,
-        antropometria.suprailiac,
+        form.chest_skinfold.value,
+        form.abdominal_skinfold.value,
+        form.thighs_skinfold.value,
+        form.triceps_skinfold.value,
+        form.suprailiac_skinfold.value,
         store.student?.age,
         store.student?.gender,
         formula
       );
     } else if (store.antropometria_protocol === "Falkner") {
       return falkner(
-        antropometria.triceps,
-        antropometria.subscapularis,
-        antropometria.suprailiac,
-        antropometria.abs
+        form.triceps_skinfold.value,
+        form.subscapularis_skinfold.value,
+        form.suprailiac_skinfold.value,
+        form.abdominal_skinfold.value
       );
     } else if (
       store.antropometria_protocol === "JacksonPollock7Siri" ||
@@ -107,28 +267,28 @@ export const antropometria = reactive({
       const searchStr = "JacksonPollock7";
       const formula = store.antropometria_protocol.substring(searchStr.length);
       return jacksonPollock7(
-        antropometria.chest,
-        antropometria.midaxillary,
-        antropometria.triceps,
-        antropometria.subscapularis,
-        antropometria.abs,
-        antropometria.suprailiac,
-        antropometria.thighs,
+        form.chest_skinfold.value,
+        form.midaxillary_skinfold.value,
+        form.triceps_skinfold.value,
+        form.subscapularis_skinfold.value,
+        form.abdominal_skinfold.value,
+        form.suprailiac_skinfold.value,
+        form.thighs_skinfold.value,
         store.student?.age,
         store.student?.gender,
         formula
       );
     } else if (store.antropometria_protocol === "Idoso3Dobras") {
       return idoso3Dobras(
-        antropometria.triceps,
-        antropometria.subscapularis,
-        antropometria.suprailiac
+        form.triceps_skinfold.value,
+        form.subscapularis_skinfold.value,
+        form.suprailiac_skinfold.value
       );
     } else if (store.antropometria_protocol === "IdosoTranWeltman") {
       return idosoTranWeltman(
-        antropometria.abs,
-        antropometria.hip,
-        antropometria.suprailiac,
+        form.abdominal_circumference.value,
+        form.hip_circumference.value,
+        form.iliac_circumference.value,
         store.student?.weight,
         store.student?.height,
         store.student?.age,
@@ -137,128 +297,11 @@ export const antropometria = reactive({
     }
   }),
   pg_class: computed(() =>
-    pgClass(antropometria.pg_result, store.student?.gender, store.student?.age)
+    pgClass(results.pg_result, store.student?.gender, store.student?.age)
   ),
 });
 
-const antropometriaForAppend = [
-  {
-    value: antropometria.abs,
-    name: "abs",
-    label: "Abdominal",
-    show: ref(true),
-  },
-  {
-    value: antropometria.waist,
-    name: "waist",
-    label: "Cintura",
-    show: ref(true),
-  },
-  { value: antropometria.hip, name: "hip", label: "Quadril", show: ref(true) },
-  {
-    value: antropometria.thighs,
-    name: "thighs",
-    label: "Coxa",
-    show: computed(() => {
-      if (store.student?.gender === "Female") {
-        return ["Default", "JacksonPollock3Siri", "JacksonPollock3Brozek"].some(
-          (item) => store.antropometria_protocol?.includes(item)
-        );
-      } else if (store.student?.gender === "Male") {
-        return ["JacksonPollock3Siri", "JacksonPollock3Brozek"].some((item) =>
-          store.antropometria_protocol?.includes(item)
-        );
-      }
-    }),
-  },
-  {
-    value: antropometria.right_biceps,
-    name: "right_biceps",
-    label: "Bíceps Direito",
-    show: computed(() => {
-      if (store.student?.gender === "Male") {
-        return ["Default"].some((item) =>
-          store.antropometria_protocol?.includes(item)
-        );
-      }
-    }),
-  },
-  {
-    value: antropometria.right_forearm,
-    name: "right_forearm",
-    label: "Antebraço Direito",
-    show: computed(() => {
-      if (
-        store.student?.gender === "Male" ||
-        store.student?.gender === "Female"
-      ) {
-        return ["Default"].some((item) =>
-          store.antropometria_protocol?.includes(item)
-        );
-      }
-    }),
-  },
-  {
-    value: antropometria.chest,
-    name: "chest",
-    label: "Peitoral",
-    show: computed(() => {
-      if (store.student?.gender === "Male") {
-        return ["JacksonPollock3Siri", "JacksonPollock3Brozek"].some((item) =>
-          store.antropometria_protocol?.includes(item)
-        );
-      }
-    }),
-  },
-  {
-    value: antropometria.triceps,
-    name: "triceps",
-    label: "Tríceps",
-    show: computed(() => {
-      if (store.student?.gender === "Female") {
-        return ["JacksonPollock3Siri", "JacksonPollock3Brozek"].some((item) =>
-          store.antropometria_protocol?.includes(item)
-        );
-      }
-    }),
-  },
-  {
-    value: antropometria.suprailiac,
-    name: "suprailiac",
-    label: "Suprailíaca",
-    show: computed(() => {
-      if (store.student?.gender === "Female") {
-        return ["JacksonPollock3Siri", "JacksonPollock3Brozek"].some((item) =>
-          store.antropometria_protocol?.includes(item)
-        );
-      }
-    }),
-  },
-  {
-    value: antropometria.subscapularis,
-    name: "subscapularis",
-    label: "Subescapular",
-    show: ref(false),
-  },
-  {
-    value: antropometria.midaxiallry,
-    name: "midaxiallry",
-    label: "Axilar Média",
-    show: ref(true),
-  },
-  {
-    value: antropometria.iliac_circumference,
-    name: "iliac_circumference",
-    label: "Perímetro ilíaco",
-    show: ref(true),
-  },
-];
-
-export const antropometriaList = computed(() => {
-  return antropometriaForAppend.filter((item) => item.show.value);
-});
-
-export const protocolsType = {
+const protocolsType = {
   default: [
     { value: "Default", name: "Padrão" },
     { value: "Weltman", name: "Weltman" },
