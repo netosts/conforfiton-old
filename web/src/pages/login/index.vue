@@ -46,11 +46,9 @@ async function onSubmit(_, { setErrors }) {
 
     const credentials = await getPersonalCredentials(data.user_id);
 
-    console.log(credentials);
-
     localStorage.setItem("credentials", JSON.stringify(credentials));
 
-    // location.reload();
+    location.reload();
   } catch (e) {
     console.error(e);
     setErrors({

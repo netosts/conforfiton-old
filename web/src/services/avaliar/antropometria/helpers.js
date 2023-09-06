@@ -13,7 +13,7 @@ export function calculateImc(weight, height) {
   const meters = height / 100;
   const imc = weight / meters ** 2;
 
-  return imc.toFixed(1);
+  return imc.toFixed(2);
 }
 
 export function imcClass(imc) {
@@ -131,15 +131,18 @@ function pgConstantFemale(cm, type) {
   return findItem ? findItem.constant : null;
 }
 
-export function calculatePg(a, b, c, gender) {
+export function calculatePg(rightBiceps, abs, rightForearm, thighs, gender) {
+  let a,
+    b,
+    c = null;
   if (gender === "Male") {
-    a = pgConstantMale(a, "A");
-    b = pgConstantMale(b, "B");
-    c = pgConstantMale(c, "C");
+    a = pgConstantMale(rightBiceps, "A");
+    b = pgConstantMale(abs, "B");
+    c = pgConstantMale(rightForearm, "C");
   } else if (gender === "Female") {
-    a = pgConstantFemale(a, "A");
-    b = pgConstantFemale(b, "B");
-    c = pgConstantFemale(c, "C");
+    a = pgConstantFemale(abs, "A");
+    b = pgConstantFemale(thighs, "B");
+    c = pgConstantFemale(rightForearm, "C");
   }
 
   if (a && b && c) {
@@ -171,14 +174,10 @@ export function jacksonPollock3(
   thighs,
   triceps,
   suprailiac,
-  subscapularis,
   age,
   gender,
   formula
 ) {
-  if (age >= 60) {
-    return (triceps + subscapularis + suprailiac).toFixed(1);
-  }
   let density;
   if (gender === "Male") {
     density =
@@ -261,4 +260,38 @@ export function pgClass(pg, gender, age) {
     .sort((a, b) => b.threshold - a.threshold);
   const findItem = items.find((item) => pg >= item.threshold);
   return findItem ? findItem.classification : null;
+}
+
+export function idoso3Dobras(triceps, subscapularis, suprailiac) {
+  return (triceps + subscapularis + suprailiac).toFixed(1);
+}
+
+export function idosoTranWeltman(
+  abs,
+  hip,
+  suprailiac,
+  weight,
+  height,
+  age,
+  gender
+) {
+  const male =
+    -47.371817 +
+    0.57914807 * abs +
+    0.25189114 * hip +
+    0.21366088 * suprailiac -
+    0.35595404 * weight;
+  const female =
+    1.168297 -
+    0.002824 * abs +
+    0.0000122098 * abs ** 2 -
+    0.000733128 * hip +
+    0.000510477 * height -
+    0.000216161 * age;
+
+  return gender === "Male"
+    ? male.toFixed(1)
+    : gender === "Female"
+    ? female.toFixed(1)
+    : null;
 }

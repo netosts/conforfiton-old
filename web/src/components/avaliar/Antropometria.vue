@@ -1,12 +1,17 @@
 <script setup>
-import { antropometria } from "@/services/avaliar/antropometria/lists";
+import {
+  antropometria,
+  antropometriaList,
+  protocolsList,
+} from "@/services/avaliar/antropometria/lists";
 
 import { updateAntropometriaProtocol } from "@/services/api/put";
 
 import { useAvaliarStore } from "@/stores/avaliar";
 
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
+import { schema } from "@/services/avaliar/antropometria/schema";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
@@ -17,23 +22,25 @@ const selectProtocol = ref(false);
 const protocolButton = ref(true);
 
 function onSubmit(values) {
-  console.log(values);
-  console.log(antropometria);
-}
+  try {
+    console.log(values);
+    console.log(antropometria);
 
-const protocols = {
-  Default: "Padrão",
-  Weltman: "Weltman",
-  JacksonPollock3Siri: "Jackson e Pollock 3 [Siri]",
-  JacksonPollock3Brozek: "Jackson e Pollock 3 [Brozek]",
-  Falkner: "Falkner",
-  JacksonPollock7Siri: "JacksonPollock 7 [Siri]",
-  JacksonPollock7Brozek: "JacksonPollock 7 [Brozek]",
-};
+    alert("Antropometria salvo com sucesso");
+
+    // Remove Antropometria from the screen
+    const indexToRemove = store.types.indexOf("Antropometria");
+    store.types.splice(indexToRemove, 1);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
 
 function renameProtocol(value) {
   if (!value) return "Sem protocolo";
-  return protocols[value];
+  const findProtocol = protocolsList.value.find((item) => item.value === value);
+  return findProtocol.value;
 }
 
 function openSelect() {
@@ -50,7 +57,7 @@ async function updateProtocol() {
 
 <template>
   <section>
-    <Form @submit="onSubmit">
+    <Form @submit="onSubmit" :validation-schema="schema" v-slot="meta">
       <h2 class="avaliar--title">Antropometria</h2>
 
       <div class="protocol">
@@ -60,16 +67,21 @@ async function updateProtocol() {
         </p>
         <div class="protocol__update">
           <button type="button" @click="openSelect" v-show="protocolButton">
-            Mudar protocolo
-            <font-awesome-icon icon="fa-solid fa-plus" />
+            Novo protocolo
           </button>
           <select
             v-model="store.antropometria_protocol"
             v-show="selectProtocol"
             @change="updateProtocol"
           >
-            <option value="Default">Padrão</option>
-            <option value="Weltman">Weltman</option>
+            <option
+              v-for="(protocol, id) in protocolsList"
+              :key="id"
+              :value="protocol.value"
+            >
+              {{ protocol.name }}
+            </option>
+            <!-- <option value="Weltman">Weltman</option>
             <option value="JacksonPollock3Siri">
               Jackson e Pollock 3 [Siri]
             </option>
@@ -81,120 +93,72 @@ async function updateProtocol() {
             <option value="JacksonPollock7Brozek">
               JacksonPollock 7 [Brozek]
             </option>
+            <option value="Idoso3Dobras">
+              JacksonPollock 7 [Brozek]
+            </option>
+            <option value="IdosoTranWeltman">
+              JacksonPollock 7 [Brozek]
+            </option> -->
           </select>
         </div>
       </div>
 
-      <div class="antropometria">
+      <div class="antropometria" v-show="!!store.antropometria_protocol">
         <div class="antropometria__containers">
           <h3 class="antropometria__containers--cm">
             Circunferências (centímetros)
           </h3>
           <div class="antropometria__containers--grid">
-            <TextField
-              v-model="antropometria.abs"
-              type="number"
-              name="abs"
-              label="Abdominal"
-            />
-            <TextField
-              v-model="antropometria.waist"
-              type="number"
-              name="waist"
-              label="Cintura"
-            />
-            <TextField
-              v-model="antropometria.hip"
-              type="number"
-              name="hip"
-              label="Quadril"
-            />
-            <TextField
-              v-model="antropometria.thighs"
-              type="number"
-              name="thighs"
-              label="Coxa"
-            />
-            <TextField
-              v-model="antropometria.rightForearm"
-              type="number"
-              name="rightForearm"
-              label="Antebraço Direito"
-            />
-            <TextField
-              v-model="antropometria.chest"
-              type="number"
-              name="chest"
-              label="Peitoral"
-            />
-            <TextField
-              v-model="antropometria.triceps"
-              type="number"
-              name="triceps"
-              label="Tríceps"
-            />
-            <TextField
-              v-model="antropometria.suprailiac"
-              type="number"
-              name="suprailiac"
-              label="Suprailíaca"
-            />
-            <TextField
-              v-model="antropometria.subscapularis"
-              type="number"
-              name="subscapularis"
-              label="Subescapular"
-            />
-            <TextField
-              v-model="antropometria.midaxiallry"
-              type="number"
-              name="midaxiallry"
-              label="Axilar Média"
-            />
+            <div v-for="(item, id) in antropometriaList" :key="id">
+              <TextField
+                v-model="item.value"
+                type="number"
+                :name="item.name"
+                :label="item.label"
+                :meta="meta"
+              />
+            </div>
           </div>
         </div>
 
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Índice de Massa Corporal</h3>
-            <p>IMC: {{ antropometria.imc }}</p>
-            <p>Classificação: {{ antropometria.imcClass }}</p>
+            <p>IMC: {{ antropometria.imc_result }}</p>
+            <p>Classificação: {{ antropometria.imc_class }}</p>
           </div>
           <div class="antropometria__containers">
             <h3>Circunferência Abdominal</h3>
-            <p>Classificação: {{ antropometria.caClass }}</p>
-            <pre>{{ antropometria.caRisk }}</pre>
+            <p>Classificação: {{ antropometria.ca_class }}</p>
+            <pre>{{ antropometria.ca_risk }}</pre>
           </div>
         </div>
 
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Relação Cintura Quadril</h3>
-            <p>RCQ: {{ antropometria.rcq }}</p>
-            <p>Classificação: {{ antropometria.rcqClass }}</p>
+            <p>RCQ: {{ antropometria.rcq_result }}</p>
+            <p>Classificação: {{ antropometria.rcq_class }}</p>
           </div>
           <div class="antropometria__containers">
             <h3>Relação Circunferência Abdominal Estatura</h3>
-            <p>Classificação: {{ antropometria.rcaeClass }}</p>
+            <p>Classificação: {{ antropometria.rcae_class }}</p>
           </div>
         </div>
 
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Índice de Adposidade Corporal</h3>
-            <p>IAC: {{ antropometria.iac }}</p>
-            <p>Classificação: {{ antropometria.iacClass }}</p>
+            <p>IAC: {{ antropometria.iac_result }}</p>
+            <p>Classificação: {{ antropometria.iac_class }}</p>
           </div>
           <div class="antropometria__containers">
             <h3>Porcentagem de Gordura</h3>
-            <p>Gordura: {{ antropometria.pg }}%</p>
-            <p>Classificação: {{ antropometria.pgClass }}</p>
+            <p>Gordura: {{ antropometria.pg_result }}%</p>
+            <p>Classificação: {{ antropometria.pg_class }}</p>
           </div>
         </div>
-      </div>
-
-      <div class="submit--btn">
-        <SubmitButton msg="Salvar" />
+        <SubmitButton msg="Salvar" :meta="meta.meta" />
       </div>
     </Form>
   </section>
@@ -230,7 +194,7 @@ section {
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 20px;
-      margin: 0 20px;
+      margin: 0 20px 10px 20px;
       @include mq(m) {
         gap: 10px;
         flex-direction: column;
