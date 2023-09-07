@@ -90,9 +90,10 @@ async function onSubmit(_, { setFieldError }) {
 }
 
 function pushToTable(value) {
+  value.day = translateDays(value.day);
   const formQ = form.q13;
   if (!formQ.length) {
-    formQ.push({ day: translateDays(value.day), periods: [value.value] });
+    formQ.push({ day: value.day, periods: [value.value] });
     return;
   }
   const hasDay = formQ.some((item) => item.day === value.day);
@@ -110,11 +111,12 @@ function pushToTable(value) {
       formQ[index].periods.push(value.value);
     }
   } else {
-    formQ.push({ day: translateDays(value.day), periods: [value.value] });
+    formQ.push({ day: value.day, periods: [value.value] });
   }
 }
 
 function disableCheckbox(value) {
+  value = translateDays(value);
   const formQ = form.q13;
   const hasDay = formQ.some((item) => item.day === value);
   if (formQ.length >= form.q12 && !hasDay) {

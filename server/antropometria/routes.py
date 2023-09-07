@@ -3,8 +3,9 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from .model import Antropometria
-from .schema import NewAntropometria
+from .schema import NewAntropometria, UpdateAntropometria
 from ..person.model import Person
+from ..student.model import Student
 
 import json
 
@@ -70,4 +71,27 @@ async def new_antropometria(person_id, data: NewAntropometria):
         return JSONResponse({
             "error": True,
             "data": f"Something went wrong while registering {person.name}'s Antropometria."
+        }, 422)
+
+
+@antropometria_router.get("/protocol/{person_id}")
+async def get_antropometria_protocol(person_id):
+    protocol = Student.select('antropometria_protocol').where(
+        'person_id', person_id).first()
+    return protocol.antropometria_protocol
+
+
+@antropometria_router.put("/protocol/{person_id}")
+async def update_antropometria_protocol(person_id, data: UpdateAntropometria):
+    student = Student.find(person_id)
+    student.antropometria_protocol = data.antropometria_protocol
+    if student.save():
+        return JSONResponse({
+            "error": False,
+            "data": f"Antropometria protocol was successfully updated."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Something went wrong and Antropometria protocol could not be updated."
         }, 422)

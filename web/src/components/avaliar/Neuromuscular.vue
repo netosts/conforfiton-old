@@ -1,171 +1,153 @@
 <script setup>
-import { postNeuromuscular } from "@/services/api/post";
+import { updateNeuromuscularProtocol } from "@/services/api/put";
 
 import {
-  repsList,
-  exerciseList,
-  total,
+  protocolsList,
+  neuroComponents,
 } from "@/services/avaliar/neuromuscular/lists";
-import { createNeuromuscularForm } from "@/services/avaliar/neuromuscular/helpers";
 
-import { useRoute } from "vue-router/auto";
+import { ref } from "vue";
+
 import { useAvaliarStore } from "@/stores/avaliar";
 
-import { schema } from "@/services/avaliar/neuromuscular/schema";
-import { Form } from "vee-validate";
-import TextField from "../TextField.vue";
-import SubmitButton from "@/components/SubmitButton.vue";
-
-const route = useRoute();
 const store = useAvaliarStore();
 
-async function onSubmit() {
-  try {
-    const form = await createNeuromuscularForm(exerciseList, total);
-    await postNeuromuscular(form, route.params.id);
+const selectProtocol = ref(false);
+const protocolButton = ref(true);
 
-    sessionStorage.setItem("submitted", true);
+function renameProtocol(value) {
+  if (!value) return "Sem protocolo";
+  const findProtocol = protocolsList.value.find((item) => item.value === value);
+  return findProtocol.name;
+}
 
-    alert("Neuromuscular salvo com sucesso");
+function openSelect() {
+  selectProtocol.value = !selectProtocol.value;
+  protocolButton.value = false;
+}
 
-    // Remove Neuromuscular from the screen
-    const indexToRemove = store.types.indexOf("Neuromuscular");
-    store.types.splice(indexToRemove, 1);
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
+async function updateProtocol() {
+  const data = { neuromuscular_protocol: store.neuromuscular_protocol };
+  await updateNeuromuscularProtocol(store.student?.id, data);
+  selectProtocol.value = false;
 }
 </script>
 
 <template>
   <section>
-    <Form @submit="onSubmit" :validation-schema="schema" v-slot="meta">
-      <h2 class="avaliar--title">Neuromuscular</h2>
-      <table class="neuro-table">
-        <thead>
-          <tr>
-            <th>Exercício</th>
-            <th>Peso L.</th>
-            <th>Reps</th>
-            <th>1RM</th>
-            <th>Pontos</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(exercise, id) in exerciseList" :key="id">
-            <td>{{ exercise.title }}</td>
-            <td>
-              <TextField
-                v-model="exercise.lifted"
-                :name="`${exercise.name}_lifted`"
-                type="number"
-                :meta="meta"
-              />
-            </td>
-            <td>
-              <TextField
-                v-model="exercise.reps"
-                :name="`${exercise.name}_reps`"
-                type="select"
-                :options="repsList"
-                :meta="meta"
-              />
-            </td>
-            <td>{{ exercise.rm }}</td>
-            <td>{{ exercise.points }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <h2 class="avaliar--title">Neuromuscular</h2>
 
-      <div class="neuro-total">
-        <h3>Total:</h3>
-        <span>{{ total }}</span>
+    <div class="protocol">
+      <p>
+        Protocolo:
+        <span>{{ renameProtocol(store.neuromuscular_protocol) }}</span>
+      </p>
+      <div class="protocol__update">
+        <button type="button" @click="openSelect" v-show="protocolButton">
+          Novo protocolo
+        </button>
+        <select
+          v-model="store.neuromuscular_protocol"
+          v-show="selectProtocol"
+          @change="updateProtocol"
+        >
+          <option
+            v-for="(protocol, id) in protocolsList"
+            :key="id"
+            :value="protocol.value"
+          >
+            {{ protocol.name }}
+          </option>
+        </select>
       </div>
+    </div>
 
-      <div class="submit--btn">
-        <SubmitButton msg="Salvar" :meta="meta.meta" />
-      </div>
-    </Form>
+    <div
+      v-for="(item, id) in neuroComponents"
+      :key="id"
+      class="neuromuscular"
+      v-show="!!store.neuromuscular_protocol"
+    >
+      <component
+        v-if="item.protocol === store.neuromuscular_protocol"
+        :is="item.component"
+      />
+    </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/styles/variables";
+@import "@/assets/styles/mixins";
 
 section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  background-color: white;
+  color: $txt-aside;
 
-  form {
+  h2 {
+    padding: 10px;
+    border-bottom: 1px solid $input-border;
+    text-align: center;
+    color: $txt-title;
+  }
+
+  .protocol {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    background-color: white;
-    color: $txt-aside;
-
-    h2 {
-      padding: 10px;
-      border-bottom: 1px solid $input-border;
-      text-align: center;
-      color: $txt-title;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 0 20px 10px 20px;
+    @include mq(m) {
+      gap: 10px;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .neuro-table {
-      margin: 0px 10px;
-      border-collapse: collapse;
-      border: 1px solid $input-border;
-
-      th,
-      td {
-        border: 1px solid $input-border;
-        padding: 8px;
-        text-align: center;
+    p {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      span {
+        font-weight: 600;
       }
+    }
 
-      th {
-        color: $txt-aside;
-      }
+    &__update {
+      button {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        border-radius: $border-radius;
+        background-color: $buttons;
+        color: white;
+        padding: 2px 8px;
+        transition: 0.2s;
+        cursor: pointer;
 
-      td {
-        font-weight: 500;
-        color: $txt-aside;
-
-        &:not(:nth-child(1)) {
-          min-width: 50px;
-          max-width: 100px;
-
-          .register-field {
-            min-width: 50px;
-          }
+        &:hover {
+          filter: brightness(0.9);
         }
       }
     }
+    select {
+      padding: 8px 15px 8px 10px;
+      width: 250px;
+      outline: none;
+      border: none;
+      border-radius: $border-radius;
+      background-color: $buttons;
+      cursor: pointer;
+      color: white;
 
-    .neuro-total {
-      display: flex;
-      margin: 0 10px 10px 10px;
-      border: 1px solid $input-border;
-
-      h3 {
-        padding: 0 10px;
-        font-size: 1.2rem;
+      @include mq(m) {
+        width: 100%;
       }
-
-      span {
-        flex: 1;
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: $logo-color;
-      }
-    }
-
-    .submit--btn {
-      margin: 10px;
-      margin-top: -5px;
     }
   }
 }

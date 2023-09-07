@@ -12,7 +12,7 @@ class Period(IntEnum):
 
 class JsonQ4(BaseModel):
     treinando: bool
-    tempo: int = Field(ge=1, le=100)
+    tempo: int
 
 
 class JsonQ13(BaseModel):

@@ -50,6 +50,19 @@ export async function postNeuromuscular(form, id) {
   }
 }
 
+export async function postNeuromuscularRml(form, id) {
+  try {
+    const response = await http.post(`/neuromuscular/rml/${id}`, form);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    alert(
+      `${err.response.status}(${err.response.statusText}): NEUROMUSCULAR RML NÃO FOI CRIADA`
+    );
+    throw err;
+  }
+}
+
 export async function postAntropometria(form, id) {
   try {
     const response = await http.post(`/antropometria/${id}`, form);

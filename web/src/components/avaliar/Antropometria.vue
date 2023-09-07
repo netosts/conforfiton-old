@@ -286,11 +286,10 @@ section {
         }
       }
     }
-
-    .submit--btn {
-      margin: 10px;
-      margin-top: -5px;
-    }
   }
+}
+
+.submitbox {
+  margin-top: 10px;
 }
 </style>

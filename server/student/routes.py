@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from .model import Student
-from .schema import NewStudent, UpdateNeuromuscular, UpdateAntropometria
+from .schema import NewStudent
 from ..person.model import Person
 from ..weight.model import Weight
 
@@ -210,42 +210,3 @@ async def get_student_for_avaliar_page(person_id):
             "error": True,
             "das": "Student not found."
         }, 404)
-
-
-@student_router.put("/neuromuscular_protocol/{person_id}")
-async def update_neuromuscular_protocol(person_id, data: UpdateNeuromuscular):
-    student = Student.find(person_id)
-    student.neuromuscular_protocol = data.neuromuscular_protocol
-    if student.save():
-        return JSONResponse({
-            "error": False,
-            "data": f"Neuromuscular protocol was successfully updated."
-        }, 200)
-    else:
-        return JSONResponse({
-            "error": True,
-            "data": f"Something went wrong and Neuromuscular protocol could not be updated."
-        }, 422)
-
-
-@student_router.get("/antropometria_protocol/{person_id}")
-async def get_antropometria_protocol(person_id):
-    protocol = Student.select('antropometria_protocol').where(
-        'person_id', person_id).first()
-    return protocol.antropometria_protocol
-
-
-@student_router.put("/antropometria_protocol/{person_id}")
-async def update_antropometria_protocol(person_id, data: UpdateAntropometria):
-    student = Student.find(person_id)
-    student.antropometria_protocol = data.antropometria_protocol
-    if student.save():
-        return JSONResponse({
-            "error": False,
-            "data": f"Antropometria protocol was successfully updated."
-        }, 200)
-    else:
-        return JSONResponse({
-            "error": True,
-            "data": f"Something went wrong and Antropometria protocol could not be updated."
-        }, 422)

@@ -3,6 +3,7 @@ import {
   getStudentAvaliar,
   getRmConfig,
   getAntropometriaProtocol,
+  getNeuromuscularProtocol,
 } from "@/services/api/get";
 import { translateGender } from "@/services/helpers";
 import { formatAge } from "@/services/validators/formats";
@@ -29,6 +30,9 @@ async function initRequests() {
     store.student = await getStudentAvaliar(route.params.id);
     store.student["age"] = formatAge(store.student.birth_date);
     if (store.types.includes("Neuromuscular")) {
+      store.neuromuscular_protocol = await getNeuromuscularProtocol(
+        store.student?.id
+      );
       store.rmConfig = await getRmConfig(store.student.gender);
     }
     if (store.types.includes("Antropometria")) {

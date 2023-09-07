@@ -87,3 +87,7 @@ class NewAntropometria(BaseModel):
             if decimal.as_tuple().exponent < -1:
                 raise ValueError("Values must have up to 1 decimal number.")
         return value
+
+
+class UpdateAntropometria(BaseModel):
+    antropometria_protocol: constr(max_length=21, strip_whitespace=True)

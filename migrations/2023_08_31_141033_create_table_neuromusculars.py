@@ -11,6 +11,8 @@ class CreateTableNeuromusculars(Migration):
             table.increments('id')
             table.integer('person_id').unsingned()
 
+            table.string('neuromuscular_protocol', 21)
+
             table.small_integer('bench_press_lifted')
             table.small_integer('bench_press_reps')
             table.decimal('bench_press_rm', 5, 1)

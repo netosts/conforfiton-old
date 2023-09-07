@@ -61,11 +61,3 @@ class NewStudent(BaseModel):
             if peso_decimal.as_tuple().exponent < -2:
                 raise ValueError("Weight must have up to 2 decimal numbers.")
         return value
-
-
-class UpdateAntropometria(BaseModel):
-    antropometria_protocol: constr(max_length=21, strip_whitespace=True)
-
-
-class UpdateNeuromuscular(BaseModel):
-    neuromuscular_protocol: constr(max_length=21, strip_whitespace=True)

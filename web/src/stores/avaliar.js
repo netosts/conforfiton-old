@@ -9,6 +9,13 @@ export const useAvaliarStore = defineStore("avaliar", () => {
   const rmConfig = ref(null);
 
   const antropometria_protocol = ref(null);
+  const neuromuscular_protocol = ref(null);
 
-  return { types, student, rmConfig, antropometria_protocol };
+  return {
+    types,
+    student,
+    rmConfig,
+    antropometria_protocol,
+    neuromuscular_protocol,
+  };
 });

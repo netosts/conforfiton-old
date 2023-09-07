@@ -93,7 +93,18 @@ export async function countPhoneDuplicate(phone_number) {
 // Get protocol used in antropometry valuation
 export async function getAntropometriaProtocol(id) {
   return http
-    .get(`/student/antropometria_protocol/${id}`)
+    .get(`/antropometria/protocol/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}
+
+// Get protocol used in neuromuscular valuation
+export async function getNeuromuscularProtocol(id) {
+  return http
+    .get(`/neuromuscular/protocol/${id}`)
     .then((res) => res.data)
     .catch((err) => {
       console.error(err.response);
