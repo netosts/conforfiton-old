@@ -12,19 +12,24 @@ class CreateTableAntropometrias(Migration):
             table.integer('person_id').unsingned()
 
             table.decimal('weight', 5, 2)
-
             table.string('antropometria_protocol', 21)
-            table.decimal('abs', 5, 2)
-            table.decimal('waist', 5, 2)
-            table.decimal('hip', 5, 2)
-            table.decimal('thighs', 5, 2).nullable()
-            table.decimal('right_biceps', 5, 2).nullable()
-            table.decimal('right_forearm', 5, 2).nullable()
-            table.decimal('chest', 5, 2).nullable()
-            table.decimal('triceps', 5, 2).nullable()
-            table.decimal('suprailiac', 5, 2).nullable()
-            table.decimal('subcapularis', 5, 2).nullable()
-            table.decimal('midaxillary', 5, 2).nullable()
+
+            # required
+            table.decimal('abdominal_circumference', 5, 2)
+            table.decimal('waist_circumference', 5, 2)
+            table.decimal('hip_circumference', 5, 2)
+            # nullable
+            table.decimal('thighs_circumference', 5, 2).nullable()
+            table.decimal('right_biceps_circumference', 5, 2).nullable()
+            table.decimal('right_forearm_circumference', 5, 2).nullable()
+            table.decimal('chest_skinfold', 5, 2).nullable()
+            table.decimal('abdominal_skinfold', 5, 2).nullable()
+            table.decimal('thighs_skinfold', 5, 2).nullable()
+            table.decimal('triceps_skinfold', 5, 2).nullable()
+            table.decimal('suprailiac_skinfold', 5, 2).nullable()
+            table.decimal('subscapularis_skinfold', 5, 2).nullable()
+            table.decimal('midaxillary_skinfold', 5, 2).nullable()
+            table.decimal('iliac_circumference', 5, 2).nullable()
 
             table.decimal('imc_result', 4, 2)
             table.string('imc_class', 30)

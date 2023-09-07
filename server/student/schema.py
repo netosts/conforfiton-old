@@ -65,3 +65,7 @@ class NewStudent(BaseModel):
 
 class UpdateAntropometria(BaseModel):
     antropometria_protocol: constr(max_length=21, strip_whitespace=True)
+
+
+class UpdateNeuromuscular(BaseModel):
+    neuromuscular_protocol: constr(max_length=21, strip_whitespace=True)

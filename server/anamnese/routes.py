@@ -14,12 +14,12 @@ anamnese_router = APIRouter(prefix='/anamnese')
 
 @anamnese_router.post('/{email}')
 async def new_anamnese(email, data: NewAnamnese):
-    person = Person.select('id').where('email', email).first()
+    person = Person.select('id', 'name').where('email', email).first()
 
     if not person:
         return JSONResponse({
             "error": True,
-            "data": "Couldn't find id."
+            "data": "Person not found."
         }, 404)
 
     anamnese = Anamnese()
@@ -63,10 +63,10 @@ async def new_anamnese(email, data: NewAnamnese):
     if anamnese.save():
         return JSONResponse({
             "error": False,
-            "data": "Anamnese successfully created."
+            "data": f"{person.name}'s Anamnese successfully created."
         }, 200)
     else:
         return JSONResponse({
             "error": True,
-            "data": "An error occurred while creating Anamnese."
+            "data": f"An error occurred while creating {person.name}'s Anamnese."
         }, 422)

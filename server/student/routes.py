@@ -3,13 +3,10 @@ from kink import di
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from datetime import datetime
-
 from .model import Student
-from .schema import NewStudent, UpdateAntropometria
+from .schema import NewStudent, UpdateNeuromuscular, UpdateAntropometria
 from ..person.model import Person
 from ..weight.model import Weight
-
 
 student_router = APIRouter(prefix='/student')
 
@@ -161,16 +158,16 @@ async def inputbar_all_students(inputFilter, inputBar, limit, personal_id):
 async def find_student(person_id):
     newest_weight = Weight.where('person_id', person_id).max('created_at')
     if newest_weight:
-        student = di["db"].table('persons') \
-            .join('students', 'persons.person_id', '=', 'students.person_id') \
-            .where('persons.person_id', person_id) \
-            .join('weights', 'persons.person_id', '=', 'weights.person_id') \
-            .where('weights.dtDas', newest_weight) \
+        student = di["db"].table('persons as p') \
+            .join('students as s', 'p.id', '=', 's.person_id') \
+            .where('p.id', person_id) \
+            .join('weights as w', 'p.id', '=', 'w.person_id') \
+            .where('w.created_at', newest_weight) \
             .first()
     else:
-        student = di["db"].table('persons') \
-            .join('students', 'persons.person_id', '=', 'students.person_id') \
-            .where('persons.person_id', person_id) \
+        student = di["db"].table('persons as p') \
+            .join('students as s', 'p.id', '=', 's.person_id') \
+            .where('p.id', person_id) \
             .first()
 
     if student:
@@ -213,6 +210,22 @@ async def get_student_for_avaliar_page(person_id):
             "error": True,
             "das": "Student not found."
         }, 404)
+
+
+@student_router.put("/neuromuscular_protocol/{person_id}")
+async def update_neuromuscular_protocol(person_id, data: UpdateNeuromuscular):
+    student = Student.find(person_id)
+    student.neuromuscular_protocol = data.neuromuscular_protocol
+    if student.save():
+        return JSONResponse({
+            "error": False,
+            "data": f"Neuromuscular protocol was successfully updated."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Something went wrong and Neuromuscular protocol could not be updated."
+        }, 422)
 
 
 @student_router.get("/antropometria_protocol/{person_id}")
