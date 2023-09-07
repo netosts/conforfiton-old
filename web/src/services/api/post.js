@@ -49,3 +49,16 @@ export async function postNeuromuscular(form, id) {
     throw err;
   }
 }
+
+export async function postAntropometria(form, id) {
+  try {
+    const response = await http.post(`/antropometria/${id}`, form);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    alert(
+      `${err.response.status}(${err.response.statusText}): ANTROPOMETRIA NÃO FOI CRIADA`
+    );
+    throw err;
+  }
+}

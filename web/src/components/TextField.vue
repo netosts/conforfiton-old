@@ -12,10 +12,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  label: {
-    type: String,
-    required: false,
-  },
+  label: String,
   required: String,
   span: String,
   placeholder: String,
@@ -29,6 +26,7 @@ const props = defineProps({
   },
   tabindex: String,
   modelValue: [String, Number, Boolean, Object],
+  rules: String,
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -89,6 +87,7 @@ const { errorMessage, handleChange, meta } = useField(name);
       :rows="rows"
       @update:model-value="value = $event"
       :tabindex="tabindex"
+      :rules="rules"
     />
 
     <div
@@ -113,6 +112,7 @@ const { errorMessage, handleChange, meta } = useField(name);
       @update:model-value="value = $event"
       :name="name"
       :tabindex="tabindex"
+      :rules="rules"
       v-slot="{ field }"
     >
       <input

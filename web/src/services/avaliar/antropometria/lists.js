@@ -99,6 +99,32 @@ const form = reactive({
       )
     ),
   },
+  abdominal_skinfold: {
+    value: undefined,
+    name: "abdominal_skinfold",
+    label: "Abdominal",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.abdominal_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
+  thighs_skinfold: {
+    value: undefined,
+    name: "thighs_skinfold",
+    label: "Coxa",
+    span: "(dobra cutânea)",
+    show: computed(() =>
+      filterShow(
+        store.student?.gender,
+        form.thighs_skinfold.name,
+        store.antropometria_protocol
+      )
+    ),
+  },
   triceps_skinfold: {
     value: undefined,
     name: "triceps_skinfold",
@@ -147,32 +173,6 @@ const form = reactive({
       filterShow(
         store.student?.gender,
         form.midaxillary_skinfold.name,
-        store.antropometria_protocol
-      )
-    ),
-  },
-  abdominal_skinfold: {
-    value: undefined,
-    name: "abdominal_skinfold",
-    label: "Abdominal",
-    span: "(dobra cutânea)",
-    show: computed(() =>
-      filterShow(
-        store.student?.gender,
-        form.abdominal_skinfold.name,
-        store.antropometria_protocol
-      )
-    ),
-  },
-  thighs_skinfold: {
-    value: undefined,
-    name: "thighs_skinfold",
-    label: "Coxa",
-    span: "(dobra cutânea)",
-    show: computed(() =>
-      filterShow(
-        store.student?.gender,
-        form.thighs_skinfold.name,
         store.antropometria_protocol
       )
     ),

@@ -4,28 +4,37 @@ import {
   results,
   protocolsList,
 } from "@/services/avaliar/antropometria/lists";
+import { createAntropometriaForm } from "@/services/avaliar/antropometria/helpers";
 
+import { postAntropometria } from "@/services/api/post";
 import { updateAntropometriaProtocol } from "@/services/api/put";
 
+import { useRoute } from "vue-router/auto";
 import { useAvaliarStore } from "@/stores/avaliar";
 
 import { ref } from "vue";
 
-import { schema } from "@/services/avaliar/antropometria/schema";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
 
+const route = useRoute();
 const store = useAvaliarStore();
 
 const selectProtocol = ref(false);
 const protocolButton = ref(true);
 
-function onSubmit(values) {
+async function onSubmit() {
   try {
-    console.log(values);
-    console.log(antropometriaList);
-    console.log(results);
+    const form = await createAntropometriaForm(
+      store.student?.weight,
+      store.antropometria_protocol,
+      antropometriaList.value,
+      results
+    );
+    await postAntropometria(form, route.params.id);
+
+    sessionStorage.setItem("submitted", true);
 
     alert("Antropometria salvo com sucesso");
 
@@ -58,7 +67,7 @@ async function updateProtocol() {
 
 <template>
   <section>
-    <Form @submit="onSubmit" :validation-schema="schema" v-slot="meta">
+    <Form @submit="onSubmit" v-slot="meta">
       <h2 class="avaliar--title">Antropometria</h2>
 
       <div class="protocol">
@@ -98,6 +107,7 @@ async function updateProtocol() {
                 :label="item.label"
                 :span="item.span"
                 :meta="meta"
+                rules="required|between:0,999"
               />
             </div>
           </div>
@@ -112,7 +122,6 @@ async function updateProtocol() {
           <div class="antropometria__containers">
             <h3>Circunferência Abdominal</h3>
             <p>Classificação: {{ results.ca_class }}</p>
-            <pre>{{ results.ca_risk }}</pre>
           </div>
         </div>
 

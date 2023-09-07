@@ -73,7 +73,7 @@ watch(sidebarIsActive, (newValue) => {
         <div class="menu__content">
           <RouterLink to="/register/student" @click="toggleSidebar">
             <font-awesome-icon icon="fa-solid fa-feather" size="sm" />
-            Cadastro Avulso
+            Cadastro Parcial
           </RouterLink>
         </div>
         <h2>Pages</h2>

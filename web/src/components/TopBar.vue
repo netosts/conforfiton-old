@@ -43,7 +43,7 @@ const userPopup = ref(false);
 header {
   display: flex;
   justify-content: flex-end;
-  height: 67px;
+  height: 69px;
   background-color: white;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.103);
 

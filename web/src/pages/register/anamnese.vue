@@ -80,8 +80,9 @@ async function onSubmit(_, { setFieldError }) {
 
     alert("Cadastro realizado com sucesso!");
 
+    sessionStorage.removeItem("registerStudent");
     sessionStorage.setItem("submitted", true);
-    location.reload();
+    router.push("/");
   } catch (err) {
     console.error(err);
     throw err;
@@ -134,10 +135,6 @@ function pushToTime() {
 }
 
 onMounted(() => {
-  if (sessionStorage.getItem("submitted")) {
-    sessionStorage.setItem("submitted", false);
-    router.push("/");
-  }
   form.q13 = [];
 });
 </script>

@@ -10,6 +10,34 @@ import {
   filterConfig,
 } from "./configs";
 
+export function createAntropometriaForm(
+  weight,
+  antropometria_protocol,
+  antropometriaList,
+  results
+) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString();
+  const form = {
+    weight,
+    antropometria_protocol,
+    created_at: formattedDate,
+  };
+
+  const extractedValues = antropometriaList.map((proxy) => proxy.value);
+  const extractedNames = antropometriaList.map((proxy) => proxy.name);
+
+  for (const [index, value] of extractedNames.entries()) {
+    form[value] = extractedValues[index];
+  }
+
+  Object.keys(results).map((key) => {
+    form[key] = results[key];
+  });
+
+  return form;
+}
+
 export function calculateImc(weight, height) {
   const meters = height / 100;
   const imc = weight / meters ** 2;
@@ -53,12 +81,12 @@ export function caRisk(abs, gender) {
   }
 
   const riskTable = {
-    dc: String((risk * 3).toFixed(1)) + "%",
-    diabetes_ii: String((risk * 2.7).toFixed(1)) + "%",
-    hypertension: String((risk * 1.8).toFixed(1)) + "%",
-    cancer: String((risk * 4.0).toFixed(1)) + "%",
-    depression: String((risk * 1.4).toFixed(1)) + "%",
-    metabolic_syndrome: String((risk * 2.5).toFixed(1)) + "%",
+    dc: (risk * 3).toFixed(1),
+    diabetes_ii: (risk * 2.7).toFixed(1),
+    hypertension: (risk * 1.8).toFixed(1),
+    cancer: (risk * 4.0).toFixed(1),
+    depression: (risk * 1.4).toFixed(1),
+    metabolic_syndrome: (risk * 2.5).toFixed(1),
   };
 
   return riskTable;

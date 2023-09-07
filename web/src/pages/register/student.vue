@@ -70,6 +70,8 @@ async function onSubmit(_, { setFieldError }) {
     await postStudent(form);
 
     alert(`${form.name} cadastrado com sucesso!`);
+
+    sessionStorage.removeItem("registerStudent");
     location.reload();
   } catch (err) {
     console.error(err);

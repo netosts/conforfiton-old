@@ -9,13 +9,12 @@ import {
 import { createNeuromuscularForm } from "@/services/avaliar/neuromuscular/helpers";
 
 import { useRoute } from "vue-router/auto";
+import { useAvaliarStore } from "@/stores/avaliar";
 
 import { schema } from "@/services/avaliar/neuromuscular/schema";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
-
-import { useAvaliarStore } from "@/stores/avaliar";
 
 const route = useRoute();
 const store = useAvaliarStore();
@@ -24,6 +23,8 @@ async function onSubmit() {
   try {
     const form = await createNeuromuscularForm(exerciseList, total);
     await postNeuromuscular(form, route.params.id);
+
+    sessionStorage.setItem("submitted", true);
 
     alert("Neuromuscular salvo com sucesso");
 

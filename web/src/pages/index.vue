@@ -122,6 +122,10 @@ watch(inputBar, (newValue) => {
 
 // DOM Mounted
 onMounted(() => {
+  if (sessionStorage.getItem("submitted")) {
+    sessionStorage.removeItem("submitted");
+    location.reload();
+  }
   getActiveStudents("%", 100);
   bodyElement.value = document.body;
 });
@@ -244,6 +248,7 @@ main {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       padding-bottom: 16px;
 
       h3 {
