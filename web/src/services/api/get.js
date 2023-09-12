@@ -121,3 +121,13 @@ export async function getPersonalCredentials(id) {
       throw err;
     });
 }
+
+export async function getAnamnese(person_id) {
+  return http
+    .get(`/anamnese/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}

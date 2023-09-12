@@ -15,6 +15,7 @@ import { useRoute, useRouter, definePage } from "vue-router/auto";
 
 import Neuromuscular from "@/components/avaliar/Neuromuscular.vue";
 import Antropometria from "@/components/avaliar/Antropometria.vue";
+import Cardio from "@/components/avaliar/Cardio.vue";
 
 definePage({
   meta: { isStudent: true, requiresAuth: true },
@@ -74,9 +75,7 @@ onMounted(() => {
 
     <Antropometria v-if="store.types?.includes('Antropometria')" />
 
-    <section v-if="store.types?.includes('Cardio')">
-      <h2>Cardio</h2>
-    </section>
+    <Cardio v-if="store.types?.includes('Cardio')" />
   </main>
 </template>
 

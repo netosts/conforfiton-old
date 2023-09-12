@@ -1,18 +1,14 @@
 <script setup>
 defineProps({
-  student: Object,
+  get: Object,
   show: Boolean,
 });
 </script>
 
 <template>
   <section v-if="show">
-    <h2>Informações Gerais</h2>
-    <p>Altura: {{ student.height }}</p>
-    <p>T. Camisa: {{ student.shirt_size }}</p>
-    <p>T. Shorts: {{ student.shorts_size }}</p>
-    <p>Registrado em: {{ student.created_at }}</p>
-    <p>Ativo: {{ student.deleted_at ? "Não" : "Sim" }}</p>
+    <h2>Anamnese</h2>
+    <p>{{ get }}</p>
   </section>
 </template>
 

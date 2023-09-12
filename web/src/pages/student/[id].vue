@@ -1,5 +1,5 @@
 <script setup>
-import { getStudent } from "../../services/api/get";
+import { getStudent, getAnamnese } from "../../services/api/get";
 
 import { studentButtons, studentComponents } from "@/services/student/lists";
 import { translateRole } from "@/services/helpers";
@@ -17,10 +17,16 @@ definePage({
 const route = useRoute();
 const store = useStudentStore();
 const student = ref({});
+const anamnese = ref({});
+const gets = ref([]);
 
 // FUNCTIONS
 async function initStudent() {
   student.value = await getStudent(route.params.id);
+  gets.value.push(student.value);
+  anamnese.value = await getAnamnese(route.params.id);
+  gets.value.push(anamnese.value);
+  console.log(gets.value);
 }
 
 function showContent(id) {
@@ -71,7 +77,7 @@ onMounted(() => {
           :key="id"
           :is="item"
           :show="store.show[id]"
-          :student="student"
+          :get="gets[id]"
         />
       </div>
     </div>

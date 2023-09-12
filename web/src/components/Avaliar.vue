@@ -71,7 +71,7 @@ onMounted(() => {
             />
           </div>
           <div class="container__content__checkbox">
-            <label for="cardio">Cardio</label>
+            <label for="cardio">Cardiorrespiratório</label>
             <Field name="avaliar" id="cardio" type="checkbox" value="Cardio" />
           </div>
         </div>
