@@ -54,25 +54,25 @@ class NewAntropometria(BaseModel):
             return None
         return value
 
-    @validator('weight',
-               'abdominal_circumference',
-               'waist_circumference',
-               'hip_circumference',
-               'thighs_circumference',
-               'right_biceps_circumference',
-               'right_forearm_circumference',
-               'chest_skinfold',
-               'abdominal_skinfold',
-               'thighs_skinfold',
-               'triceps_skinfold',
-               'suprailiac_skinfold',
-               'subscapularis_skinfold',
-               'midaxillary_skinfold',
-               'iliac_circumference',
-               'imc_result',
-               'rcq_result',
-               'iac_result',
-               )
+    @validator(
+        'abdominal_circumference',
+        'waist_circumference',
+        'hip_circumference',
+        'thighs_circumference',
+        'right_biceps_circumference',
+        'right_forearm_circumference',
+        'chest_skinfold',
+        'abdominal_skinfold',
+        'thighs_skinfold',
+        'triceps_skinfold',
+        'suprailiac_skinfold',
+        'subscapularis_skinfold',
+        'midaxillary_skinfold',
+        'iliac_circumference',
+        'imc_result',
+        'rcq_result',
+        'iac_result',
+    )
     def validate_two_decimals(cls, value):
         if value is not None:
             decimal = Decimal(str(value))
