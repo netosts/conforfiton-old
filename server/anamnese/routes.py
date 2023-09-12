@@ -70,3 +70,15 @@ async def new_anamnese(email, data: NewAnamnese):
             "error": True,
             "data": f"An error occurred while creating {person.name}'s Anamnese."
         }, 422)
+
+
+@anamnese_router.get('/{person_id}')
+async def get_anamnese(person_id):
+    anamnese = Anamnese.find(person_id)
+    if anamnese:
+        return anamnese.serialize()
+    else:
+        return JSONResponse({
+            "error": True,
+            "data": f"Anamnese not found."
+        }, 404)
