@@ -1,9 +1,9 @@
 <script setup>
 import {
-  antropometriaList,
+  cardioList,
   results,
-  protocolsList,
-} from "@/services/avaliar/antropometria/lists";
+  renameProtocol,
+} from "@/services/avaliar/cardio/lists";
 import { createAntropometriaForm } from "@/services/avaliar/antropometria/helpers";
 
 // import { postAntropometria } from "@/services/api/post";
@@ -17,7 +17,7 @@ import { ref } from "vue";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
-import Checkbox from "../cardio/Checkbox.vue";
+import Checkbox from "./cardio/Checkbox.vue";
 
 const route = useRoute();
 const store = useAvaliarStore();
@@ -27,13 +27,13 @@ const protocolButton = ref(true);
 
 async function onSubmit() {
   try {
-    const form = await createAntropometriaForm(
-      store.student?.weight,
-      store.cardio_protocol,
-      antropometriaList.value,
-      results
-    );
-    await postAntropometria(form, route.params.id);
+    // const form = await createAntropometriaForm(
+    //   store.student?.weight,
+    //   store.cardio_protocol,
+    //   antropometriaList.value,
+    //   results
+    // );
+    // await postAntropometria(form, route.params.id);
 
     sessionStorage.setItem("submitted", true);
 
@@ -41,17 +41,11 @@ async function onSubmit() {
 
     // Remove Antropometria from the screen
     const indexToRemove = store.types.indexOf("Antropometria");
-    store.types.splice(indexToRemove, 1);
+    // store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);
     throw err;
   }
-}
-
-function renameProtocol(value) {
-  if (!value) return "Sem protocolo";
-  const findProtocol = protocolsList.value.find((item) => item.value === value);
-  return findProtocol.name;
 }
 
 function openSelect() {
@@ -59,10 +53,12 @@ function openSelect() {
   protocolButton.value = false;
 }
 
-async function updateProtocol() {
-  const data = { cardio_protocol: store.cardio_protocol };
-  await updateAntropometriaProtocol(store.student?.id, data);
-  selectProtocol.value = false;
+async function updateProtocol(value) {
+  console.log(value);
+  const data = { cardio_protocol: value };
+  console.log(data);
+  // await updateAntropometriaProtocol(store.student?.id, data);
+  // selectProtocol.value = false;
 }
 </script>
 
@@ -74,18 +70,52 @@ async function updateProtocol() {
       <div class="protocol">
         <p>
           Protocolo:
-          <span>{{ renameProtocol(store.cardio_protocol) }}</span>
+          <span>{{ renameProtocol }}</span>
         </p>
-        <div class="protocol__update">
+        <div class="protocol__update" v-if="store.cardio_protocol !== 'Elder'">
           <button type="button" @click="openSelect" v-show="protocolButton">
             Novo protocolo
           </button>
         </div>
       </div>
 
-      <Checkbox />
+      <Checkbox v-show="selectProtocol" @confirmProtocol="updateProtocol" />
 
-      <div class="cardio" v-show="!!store.cardio_protocol">
+      <div class="cardio">
+        <div class="cardio__inputs">
+          <div v-for="(item, id) in cardioList" :key="id">
+            <TextField
+              v-model="item.value"
+              :name="item.name"
+              type="number"
+              :label="item.label"
+              :span="item.span"
+              :meta="meta"
+              rules="required"
+            />
+          </div>
+        </div>
+
+        <p v-if="results.fcmax">FCMAX: {{ results.fcmax }}</p>
+        <p v-if="results.l1">L1: {{ results.l1 }}</p>
+        <p v-if="results.l2">L2: {{ results.l2 }}</p>
+        <p v-if="results.l1_fcmax_percentage">
+          L1 (% FC Max): {{ results.l1_fcmax_percentage }}
+        </p>
+        <p v-if="results.l2_fcmax_percentage">
+          L2 (% FC Max): {{ results.l2_fcmax_percentage }}
+        </p>
+        <p v-if="results.vo2max">VO2MAX: {{ results.vo2max }} ml/kg/min</p>
+        <p v-if="results.vo2max">vVO2MAX: {{ results.vvo2max }} Km/h</p>
+        <p v-if="results.vo2max_pace">Pace: {{ results.vo2max_pace }} min/km</p>
+        <p v-if="results.vl1">VL1: {{ results.vl1 }} Km/h</p>
+        <p v-if="results.vl1_pace">Pace: {{ results.vl1_pace }} min/km</p>
+        <p v-if="results.vl2">VL2: {{ results.vl2 }} Km/h</p>
+        <p v-if="results.vl2_pace">Pace: {{ results.vl2_pace }} min/km</p>
+        <p v-if="results.elder_aerobic_power">
+          Classificação: {{ results.elder_aerobic_power }}
+        </p>
+
         <SubmitButton msg="Salvar" :meta="meta.meta" />
       </div>
     </Form>
@@ -169,6 +199,18 @@ section {
         @include mq(m) {
           width: 100%;
         }
+      }
+    }
+
+    .cardio {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px;
+      &__inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
       }
     }
   }

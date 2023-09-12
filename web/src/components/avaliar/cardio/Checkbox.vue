@@ -1,22 +1,22 @@
 <script setup>
-import { formulaList, protocolsList } from "@/services/avaliar/cardio/lists";
+import {
+  fcmaxList,
+  l1l2List,
+  vo2maxList,
+} from "@/services/avaliar/cardio/lists";
 
 import { Form, Field } from "vee-validate";
-
-function onSubmit(values) {
-  console.log(values.formula + values.protocol);
-}
 </script>
 
 <template>
-  <Form @submit="onSubmit" v-slot="{ values, meta }">
+  <Form v-slot="{ values, meta }">
     <div class="radio">
       <div class="radio__1">
-        <h3>Formulas FCMAX</h3>
-        <div v-for="(item, id) in formulaList" :key="id">
+        <h3>FCMAX</h3>
+        <div v-for="(item, id) in fcmaxList" :key="id">
           <Field
             type="radio"
-            name="formula"
+            name="fcmax"
             :id="item.id"
             :value="item.value"
             :meta="meta"
@@ -26,11 +26,25 @@ function onSubmit(values) {
         </div>
       </div>
       <div class="radio__1">
-        <h3>Protocolos</h3>
-        <div v-for="(item, id) in protocolsList" :key="id">
+        <h3>L1 & L2</h3>
+        <div v-for="(item, id) in l1l2List" :key="id">
           <Field
             type="radio"
-            name="protocol"
+            name="l1l2"
+            :id="item.id"
+            :value="item.value"
+            :meta="meta"
+            rules="required"
+          />
+          <label :for="item.id">{{ item.label }}</label>
+        </div>
+      </div>
+      <div class="radio__1">
+        <h3>VO2MAX</h3>
+        <div v-for="(item, id) in vo2maxList" :key="id">
+          <Field
+            type="radio"
+            name="vo2max"
             :id="item.id"
             :value="item.value"
             :meta="meta"
@@ -46,7 +60,13 @@ function onSubmit(values) {
         class="submitbox__submit"
         :class="{ 'submitbox__submit--disabled': meta ? !meta.valid : null }"
       >
-        <button type="submit" class="submitbox__submit__btn">
+        <button
+          type="button"
+          class="submitbox__submit__btn"
+          @click="
+            $emit('confirmProtocol', values.fcmax + values.l1l2 + values.vo2max)
+          "
+        >
           Confirmar protocolo
         </button>
       </div>
@@ -112,19 +132,3 @@ form {
   }
 }
 </style>
-
-<!-- border: none;
-  padding: 2px 10px;
-  background-color: $buttons;
-  color: white;
-  margin: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-
-  &:hover {
-    filter: brightness(0.9);
-  }
-
-  &:active {
-    filter: brightness(0.7);
-  } -->

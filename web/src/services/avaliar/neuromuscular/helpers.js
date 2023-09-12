@@ -1,4 +1,9 @@
-import { sitUpConfig, pushUpConfig, jumpConfig } from "./config";
+import {
+  exerciseConfig,
+  sitUpConfig,
+  pushUpConfig,
+  jumpConfig,
+} from "./configs";
 
 export function createNeuromuscularForm(
   neuromuscular_protocol,
@@ -84,9 +89,9 @@ function calcularForcaRelativa(RM, pesoCorporal) {
   return RM / pesoCorporal;
 }
 
-export function calcularPontos(student, rm, exercise, exerciseConfig) {
-  if (student && rm) {
-    const forcaRelativa = calcularForcaRelativa(rm, student.weight);
+export function calcularPontos(weight, rm, exercise) {
+  if (rm) {
+    const forcaRelativa = calcularForcaRelativa(rm, weight);
 
     const findConfig = exerciseConfig.reduce((closestConfig, config) => {
       if (config.exercise === exercise && forcaRelativa >= config.threshold) {

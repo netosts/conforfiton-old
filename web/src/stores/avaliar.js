@@ -10,7 +10,7 @@ export const useAvaliarStore = defineStore("avaliar", () => {
 
   const antropometria_protocol = ref(null);
   const neuromuscular_protocol = ref(null);
-  const cardio_protocol = ref(null);
+  const cardio_protocol = ref("DefaultEllestadConconiActive");
 
   return {
     types,

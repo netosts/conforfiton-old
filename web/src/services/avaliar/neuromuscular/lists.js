@@ -31,10 +31,9 @@ export const exerciseList = reactive([
     }),
     points: computed(() =>
       calcularPontos(
-        store.student,
+        store.student?.weight,
         exerciseList[0].rm,
-        exerciseList[0].name,
-        store.rmConfig
+        exerciseList[0].name
       )
     ),
   },
@@ -52,10 +51,9 @@ export const exerciseList = reactive([
     }),
     points: computed(() =>
       calcularPontos(
-        store.student,
+        store.student?.weight,
         exerciseList[1].rm,
-        exerciseList[1].name,
-        store.rmConfig
+        exerciseList[1].name
       )
     ),
   },
@@ -73,10 +71,9 @@ export const exerciseList = reactive([
     }),
     points: computed(() =>
       calcularPontos(
-        store.student,
+        store.student?.weight,
         exerciseList[2].rm,
-        exerciseList[2].name,
-        store.rmConfig
+        exerciseList[2].name
       )
     ),
   },
@@ -94,10 +91,9 @@ export const exerciseList = reactive([
     }),
     points: computed(() =>
       calcularPontos(
-        store.student,
+        store.student?.weight,
         exerciseList[3].rm,
-        exerciseList[3].name,
-        store.rmConfig
+        exerciseList[3].name
       )
     ),
   },
@@ -115,10 +111,9 @@ export const exerciseList = reactive([
     }),
     points: computed(() =>
       calcularPontos(
-        store.student,
+        store.student?.weight,
         exerciseList[4].rm,
-        exerciseList[4].name,
-        store.rmConfig
+        exerciseList[4].name
       )
     ),
   },
@@ -136,10 +131,9 @@ export const exerciseList = reactive([
     }),
     points: computed(() =>
       calcularPontos(
-        store.student,
+        store.student?.weight,
         exerciseList[5].rm,
-        exerciseList[5].name,
-        store.rmConfig
+        exerciseList[5].name
       )
     ),
   },
