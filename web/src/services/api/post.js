@@ -75,3 +75,16 @@ export async function postAntropometria(form, id) {
     throw err;
   }
 }
+
+export async function postCardio(form, id) {
+  try {
+    const response = await http.post(`/cardio/${id}`, form);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    alert(
+      `${err.response.status}(${err.response.statusText}): CARDIORRESPIRATÓRIA NÃO FOI CRIADA`
+    );
+    throw err;
+  }
+}

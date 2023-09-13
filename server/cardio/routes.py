@@ -26,6 +26,28 @@ async def new_cardio(person_id, data: NewCardio):
     cardio.weight = data.weight
     cardio.cardio_protocol = data.cardio_protocol
 
+    cardio.fc_repouso = data.fc_repouso
+    cardio.fc_max = data.fc_max
+    cardio.l1 = data.l1
+    cardio.l1_fc_max_percentage = data.l1_fc_max_percentage
+    cardio.l2 = data.l2
+    cardio.l2_fc_max_percentage = data.l2_fc_max_percentage
+    cardio.distance = data.distance
+    cardio.time = data.time
+    cardio.fc_5min = data.fc_5min
+    cardio.vo2max = data.vo2max
+    cardio.vo2max_absolute = data.vo2max_absolute
+    cardio.vo2max_mets = data.vo2max_mets
+    cardio.vvo2max = data.vvo2max
+    cardio.vvo2max_pace = data.vvo2max_pace
+    cardio.vl1 = data.vl1
+    cardio.vl1_pace = data.vl1_pace
+    cardio.vl2 = data.vl2
+    cardio.vl2_pace = data.vl2_pace
+    cardio.elder_aerobic_power = data.elder_aerobic_power
+    cardio.weekly_caloric_expenditure = data.weekly_caloric_expenditure
+    cardio.daily_caloric_expenditure = data.daily_caloric_expenditure
+
     cardio.created_at = data.created_at
 
     if cardio.save():

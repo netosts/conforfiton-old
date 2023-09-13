@@ -11,7 +11,7 @@ class CreateTableRmlForNeuromusculars(Migration):
             table.increments('id')
             table.integer('person_id').unsingned()
 
-            table.string('neuromuscular_protocol', 21)
+            table.string('neuromuscular_protocol', 50)
 
             table.small_integer('sit_up').nullable()
             table.small_integer('push_up').nullable()

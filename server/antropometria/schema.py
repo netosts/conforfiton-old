@@ -1,7 +1,7 @@
 # pylint: skip-file
 from decimal import Decimal
 from pydantic import BaseModel, Field, constr, validator
-from ..base_model.types import created_at
+from ..base_model.types import created_at, protocol
 
 
 class JsonCARisk(BaseModel):
@@ -15,7 +15,7 @@ class JsonCARisk(BaseModel):
 
 class NewAntropometria(BaseModel):
     weight: float = Field(g=0, le=600)
-    antropometria_protocol: constr(max_length=21, strip_whitespace=True)
+    antropometria_protocol: protocol
 
     # required
     abdominal_circumference: float = Field(ge=0, le=999)
@@ -90,4 +90,4 @@ class NewAntropometria(BaseModel):
 
 
 class UpdateAntropometria(BaseModel):
-    antropometria_protocol: constr(max_length=21, strip_whitespace=True)
+    antropometria_protocol: protocol

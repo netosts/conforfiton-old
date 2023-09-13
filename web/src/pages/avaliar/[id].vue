@@ -1,9 +1,9 @@
 <script setup>
 import {
   getStudentAvaliar,
-  getRmConfig,
   getAntropometriaProtocol,
   getNeuromuscularProtocol,
+  getCardioProtocol,
 } from "@/services/api/get";
 import { translateGender } from "@/services/helpers";
 import { formatAge } from "@/services/validators/formats";
@@ -34,12 +34,16 @@ async function initRequests() {
       store.neuromuscular_protocol = await getNeuromuscularProtocol(
         store.student?.id
       );
-      store.rmConfig = await getRmConfig(store.student.gender);
     }
     if (store.types.includes("Antropometria")) {
       store.antropometria_protocol = await getAntropometriaProtocol(
         store.student?.id
       );
+    }
+    if (store.types.includes("Cardio")) {
+      store.student?.age >= 60
+        ? (store.cardio_protocol = "Elder")
+        : (store.cardio_protocol = await getCardioProtocol(store.student?.id));
     }
   } catch {
     alert("Houve um erro e o aluno não pôde ser encontrado.");

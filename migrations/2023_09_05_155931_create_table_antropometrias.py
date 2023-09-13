@@ -12,7 +12,7 @@ class CreateTableAntropometrias(Migration):
             table.integer('person_id').unsingned()
 
             table.decimal('weight', 5, 2)
-            table.string('antropometria_protocol', 21)
+            table.string('antropometria_protocol', 50)
 
             # required
             table.decimal('abdominal_circumference', 5, 2)

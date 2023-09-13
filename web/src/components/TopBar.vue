@@ -29,12 +29,7 @@ onClickOutside(tooltip, closePopup);
           <p class="user__info-credential">{{ personal?.role }}</p>
         </div>
         <Transition name="slide-fade">
-          <div
-            ref="tooltip"
-            class="user__tooltip"
-            v-show="userPopup"
-            v-on-click-outside="closePopup"
-          >
+          <div ref="tooltip" class="user__tooltip" v-show="userPopup">
             <span>Bem vindo {{ personal?.name }}!</span>
             <RouterLink to="/profile"
               ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink

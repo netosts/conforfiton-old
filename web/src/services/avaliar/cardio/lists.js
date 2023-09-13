@@ -15,6 +15,10 @@ import {
   vo2maxBicycle,
   formatPace,
   elderAerobicPower,
+  vo2maxAbsolute,
+  vo2maxMets,
+  weeklyCaloricExpenditure,
+  dailyCaloricExpenditure,
 } from "./helpers";
 
 import { reactive, computed } from "vue";
@@ -23,34 +27,34 @@ import { useAvaliarStore } from "@/stores/avaliar";
 const store = useAvaliarStore();
 
 const form = reactive({
-  fcrepouso: {
+  fc_repouso: {
     value: undefined,
-    name: "fcrepouso",
+    name: "fc_repouso",
     label: "FC Repouso",
-    show: computed(() => store.cardio_protocol.includes("L1L2Zona")),
+    show: computed(() => store.cardio_protocol?.includes("L1L2Zona")),
   },
   l1: {
     value: undefined,
     name: "l1",
     label: "L1",
     span: "(bpm)",
-    show: computed(() => store.cardio_protocol.includes("EllestadConconi")),
+    show: computed(() => store.cardio_protocol?.includes("EllestadConconi")),
   },
   l2: {
     value: undefined,
     name: "l2",
     label: "L2",
     span: "(bpm)",
-    show: computed(() => store.cardio_protocol.includes("EllestadConconi")),
+    show: computed(() => store.cardio_protocol?.includes("EllestadConconi")),
   },
   distance: {
-    value: undefined,
+    value: store.cardio_protocol?.includes("Weltman") ? 3200 : undefined,
     name: "distance",
     label: "Distância",
     span: "(metros)",
     show: computed(
       () =>
-        store.cardio_protocol.includes("Cooper") ||
+        store.cardio_protocol?.includes("Cooper") ||
         store.cardio_protocol === "Elder"
     ),
   },
@@ -61,17 +65,17 @@ const form = reactive({
     span: "(minutos)",
     show: computed(
       () =>
-        store.cardio_protocol.includes("Weltman") ||
-        store.cardio_protocol.includes("Active") ||
-        store.cardio_protocol.includes("Inactive")
+        store.cardio_protocol?.includes("Weltman") ||
+        store.cardio_protocol?.includes("Active") ||
+        store.cardio_protocol?.includes("Inactive")
     ),
   },
-  fc5min: {
+  fc_5min: {
     value: undefined,
-    name: "fc5min",
+    name: "fc_5min",
     label: "FC do 5º Minuto",
     span: "(bpm)",
-    show: computed(() => store.cardio_protocol.includes("Bicycle")),
+    show: computed(() => store.cardio_protocol?.includes("Bicycle")),
   },
 });
 
@@ -80,48 +84,52 @@ export const cardioList = computed(() => {
 });
 
 export const results = reactive({
-  fcmax: computed(() => fcmax(store.student?.age, store.cardio_protocol)),
+  fc_max: computed(() => fcmax(store.student?.age, store.cardio_protocol)),
   l1: computed(() => {
-    if (store.cardio_protocol.includes("L1L2Zona")) {
-      return l1reserva(results.fcmax, form.fcrepouso.value);
-    } else if (store.cardio_protocol.includes("EllestadConconi")) {
+    if (store.cardio_protocol?.includes("L1L2Zona")) {
+      return l1reserva(results.fc_max, form.fc_repouso.value);
+    } else if (store.cardio_protocol?.includes("EllestadConconi")) {
       return form.l1.value;
     }
   }),
   l2: computed(() => {
-    if (store.cardio_protocol.includes("L1L2Zona")) {
-      return l2reserva(results.fcmax, form.fcrepouso.value);
-    } else if (store.cardio_protocol.includes("EllestadConconi")) {
+    if (store.cardio_protocol?.includes("L1L2Zona")) {
+      return l2reserva(results.fc_max, form.fc_repouso.value);
+    } else if (store.cardio_protocol?.includes("EllestadConconi")) {
       return form.l2.value;
     }
   }),
-  l1_fcmax_percentage: computed(() =>
-    l1EllestadConconi(results.fcmax, form.l1.value)
+  l1_fc_max_percentage: computed(() =>
+    l1EllestadConconi(results.fc_max, form.l1.value)
   ),
-  l2_fcmax_percentage: computed(() =>
-    l2EllestadConconi(results.fcmax, form.l2.value)
+  l2_fc_max_percentage: computed(() =>
+    l2EllestadConconi(results.fc_max, form.l2.value)
   ),
   vo2max: computed(() => {
-    if (store.cardio_protocol.includes("Cooper")) {
+    if (store.cardio_protocol?.includes("Cooper")) {
       return vo2maxCooper(form.distance.value);
-    } else if (store.cardio_protocol.includes("Weltman")) {
+    } else if (store.cardio_protocol?.includes("Weltman")) {
       return vo2maxWeltman(form.time.value);
-    } else if (store.cardio_protocol.includes("Active")) {
+    } else if (store.cardio_protocol?.includes("Active")) {
       return vo2maxActive(form.time.value, store.student?.gender);
-    } else if (store.cardio_protocol.includes("Inactive")) {
+    } else if (store.cardio_protocol?.includes("Inactive")) {
       return vo2maxInactive(form.time.value);
-    } else if (store.cardio_protocol.includes("Bicycle")) {
-      return vo2maxBicycle(form.fc5min.value);
+    } else if (store.cardio_protocol?.includes("Bicycle")) {
+      return vo2maxBicycle(form.fc_5min.value);
     }
   }),
+  vo2max_absolute: computed(() =>
+    vo2maxAbsolute(results.vo2max, store.student?.weight)
+  ),
+  vo2max_mets: computed(() => vo2maxMets(results.vo2max)),
   vvo2max: computed(() => {
-    if (store.cardio_protocol.includes("Cooper")) {
+    if (store.cardio_protocol?.includes("Cooper")) {
       return vvo2maxCooper(form.distance.value);
-    } else if (store.cardio_protocol.includes("Weltman")) {
+    } else if (store.cardio_protocol?.includes("Weltman")) {
       return vvo2maxWeltman(form.time.value);
     }
   }),
-  vo2max_pace: computed(() => formatPace(results.vvo2max)),
+  vvo2max_pace: computed(() => formatPace(results.vvo2max)),
   vl1: computed(() => vl1Weltman(form.time.value)),
   vl1_pace: computed(() => formatPace(results.vl1)),
   vl2: computed(() => vl2Weltman(form.time.value)),
@@ -134,6 +142,12 @@ export const results = reactive({
           form.distance.value
         )
       : null
+  ),
+  weekly_caloric_expenditure: computed(() =>
+    weeklyCaloricExpenditure(store.student?.weight)
+  ),
+  daily_caloric_expenditure: computed(() =>
+    dailyCaloricExpenditure(store.student?.weight)
   ),
 });
 
@@ -173,17 +187,17 @@ export const renameProtocol = computed(() => {
     l1l2Label,
     vo2maxLabel = null;
   for (const item of fcmaxList) {
-    if (store.cardio_protocol.includes(item.value)) {
+    if (store.cardio_protocol?.includes(item.value)) {
       fcmaxLabel = item.label;
     }
   }
   for (const item of l1l2List) {
-    if (store.cardio_protocol.includes(item.value)) {
+    if (store.cardio_protocol?.includes(item.value)) {
       l1l2Label = item.label;
     }
   }
   for (const item of vo2maxList) {
-    if (store.cardio_protocol.includes(item.value)) {
+    if (store.cardio_protocol?.includes(item.value)) {
       vo2maxLabel = item.label;
     }
   }

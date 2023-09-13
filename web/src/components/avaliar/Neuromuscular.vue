@@ -98,15 +98,10 @@ section {
 
   .protocol {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     margin: 0 20px 10px 20px;
-    @include mq(m) {
-      gap: 10px;
-      flex-direction: column;
-      align-items: center;
-    }
 
     p {
       display: flex;

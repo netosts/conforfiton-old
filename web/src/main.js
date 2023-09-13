@@ -38,6 +38,9 @@ import {
   asymbol,
   name,
   date,
+  distance,
+  bpm,
+  time,
 } from "./services/rules";
 import { defineRule } from "vee-validate";
 
@@ -62,6 +65,9 @@ defineRule("password", (value) => password(value));
 defineRule("asymbol", (value) => asymbol(value));
 defineRule("name", (value) => name(value));
 defineRule("date", (value) => date(value));
+defineRule("distance", (value) => distance(value));
+defineRule("bpm", (value) => bpm(value));
+defineRule("time", (value) => time(value));
 
 library.add(
   faMoon,

@@ -26,11 +26,11 @@ import { Form, Field } from "vee-validate";
         </div>
       </div>
       <div class="radio__1">
-        <h3>L1 & L2</h3>
-        <div v-for="(item, id) in l1l2List" :key="id">
+        <h3>VO2MAX</h3>
+        <div v-for="(item, id) in vo2maxList" :key="id">
           <Field
             type="radio"
-            name="l1l2"
+            name="vo2max"
             :id="item.id"
             :value="item.value"
             :meta="meta"
@@ -40,11 +40,11 @@ import { Form, Field } from "vee-validate";
         </div>
       </div>
       <div class="radio__1">
-        <h3>VO2MAX</h3>
-        <div v-for="(item, id) in vo2maxList" :key="id">
+        <h3>L1 & L2</h3>
+        <div v-for="(item, id) in l1l2List" :key="id">
           <Field
             type="radio"
-            name="vo2max"
+            name="l1l2"
             :id="item.id"
             :value="item.value"
             :meta="meta"
@@ -85,6 +85,7 @@ form {
 .radio {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 10px;
   margin: 10px 20px 0 20px;
 
   &__1 {

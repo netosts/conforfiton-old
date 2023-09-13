@@ -90,6 +90,17 @@ export async function countPhoneDuplicate(phone_number) {
 //     });
 // };
 
+// Get protocol used in neuromuscular valuation
+export async function getNeuromuscularProtocol(id) {
+  return http
+    .get(`/neuromuscular/protocol/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}
+
 // Get protocol used in antropometry valuation
 export async function getAntropometriaProtocol(id) {
   return http
@@ -101,10 +112,10 @@ export async function getAntropometriaProtocol(id) {
     });
 }
 
-// Get protocol used in neuromuscular valuation
-export async function getNeuromuscularProtocol(id) {
+// Get protocol used in cardio valuation
+export async function getCardioProtocol(id) {
   return http
-    .get(`/neuromuscular/protocol/${id}`)
+    .get(`/cardio/protocol/${id}`)
     .then((res) => res.data)
     .catch((err) => {
       console.error(err.response);

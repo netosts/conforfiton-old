@@ -25,3 +25,13 @@ export async function updateNeuromuscularProtocol(person_id, value) {
     throw err;
   }
 }
+
+export async function updateCardioProtocol(person_id, value) {
+  try {
+    const response = await http.put(`/cardio/protocol/${person_id}`, value);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}

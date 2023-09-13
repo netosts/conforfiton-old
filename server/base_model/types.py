@@ -27,3 +27,5 @@ shirt_size = constr(max_length=3, strip_whitespace=True)
 shorts_size = constr(max_length=8, strip_whitespace=True)
 
 created_at = datetime
+
+protocol = constr(max_length=50, strip_whitespace=True)

@@ -1,5 +1,28 @@
 import { elderAerobicPowerConfig } from "./configs";
 
+export function createCardioForm(weight, cardio_protocol, cardioList, results) {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString();
+  const form = {
+    weight,
+    cardio_protocol,
+    created_at: formattedDate,
+  };
+
+  const extractedValues = cardioList.map((proxy) => proxy.value);
+  const extractedNames = cardioList.map((proxy) => proxy.name);
+
+  for (const [index, value] of extractedNames.entries()) {
+    form[value] = extractedValues[index];
+  }
+
+  Object.keys(results).map((key) => {
+    form[key] = results[key];
+  });
+
+  return form;
+}
+
 export function fcmax(age, protocol) {
   if (!protocol) return null;
   const formulas = {
@@ -10,7 +33,7 @@ export function fcmax(age, protocol) {
 
   for (const name of Object.keys(formulas)) {
     if (protocol.includes(name)) {
-      return formulas[name].toFixed(2);
+      return Math.floor(formulas[name]);
     }
   }
 }
@@ -34,14 +57,14 @@ export function l2EllestadConconi(fcmax, l2) {
 }
 
 export function vo2maxCooper(distance) {
-  return distance ? (distance - 504.1 / 44.9).toFixed(2) : null;
+  return distance ? (distance - 504.1 / 44.9).toFixed(1) : null;
 }
 export function vvo2maxCooper(distance) {
   return distance ? ((distance / 12) * 0.06).toFixed(2) : null;
 }
 
 export function vo2maxWeltman(time) {
-  return time ? (118.4 - 4.774 * time).toFixed(2) : null;
+  return time ? (118.4 - 4.774 * time).toFixed(1) : null;
 }
 
 export function vvo2maxWeltman(time) {
@@ -63,15 +86,25 @@ export function vo2maxActive(time, gender) {
   } else if (gender === "Female") {
     result = 8.05 + 2.74 * time;
   }
-  return result ? result.toFixed(2) : null;
+  return result ? result.toFixed(1) : null;
 }
 
 export function vo2maxInactive(time) {
-  return time ? (4.46 + 3.933 * time).toFixed(2) : null;
+  return time ? (4.46 + 3.933 * time).toFixed(1) : null;
 }
 
 export function vo2maxBicycle(fc5min) {
-  return fc5min ? (6300 - 19.26 * fc5min).toFixed(2) : null;
+  return fc5min ? (6300 - 19.26 * fc5min).toFixed(1) : null;
+}
+
+export function formatPace(kmh) {
+  if (kmh) {
+    const pace = 60 / kmh;
+    const minutes = Math.floor(pace);
+    const seconds = Math.round((pace - minutes) * 60);
+    return `${minutes}.${seconds}`;
+  }
+  return null;
 }
 
 export function elderAerobicPower(gender, age, distance) {
@@ -92,12 +125,18 @@ export function elderAerobicPower(gender, age, distance) {
   return findClass ? findClass.classification : null;
 }
 
-export function formatPace(kmh) {
-  if (kmh) {
-    const pace = 60 / kmh;
-    const minutes = Math.floor(pace);
-    const seconds = Math.round((pace - minutes) * 60);
-    return `${minutes}.${seconds}`;
-  }
-  return null;
+export function vo2maxAbsolute(vo2max, weight) {
+  return vo2max ? ((vo2max * weight) / 1000).toFixed(1) : null;
+}
+
+export function vo2maxMets(vo2max) {
+  return vo2max ? (vo2max / 3.5).toFixed(1) : null;
+}
+
+export function weeklyCaloricExpenditure(weight) {
+  return weight ? Math.floor((weight * 2000) / 70) : null;
+}
+
+export function dailyCaloricExpenditure(weight) {
+  return weight ? Math.floor((weight * 300) / 70) : null;
 }

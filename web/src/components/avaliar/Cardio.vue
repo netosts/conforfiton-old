@@ -4,15 +4,16 @@ import {
   results,
   renameProtocol,
 } from "@/services/avaliar/cardio/lists";
-import { createAntropometriaForm } from "@/services/avaliar/antropometria/helpers";
+import { createCardioForm } from "@/services/avaliar/cardio/helpers";
 
-// import { postAntropometria } from "@/services/api/post";
-// import { updateAntropometriaProtocol } from "@/services/api/put";
+import { postCardio } from "@/services/api/post";
+import { updateCardioProtocol } from "@/services/api/put";
 
 import { useRoute } from "vue-router/auto";
 import { useAvaliarStore } from "@/stores/avaliar";
 
 import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
@@ -24,16 +25,17 @@ const store = useAvaliarStore();
 
 const selectProtocol = ref(false);
 const protocolButton = ref(true);
+const checkbox = ref();
 
 async function onSubmit() {
   try {
-    // const form = await createAntropometriaForm(
-    //   store.student?.weight,
-    //   store.cardio_protocol,
-    //   antropometriaList.value,
-    //   results
-    // );
-    // await postAntropometria(form, route.params.id);
+    const form = await createCardioForm(
+      store.student?.weight,
+      store.cardio_protocol,
+      cardioList.value,
+      results
+    );
+    await postCardio(form, route.params.id);
 
     sessionStorage.setItem("submitted", true);
 
@@ -41,7 +43,7 @@ async function onSubmit() {
 
     // Remove Antropometria from the screen
     const indexToRemove = store.types.indexOf("Antropometria");
-    // store.types.splice(indexToRemove, 1);
+    store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);
     throw err;
@@ -53,13 +55,19 @@ function openSelect() {
   protocolButton.value = false;
 }
 
-async function updateProtocol(value) {
-  console.log(value);
-  const data = { cardio_protocol: value };
-  console.log(data);
-  // await updateAntropometriaProtocol(store.student?.id, data);
-  // selectProtocol.value = false;
+function closeCheckbox() {
+  selectProtocol.value = false;
+  protocolButton.value = true;
 }
+
+async function updateProtocol(value) {
+  const data = { cardio_protocol: value };
+  await updateCardioProtocol(store.student?.id, data);
+  store.cardio_protocol = value;
+  selectProtocol.value = false;
+}
+
+onClickOutside(checkbox, closeCheckbox);
 </script>
 
 <template>
@@ -79,9 +87,13 @@ async function updateProtocol(value) {
         </div>
       </div>
 
-      <Checkbox v-show="selectProtocol" @confirmProtocol="updateProtocol" />
+      <Checkbox
+        ref="checkbox"
+        v-show="selectProtocol"
+        @confirmProtocol="updateProtocol"
+      />
 
-      <div class="cardio">
+      <div class="cardio" v-if="!!store.cardio_protocol">
         <div class="cardio__inputs">
           <div v-for="(item, id) in cardioList" :key="id">
             <TextField
@@ -91,29 +103,72 @@ async function updateProtocol(value) {
               :label="item.label"
               :span="item.span"
               :meta="meta"
-              rules="required"
+              :rules="{
+                required: true,
+                bpm:
+                  item.name === 'fc_repouso' ||
+                  item.name === 'l1' ||
+                  item.name === 'l2' ||
+                  item.name === 'fc_5min',
+                distance: item.name === 'distance',
+                time: item.name === 'time',
+              }"
             />
           </div>
         </div>
 
-        <p v-if="results.fcmax">FCMAX: {{ results.fcmax }}</p>
-        <p v-if="results.l1">L1: {{ results.l1 }}</p>
-        <p v-if="results.l2">L2: {{ results.l2 }}</p>
-        <p v-if="results.l1_fcmax_percentage">
-          L1 (% FC Max): {{ results.l1_fcmax_percentage }}
+        <p v-if="results.fc_max">FC MAX: {{ results.fc_max }} bpm</p>
+
+        <p v-if="store.cardio_protocol?.includes('Cooper')">
+          L1: {{ results.l1 }} bpm
         </p>
-        <p v-if="results.l2_fcmax_percentage">
-          L2 (% FC Max): {{ results.l2_fcmax_percentage }}
+        <p v-if="store.cardio_protocol?.includes('Cooper')">
+          L2: {{ results.l2 }} bpm
         </p>
+
+        <p v-if="results.l1_fc_max_percentage">
+          L1 (% FC Max): {{ results.l1_fc_max_percentage }} %
+        </p>
+        <p v-if="results.l2_fc_max_percentage">
+          L2 (% FC Max): {{ results.l2_fc_max_percentage }} %
+        </p>
+
         <p v-if="results.vo2max">VO2MAX: {{ results.vo2max }} ml/kg/min</p>
-        <p v-if="results.vo2max">vVO2MAX: {{ results.vvo2max }} Km/h</p>
-        <p v-if="results.vo2max_pace">Pace: {{ results.vo2max_pace }} min/km</p>
-        <p v-if="results.vl1">VL1: {{ results.vl1 }} Km/h</p>
-        <p v-if="results.vl1_pace">Pace: {{ results.vl1_pace }} min/km</p>
-        <p v-if="results.vl2">VL2: {{ results.vl2 }} Km/h</p>
-        <p v-if="results.vl2_pace">Pace: {{ results.vl2_pace }} min/km</p>
+        <p v-if="results.vo2max_absolute">
+          VO2MAX Absoluto: {{ results.vo2max_absolute }} l/min
+        </p>
+        <p v-if="results.vo2max_mets">
+          VO2MAX Mets: {{ results.vo2max_mets }} mets
+        </p>
+
+        <p v-if="results.vvo2max">vVO2MAX: {{ results.vvo2max }} Km/h</p>
+        <p v-if="results.vvo2max_pace">
+          Pace: {{ results.vvo2max_pace }} min/km
+        </p>
+
+        <p v-if="store.cardio_protocol?.includes('Weltman')">
+          VL1: {{ results.vl1 }} Km/h
+        </p>
+        <p v-if="store.cardio_protocol?.includes('Weltman')">
+          Pace: {{ results.vl1_pace }} min/km
+        </p>
+
+        <p v-if="store.cardio_protocol?.includes('Weltman')">
+          VL2: {{ results.vl2 }} Km/h
+        </p>
+        <p v-if="store.cardio_protocol?.includes('Weltman')">
+          Pace: {{ results.vl2_pace }} min/km
+        </p>
+
         <p v-if="results.elder_aerobic_power">
           Classificação: {{ results.elder_aerobic_power }}
+        </p>
+
+        <p v-if="results.weekly_caloric_expenditure">
+          Gasto calórico semanal: {{ results.weekly_caloric_expenditure }} kcal
+        </p>
+        <p v-if="results.daily_caloric_expenditure">
+          Gasto calórico diário: {{ results.daily_caloric_expenditure }} kcal
         </p>
 
         <SubmitButton msg="Salvar" :meta="meta.meta" />
@@ -149,15 +204,10 @@ section {
 
     .protocol {
       display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
       margin: 0 20px 10px 20px;
-      @include mq(m) {
-        gap: 10px;
-        flex-direction: column;
-        align-items: center;
-      }
 
       p {
         display: flex;

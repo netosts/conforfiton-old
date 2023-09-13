@@ -1,11 +1,11 @@
 # pylint: skip-file
 from pydantic import BaseModel, Field, constr
 
-from ..base_model.types import created_at
+from ..base_model.types import created_at, protocol
 
 
 class NewNeuromuscular(BaseModel):
-    neuromuscular_protocol: constr(max_length=21, strip_whitespace=True)
+    neuromuscular_protocol: protocol
 
     bench_press_lifted: int = Field(ge=0, le=800)
     bench_press_reps: int = Field(ge=0, le=15)
@@ -43,11 +43,11 @@ class NewNeuromuscular(BaseModel):
 
 
 class UpdateNeuromuscular(BaseModel):
-    neuromuscular_protocol: constr(max_length=21, strip_whitespace=True)
+    neuromuscular_protocol: protocol
 
 
 class NewNeuromuscularRml(BaseModel):
-    neuromuscular_protocol: constr(max_length=21, strip_whitespace=True)
+    neuromuscular_protocol: protocol
 
     sit_up: int = Field(ge=0, le=999, default=None)
     push_up: int = Field(ge=0, le=999, default=None)

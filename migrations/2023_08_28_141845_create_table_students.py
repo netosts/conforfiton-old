@@ -10,9 +10,9 @@ class CreateTableStudents(Migration):
         with self.schema.create('students') as table:
             table.integer('person_id').unsigned().unique()
             table.integer('personal_id').unsigned()
-            table.string('neuromuscular_protocol', 30).nullable()
-            table.string('antropometria_protocol', 30).nullable()
-            table.string('cardio_protocol', 30).nullable()
+            table.string('neuromuscular_protocol', 50).nullable()
+            table.string('antropometria_protocol', 50).nullable()
+            table.string('cardio_protocol', 50).nullable()
             table.text('note').nullable()
             table.soft_deletes()
 
