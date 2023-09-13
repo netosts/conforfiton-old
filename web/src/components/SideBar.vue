@@ -24,12 +24,6 @@ function windowResizeSidebar() {
   }
 }
 
-function logout() {
-  localStorage.removeItem("user");
-  sessionStorage.removeItem("u:u");
-  location.reload();
-}
-
 // DOM Mount Functions
 onMounted(() => {
   window.addEventListener("resize", windowResizeSidebar);
@@ -90,7 +84,6 @@ watch(sidebarIsActive, (newValue) => {
             <font-awesome-icon icon="fa-solid fa-print" size="sm" />
             Imprimir Avaliação
           </RouterLink>
-          <button @click="logout">Logout</button>
         </div>
       </div>
     </div>
@@ -232,11 +225,6 @@ watch(sidebarIsActive, (newValue) => {
           color: white;
         }
       }
-    }
-
-    button {
-      margin: 20px 15px 15px 15px;
-      @include submitButtons($buttons, white);
     }
   }
 }

@@ -1,8 +1,22 @@
 <script setup>
 import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
 const personal = ref(JSON.parse(localStorage.getItem("credentials")));
 const userPopup = ref(false);
+const tooltip = ref();
+
+function logout() {
+  localStorage.removeItem("user");
+  sessionStorage.removeItem("u:u");
+  location.reload();
+}
+
+function closePopup() {
+  userPopup.value = false;
+}
+
+onClickOutside(tooltip, closePopup);
 </script>
 
 <template>
@@ -15,7 +29,12 @@ const userPopup = ref(false);
           <p class="user__info-credential">{{ personal?.role }}</p>
         </div>
         <Transition name="slide-fade">
-          <div class="user__tooltip" v-show="userPopup">
+          <div
+            ref="tooltip"
+            class="user__tooltip"
+            v-show="userPopup"
+            v-on-click-outside="closePopup"
+          >
             <span>Bem vindo {{ personal?.name }}!</span>
             <RouterLink to="/profile"
               ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink
@@ -29,6 +48,10 @@ const userPopup = ref(false);
             <RouterLink to="/profile"
               ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink
             >
+            <button @click="logout">
+              <font-awesome-icon icon="fa-solid fa-arrow-right-to-bracket" />
+              Sair
+            </button>
           </div>
         </Transition>
       </div>
@@ -84,12 +107,13 @@ header {
         flex-direction: column;
         position: absolute;
         top: 70px;
-        right: 77%;
+        right: 82%;
         transform: translateX(50%);
-        width: 170px;
+        width: 200px;
         padding: 10px 0;
         border-radius: $border-radius;
         background-color: white;
+        cursor: default;
         transition: 0.35s;
 
         span {
@@ -100,25 +124,34 @@ header {
         }
 
         a {
-          padding: 5px 20px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          padding: 8px 24px;
           text-decoration: none;
           color: $txt-title;
-          font-size: 14px;
+          font-size: 16px;
           transition: 0.2s;
           &:hover {
             background-color: $background;
           }
         }
 
-        &::before {
-          content: "";
-          position: absolute;
-          top: -8px;
-          right: 50%;
-          transform: translateX(50%) rotate(45deg);
-          width: 15px;
-          height: 15px;
-          background-color: white;
+        button {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          padding: 8px 24px;
+          border: none;
+          background-color: transparent;
+          text-align: start;
+          color: $txt-title;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.2s;
+          &:hover {
+            background-color: $background;
+          }
         }
       }
     }

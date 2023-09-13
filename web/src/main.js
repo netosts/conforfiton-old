@@ -21,11 +21,9 @@ import {
   faPlus,
   faPrint,
   faFeather,
+  faArrowRightToBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { faMoon } from "@fortawesome/free-regular-svg-icons";
-
-// Vue Motion plugin
-import { MotionPlugin } from "@vueuse/motion";
 
 // Vee validate
 import {
@@ -82,11 +80,10 @@ library.add(
   faUser,
   faAnglesRight,
   faChevronLeft,
-  faRotateRight
+  faRotateRight,
+  faArrowRightToBracket
 );
 
-// Use Vue Router and Vue Motion plugins and Pinia
-app.use(MotionPlugin);
 app.use(router);
 app.use(pinia);
 
