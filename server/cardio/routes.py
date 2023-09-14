@@ -69,6 +69,38 @@ async def get_cardio_protocol(person_id):
     return protocol.cardio_protocol
 
 
+@cardio_router.get('/student/{person_id}')
+async def get_cardio_for_student_page(person_id):
+    cardio = Cardio.select(
+        'weight',
+        'cardio_protocol',
+        'fc_repouso',
+        'fc_max',
+        'l1',
+        'l1_fc_max_percentage',
+        'l2',
+        'l2_fc_max_percentage',
+        'distance',
+        'time',
+        'fc_5min',
+        'vo2max',
+        'vo2max_absolute',
+        'vo2max_mets',
+        'vvo2max',
+        'vvo2max_pace',
+        'vl1',
+        'vl1_pace',
+        'vl2',
+        'vl2_pace',
+        'elder_aerobic_power',
+        'weekly_caloric_expenditure',
+        'daily_caloric_expenditure',
+        'created_at',
+    ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
+
+    return cardio
+
+
 @cardio_router.put("/protocol/{person_id}")
 async def update_cardio_protocol(person_id, data: UpdateCardio):
     student = Student.find(person_id)

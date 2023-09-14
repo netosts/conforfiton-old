@@ -81,6 +81,40 @@ async def get_antropometria_protocol(person_id):
     return protocol.antropometria_protocol
 
 
+@antropometria_router.get('/student/{person_id}')
+async def get_antropometria_for_student_page(person_id):
+    antropometria = Antropometria.select(
+        'weight',
+        'antropometria_protocol',
+        'abdominal_circumference',
+        'waist_circumference',
+        'hip_circumference',
+        'thighs_circumference',
+        'right_biceps_circumference',
+        'right_forearm_circumference',
+        'chest_skinfold',
+        'abdominal_skinfold',
+        'thighs_skinfold',
+        'triceps_skinfold',
+        'suprailiac_skinfold',
+        'subscapularis_skinfold',
+        'midaxillary_skinfold',
+        'iliac_circumference',
+        'imc_result',
+        'imc_class',
+        'ca_class',
+        'ca_risk',
+        'rcq_result',
+        'rcq_class',
+        'rcae_class',
+        'iac_result',
+        'iac_class',
+        'pg_result',
+        'pg_class',
+    ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
+    return antropometria
+
+
 @antropometria_router.put("/protocol/{person_id}")
 async def update_antropometria_protocol(person_id, data: UpdateAntropometria):
     student = Student.find(person_id)

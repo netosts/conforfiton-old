@@ -1,4 +1,5 @@
 # pylint: skip-file
+from kink import di
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -116,6 +117,55 @@ async def get_neuromuscular_protocol(person_id):
     protocol = Student.select('neuromuscular_protocol').where(
         'person_id', person_id).first()
     return protocol.neuromuscular_protocol
+
+
+@neuromuscular_router.get('/student/{person_id}')
+async def get_neuromuscular_for_student_page(person_id):
+    neuro = Neuromuscular.select(
+        'neuromuscular_protocol',
+        'bench_press_lifted',
+        'bench_press_reps',
+        'bench_press_rm',
+        'bench_press_points',
+        'barbell_curl_lifted',
+        'barbell_curl_reps',
+        'barbell_curl_rm',
+        'barbell_curl_points',
+        'pull_down_lifted',
+        'pull_down_reps',
+        'pull_down_rm',
+        'pull_down_points',
+        'leg_press_lifted',
+        'leg_press_reps',
+        'leg_press_rm',
+        'leg_press_points',
+        'leg_extension_lifted',
+        'leg_extension_reps',
+        'leg_extension_rm',
+        'leg_extension_points',
+        'leg_curl_lifted',
+        'leg_curl_reps',
+        'leg_curl_rm',
+        'leg_curl_points',
+        'total_points',
+        'created_at',
+    ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
+
+    rml = NeuromuscularRml.select(
+        'neuromuscular_protocol',
+        'sit_up',
+        'push_up',
+        'jump',
+        'sit_up_result',
+        'push_up_result',
+        'jump_result',
+        'created_at',
+    ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
+
+    combined_list = neuro + rml
+
+    if len(combined_list) > 0:
+        return sorted(combined_list, key=lambda x: x["created_at"], reverse=True)
 
 
 @neuromuscular_router.put("/protocol/{person_id}")
