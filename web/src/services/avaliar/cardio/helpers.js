@@ -40,12 +40,12 @@ export function fcmax(age, protocol) {
 
 export function l1reserva(fcmax, fcrepouso) {
   const fcreserva = fcmax - fcrepouso;
-  return fcrepouso ? (fcrepouso + 0.6 * fcreserva).toFixed(2) : null;
+  return fcrepouso ? fcrepouso + 0.6 * fcreserva : null;
 }
 
 export function l2reserva(fcmax, fcrepouso) {
   const fcreserva = fcmax - fcrepouso;
-  return fcrepouso ? (fcrepouso + 0.85 * fcreserva).toFixed(2) : null;
+  return fcrepouso ? fcrepouso + 0.85 * fcreserva : null;
 }
 
 export function l1EllestadConconi(fcmax, l1) {

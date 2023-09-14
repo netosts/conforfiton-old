@@ -1,12 +1,18 @@
 <script setup>
-import { getStudent, getAnamnese } from "../../services/api/get";
+import {
+  getStudent,
+  getAnamnese,
+  getNeuromuscularStudentPage,
+  getAntropometriaStudentPage,
+  getCardioStudentPage,
+} from "../../services/api/get";
 
 import { studentButtons, studentComponents } from "@/services/student/lists";
 import { translateRole } from "@/services/helpers";
 
 import { useStudentStore } from "@/stores/student";
 
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive } from "vue";
 import { useRoute, definePage } from "vue-router/auto";
 
 definePage({
@@ -18,15 +24,29 @@ const route = useRoute();
 const store = useStudentStore();
 const student = ref({});
 const anamnese = ref({});
-const gets = ref([]);
+const gets = reactive({
+  student: undefined,
+  anamnese: undefined,
+  evaluations: {
+    neuromuscular: undefined,
+    antropometria: undefined,
+    cardio: undefined,
+  },
+});
 
 // FUNCTIONS
 async function initStudent() {
   student.value = await getStudent(route.params.id);
-  gets.value.push(student.value);
-  anamnese.value = await getAnamnese(route.params.id);
-  gets.value.push(anamnese.value);
-  console.log(gets.value);
+  gets.student = student.value;
+  gets.anamnese = await getAnamnese(route.params.id);
+  gets.evaluations.neuromuscular = await getNeuromuscularStudentPage(
+    route.params.id
+  );
+  gets.evaluations.antropometria = await getAntropometriaStudentPage(
+    route.params.id
+  );
+  gets.evaluations.cardio = await getCardioStudentPage(route.params.id);
+  console.log(gets);
 }
 
 function showContent(id) {
@@ -75,9 +95,9 @@ onMounted(() => {
         <component
           v-for="(item, id) in studentComponents"
           :key="id"
-          :is="item"
+          :is="item.component"
           :show="store.show[id]"
-          :get="gets[id]"
+          :get="gets[item.get]"
         />
       </div>
     </div>

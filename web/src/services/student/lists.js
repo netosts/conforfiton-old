@@ -4,4 +4,8 @@ import Anamnese from "@/components/student/Anamnese.vue";
 
 export const studentButtons = ["Geral", "Anamnese", "Avaliações"];
 
-export const studentComponents = [Overview, Anamnese, Evaluations];
+export const studentComponents = [
+  { component: Overview, get: "student" },
+  { component: Anamnese, get: "anamnese" },
+  { component: Evaluations, get: "evaluations" },
+];

@@ -26,7 +26,7 @@ const props = defineProps({
   },
   tabindex: String,
   modelValue: [String, Number, Boolean, Object],
-  rules: String,
+  rules: [String, Object],
 });
 
 const emit = defineEmits(["update:modelValue"]);

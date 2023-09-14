@@ -113,6 +113,8 @@ async function updateProtocol() {
           </div>
         </div>
 
+        <pre>{{ meta }}</pre>
+
         <div class="antropometria__1-1">
           <div class="antropometria__containers">
             <h3>Índice de Massa Corporal</h3>

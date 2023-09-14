@@ -5,6 +5,8 @@ import {
   getNeuromuscularProtocol,
   getCardioProtocol,
 } from "@/services/api/get";
+
+import { evaluationComponents } from "@/services/avaliar/lists";
 import { translateGender } from "@/services/helpers";
 import { formatAge } from "@/services/validators/formats";
 
@@ -12,10 +14,6 @@ import { useAvaliarStore } from "@/stores/avaliar";
 
 import { onMounted } from "vue";
 import { useRoute, useRouter, definePage } from "vue-router/auto";
-
-import Neuromuscular from "@/components/avaliar/Neuromuscular.vue";
-import Antropometria from "@/components/avaliar/Antropometria.vue";
-import Cardio from "@/components/avaliar/Cardio.vue";
 
 definePage({
   meta: { isStudent: true, requiresAuth: true },
@@ -75,11 +73,15 @@ onMounted(() => {
       </div>
     </section>
 
-    <Neuromuscular v-if="store.types?.includes('Neuromuscular')" />
-
-    <Antropometria v-if="store.types?.includes('Antropometria')" />
-
-    <Cardio v-if="store.types?.includes('Cardio')" />
+    <div class="evaluation">
+      <div v-for="(item, id) in evaluationComponents" :key="id">
+        <component
+          :is="item.component"
+          v-if="store.types?.includes(item.includes)"
+          class="evaluation__component"
+        />
+      </div>
+    </div>
   </main>
 </template>
 
@@ -138,6 +140,9 @@ main {
         border-right: 2px solid $background;
       }
     }
+  }
+  .evaluation__component {
+    margin-bottom: 20px;
   }
 }
 </style>

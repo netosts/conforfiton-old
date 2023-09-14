@@ -142,3 +142,31 @@ export async function getAnamnese(person_id) {
       throw err;
     });
 }
+
+export async function getNeuromuscularStudentPage(person_id) {
+  return http
+    .get(`/neuromuscular/student/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}
+export async function getAntropometriaStudentPage(person_id) {
+  return http
+    .get(`/antropometria/student/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}
+export async function getCardioStudentPage(person_id) {
+  return http
+    .get(`/cardio/student/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}

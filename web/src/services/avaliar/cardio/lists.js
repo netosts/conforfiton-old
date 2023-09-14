@@ -100,10 +100,14 @@ export const results = reactive({
     }
   }),
   l1_fc_max_percentage: computed(() =>
-    l1EllestadConconi(results.fc_max, form.l1.value)
+    store.cardio_protocol?.includes("EllestadConconi")
+      ? l1EllestadConconi(results.fc_max, form.l1.value)
+      : null
   ),
   l2_fc_max_percentage: computed(() =>
-    l2EllestadConconi(results.fc_max, form.l2.value)
+    store.cardio_protocol?.includes("EllestadConconi")
+      ? l2EllestadConconi(results.fc_max, form.l2.value)
+      : null
   ),
   vo2max: computed(() => {
     if (store.cardio_protocol?.includes("Cooper")) {
@@ -130,10 +134,22 @@ export const results = reactive({
     }
   }),
   vvo2max_pace: computed(() => formatPace(results.vvo2max)),
-  vl1: computed(() => vl1Weltman(form.time.value)),
-  vl1_pace: computed(() => formatPace(results.vl1)),
-  vl2: computed(() => vl2Weltman(form.time.value)),
-  vl2_pace: computed(() => formatPace(results.vl2)),
+  vl1: computed(() =>
+    store.cardio_protocol?.includes("Weltman")
+      ? vl1Weltman(form.time.value)
+      : null
+  ),
+  vl1_pace: computed(() =>
+    store.cardio_protocol?.includes("Weltman") ? formatPace(results.vl1) : null
+  ),
+  vl2: computed(() =>
+    store.cardio_protocol?.includes("Weltman")
+      ? vl2Weltman(form.time.value)
+      : null
+  ),
+  vl2_pace: computed(() =>
+    store.cardio_protocol?.includes("Weltman") ? formatPace(results.vl2) : null
+  ),
   elder_aerobic_power: computed(() =>
     store.cardio_protocol === "Elder"
       ? elderAerobicPower(

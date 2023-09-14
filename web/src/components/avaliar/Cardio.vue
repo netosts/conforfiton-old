@@ -13,7 +13,6 @@ import { useRoute } from "vue-router/auto";
 import { useAvaliarStore } from "@/stores/avaliar";
 
 import { ref } from "vue";
-import { onClickOutside } from "@vueuse/core";
 
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
@@ -25,7 +24,6 @@ const store = useAvaliarStore();
 
 const selectProtocol = ref(false);
 const protocolButton = ref(true);
-const checkbox = ref();
 
 async function onSubmit() {
   try {
@@ -55,24 +53,17 @@ function openSelect() {
   protocolButton.value = false;
 }
 
-function closeCheckbox() {
-  selectProtocol.value = false;
-  protocolButton.value = true;
-}
-
 async function updateProtocol(value) {
   const data = { cardio_protocol: value };
   await updateCardioProtocol(store.student?.id, data);
   store.cardio_protocol = value;
   selectProtocol.value = false;
 }
-
-onClickOutside(checkbox, closeCheckbox);
 </script>
 
 <template>
   <section>
-    <Form @submit="onSubmit" v-slot="meta">
+    <Form @submit="onSubmit">
       <h2 class="avaliar--title">Cardiorrespiratório</h2>
 
       <div class="protocol">
@@ -87,11 +78,7 @@ onClickOutside(checkbox, closeCheckbox);
         </div>
       </div>
 
-      <Checkbox
-        ref="checkbox"
-        v-show="selectProtocol"
-        @confirmProtocol="updateProtocol"
-      />
+      <Checkbox v-show="selectProtocol" @confirmProtocol="updateProtocol" />
 
       <div class="cardio" v-if="!!store.cardio_protocol">
         <div class="cardio__inputs">
@@ -102,7 +89,6 @@ onClickOutside(checkbox, closeCheckbox);
               type="number"
               :label="item.label"
               :span="item.span"
-              :meta="meta"
               :rules="{
                 required: true,
                 bpm:
@@ -171,7 +157,7 @@ onClickOutside(checkbox, closeCheckbox);
           Gasto calórico diário: {{ results.daily_caloric_expenditure }} kcal
         </p>
 
-        <SubmitButton msg="Salvar" :meta="meta.meta" />
+        <SubmitButton msg="Salvar" />
       </div>
     </Form>
   </section>
