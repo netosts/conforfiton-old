@@ -25,8 +25,13 @@ const store = useAvaliarStore();
 const selectProtocol = ref(false);
 const protocolButton = ref(true);
 
-async function onSubmit() {
+async function onSubmit(values) {
   try {
+    const error = Object.values(values).some(
+      (value) => value === null || value === undefined || value === ""
+    );
+    if (error) return alert("Por favor preencha a avaliação corretamente.");
+
     const form = await createCardioForm(
       store.student?.weight,
       store.cardio_protocol,
@@ -151,10 +156,11 @@ async function updateProtocol(value) {
         </p>
 
         <p v-if="results.weekly_caloric_expenditure">
-          Gasto calórico semanal: {{ results.weekly_caloric_expenditure }} kcal
+          Gasto Calórico - Semanal:
+          {{ results.weekly_caloric_expenditure }} kcal
         </p>
         <p v-if="results.daily_caloric_expenditure">
-          Gasto calórico diário: {{ results.daily_caloric_expenditure }} kcal
+          Gasto Calórico - Diário: {{ results.daily_caloric_expenditure }} kcal
         </p>
 
         <SubmitButton msg="Salvar" />

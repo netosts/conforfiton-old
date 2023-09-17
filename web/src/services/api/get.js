@@ -138,8 +138,11 @@ export async function getAnamnese(person_id) {
     .get(`/anamnese/${person_id}`)
     .then((res) => res.data)
     .catch((err) => {
-      console.error(err.response);
+      console.error(err);
       throw err;
+      // if (err.response.data.data === "Anamnese not found.") {
+      //   alert("O aluno ainda não tem anamnese.");
+      // }
     });
 }
 

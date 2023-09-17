@@ -2,9 +2,20 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useStudentStore = defineStore("student", () => {
-  const show = ref(
-    Array.from({ length: 3 }, (_, i) => (i === 0 ? true : false))
-  );
+  const student = ref({
+    id: undefined,
+    value: undefined,
+  });
+  const anamnese = ref({
+    id: undefined,
+    value: undefined,
+  });
+  const evaluations = ref({
+    id: undefined,
+    neuromuscular: undefined,
+    antropometria: undefined,
+    cardio: undefined,
+  });
 
-  return { show };
+  return { student, anamnese, evaluations };
 });

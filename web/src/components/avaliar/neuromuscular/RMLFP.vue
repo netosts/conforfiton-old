@@ -39,7 +39,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <Form @submit="onSubmit" v-slot="meta">
+  <Form @submit="onSubmit">
     <div class="input--grid">
       <div v-for="(item, id) in RMLFPList" :key="id">
         <TextField
@@ -48,7 +48,6 @@ async function onSubmit() {
           :name="item.name"
           :label="item.label"
           :span="item.span"
-          :meta="meta"
           rules="between:0,999"
         />
       </div>
@@ -59,7 +58,7 @@ async function onSubmit() {
       {{ results.push_up_result }}
     </p>
     <p>Potência de Membros Inferiores - Salto: {{ results.jump_result }}</p>
-    <SubmitButton msg="Salvar" :meta="meta.meta" />
+    <SubmitButton msg="Salvar" />
   </Form>
 </template>
 

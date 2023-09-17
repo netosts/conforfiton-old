@@ -44,7 +44,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <Form @submit="onSubmit" :validation-schema="schema" v-slot="meta">
+  <Form @submit="onSubmit" :validation-schema="schema">
     <table class="neuro-table">
       <thead>
         <tr>
@@ -63,7 +63,7 @@ async function onSubmit() {
               v-model="exercise.lifted"
               :name="`${exercise.name}_lifted`"
               type="number"
-              :meta="meta"
+              rules="required"
             />
           </td>
           <td>
@@ -72,7 +72,7 @@ async function onSubmit() {
               :name="`${exercise.name}_reps`"
               type="select"
               :options="repsList"
-              :meta="meta"
+              rules="required"
             />
           </td>
           <td>{{ exercise.rm }}</td>
@@ -86,7 +86,7 @@ async function onSubmit() {
       <span>{{ total }}</span>
     </div>
 
-    <SubmitButton msg="Salvar" :meta="meta.meta" />
+    <SubmitButton msg="Salvar" />
   </Form>
 </template>
 

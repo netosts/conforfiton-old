@@ -1,57 +1,35 @@
 <script setup>
-import {
-  getStudent,
-  getAnamnese,
-  getNeuromuscularStudentPage,
-  getAntropometriaStudentPage,
-  getCardioStudentPage,
-} from "../../services/api/get";
+import { getStudent } from "@/services/api/get";
 
-import { studentButtons, studentComponents } from "@/services/student/lists";
+import { studentButtons } from "@/services/student/lists";
 import { translateRole } from "@/services/helpers";
+
+import { onMounted } from "vue";
+import { useRoute, useRouter, definePage } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
 
-import { onMounted, ref, reactive } from "vue";
-import { useRoute, definePage } from "vue-router/auto";
-
 definePage({
-  meta: { isStudent: true, requiresAuth: true },
+  meta: { requiresAuth: true },
 });
 
 // VARIABLES
 const route = useRoute();
+const router = useRouter();
 const store = useStudentStore();
-const student = ref({});
-const anamnese = ref({});
-const gets = reactive({
-  student: undefined,
-  anamnese: undefined,
-  evaluations: {
-    neuromuscular: undefined,
-    antropometria: undefined,
-    cardio: undefined,
-  },
-});
 
 // FUNCTIONS
 async function initStudent() {
-  student.value = await getStudent(route.params.id);
-  gets.student = student.value;
-  gets.anamnese = await getAnamnese(route.params.id);
-  gets.evaluations.neuromuscular = await getNeuromuscularStudentPage(
-    route.params.id
-  );
-  gets.evaluations.antropometria = await getAntropometriaStudentPage(
-    route.params.id
-  );
-  gets.evaluations.cardio = await getCardioStudentPage(route.params.id);
-  console.log(gets);
-}
-
-function showContent(id) {
-  store.show.fill(false);
-  store.show[id] = true;
+  try {
+    if (store.student.id !== route.params.id) {
+      store.student.value = await getStudent(route.params.id);
+      store.student.id = route.params.id;
+    }
+  } catch (err) {
+    if (err.response.data.msg === "Student not found.") {
+      router.push("/NotFound");
+    }
+  }
 }
 
 // DOM Mount
@@ -66,8 +44,8 @@ onMounted(() => {
       <div class="profile__picture"></div>
       <div class="profile__info">
         <div class="profile__info__credentials">
-          <p>{{ student.name }}</p>
-          <span>{{ translateRole(student.role) }}</span>
+          <p>{{ store.student.value?.name }}</p>
+          <span>{{ translateRole(store.student?.value?.role) }}</span>
         </div>
         <div class="profile__info__address">
           <span>
@@ -77,28 +55,24 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
     <div class="content">
       <div class="content__buttons">
         <div class="content__buttons--buttons">
-          <button
+          <RouterLink
             v-for="(item, id) in studentButtons"
             :key="id"
-            @click="showContent(id)"
-            :class="{ 'button--active': store.show[id] }"
+            :to="`/student/${route.params.id}/${item.link}`"
           >
-            {{ item }}
-          </button>
+            <button>
+              {{ item.button }}
+            </button>
+          </RouterLink>
         </div>
         <button class="profile__edit">Editar Perfil</button>
       </div>
       <div class="content__components">
-        <component
-          v-for="(item, id) in studentComponents"
-          :key="id"
-          :is="item.component"
-          :show="store.show[id]"
-          :get="gets[item.get]"
-        />
+        <RouterView :student="store.student.value" />
       </div>
     </div>
   </main>
@@ -168,24 +142,28 @@ onMounted(() => {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      .button--active {
-        background-color: rgba(255, 255, 255, 0.12);
-      }
 
-      button {
-        padding: 10px 16px;
-        border: none;
+      a {
         border-radius: $border-radius;
-        background-color: transparent;
-        cursor: pointer;
-        color: rgba(255, 255, 255, 0.84);
-        font-size: 0.9rem;
-        font-weight: 500;
         transition: 0.3s;
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.12);
         }
+
+        button {
+          padding: 10px 16px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+          color: rgba(255, 255, 255, 0.84);
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+      }
+
+      .router-link-exact-active {
+        background-color: rgba(255, 255, 255, 0.12);
       }
     }
 

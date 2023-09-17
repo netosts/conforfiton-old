@@ -14,7 +14,7 @@ import { useAvaliarStore } from "@/stores/avaliar";
 
 import { ref } from "vue";
 
-import { Form } from "vee-validate";
+import { Form, Field } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
 
@@ -24,8 +24,15 @@ const store = useAvaliarStore();
 const selectProtocol = ref(false);
 const protocolButton = ref(true);
 
-async function onSubmit() {
+async function onSubmit(values) {
   try {
+    const error = Object.values(values).some(
+      (value) => value === null || value === undefined || value === ""
+    );
+    if (error) return alert("Por favor preencha a avaliação corretamente.");
+    if (values.pg_result > 100)
+      return alert("Porcentagem de gordura acima de 100%");
+
     const form = await createAntropometriaForm(
       store.student?.weight,
       store.antropometria_protocol,
@@ -67,7 +74,7 @@ async function updateProtocol() {
 
 <template>
   <section>
-    <Form @submit="onSubmit" v-slot="meta">
+    <Form @submit="onSubmit">
       <h2 class="avaliar--title">Antropometria</h2>
 
       <div class="protocol">
@@ -106,52 +113,137 @@ async function updateProtocol() {
                 :name="item.name"
                 :label="item.label"
                 :span="item.span"
-                :meta="meta"
                 rules="required|between:0,999"
               />
             </div>
           </div>
         </div>
 
-        <pre>{{ meta }}</pre>
+        <table class="antropometria__table">
+          <thead>
+            <tr>
+              <th>Fórmulas</th>
+              <th>Resultado</th>
+              <th>Classificação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>IMC</td>
+              <td>
+                <Field
+                  v-model="results.imc_result"
+                  name="imc_result"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+              <td>
+                <Field
+                  v-model="results.imc_class"
+                  name="imc_class"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+            </tr>
+            <tr>
+              <td>CA</td>
+              <td>N/A</td>
+              <td>
+                <Field
+                  v-model="results.ca_class"
+                  name="ca_class"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+            </tr>
+            <tr>
+              <td>RCQ</td>
+              <td>
+                <Field
+                  v-model="results.rcq_result"
+                  name="rcq_result"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+              <td>
+                <Field
+                  v-model="results.rcq_class"
+                  name="rcq_class"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+            </tr>
 
-        <div class="antropometria__1-1">
-          <div class="antropometria__containers">
-            <h3>Índice de Massa Corporal</h3>
-            <p>IMC: {{ results.imc_result }}</p>
-            <p>Classificação: {{ results.imc_class }}</p>
-          </div>
-          <div class="antropometria__containers">
-            <h3>Circunferência Abdominal</h3>
-            <p>Classificação: {{ results.ca_class }}</p>
-          </div>
-        </div>
+            <tr>
+              <td>RCAE</td>
+              <td>N/A</td>
+              <td>
+                <Field
+                  v-model="results.rcae_class"
+                  name="rcae_class"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+            </tr>
 
-        <div class="antropometria__1-1">
-          <div class="antropometria__containers">
-            <h3>Relação Cintura Quadril</h3>
-            <p>RCQ: {{ results.rcq_result }}</p>
-            <p>Classificação: {{ results.rcq_class }}</p>
-          </div>
-          <div class="antropometria__containers">
-            <h3>Relação Circunferência Abdominal Estatura</h3>
-            <p>Classificação: {{ results.rcae_class }}</p>
-          </div>
-        </div>
+            <tr>
+              <td>IAC</td>
+              <td>
+                <Field
+                  v-model="results.iac_result"
+                  name="iac_result"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+              <td>
+                <Field
+                  v-model="results.iac_class"
+                  name="iac_class"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+            </tr>
 
-        <div class="antropometria__1-1">
-          <div class="antropometria__containers">
-            <h3>Índice de Adposidade Corporal</h3>
-            <p>IAC: {{ results.iac_result }}</p>
-            <p>Classificação: {{ results.iac_class }}</p>
-          </div>
-          <div class="antropometria__containers">
-            <h3>Porcentagem de Gordura</h3>
-            <p>Gordura: {{ results.pg_result }}%</p>
-            <p>Classificação: {{ results.pg_class }}</p>
-          </div>
-        </div>
-        <SubmitButton msg="Salvar" :meta="meta.meta" />
+            <tr>
+              <td>%G</td>
+              <td>
+                <Field
+                  v-model="results.pg_result"
+                  name="pg_result"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+              <td>
+                <Field
+                  v-model="results.pg_class"
+                  name="pg_class"
+                  v-slot="{ field }"
+                >
+                  <input v-bind="field" type="text" tabindex="-1" />
+                </Field>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <SubmitButton msg="Salvar" />
       </div>
     </Form>
   </section>
@@ -237,6 +329,35 @@ section {
       flex-direction: column;
       gap: 10px;
       margin: 0 20px 20px 20px;
+
+      &__table {
+        border-collapse: collapse;
+        border: 1px solid $input-border;
+        color: $txt-aside;
+        text-align: center;
+
+        th,
+        td {
+          border: 1px solid $input-border;
+          padding: 8px;
+        }
+
+        td {
+          font-weight: 500;
+
+          input {
+            width: 100%;
+            border: none;
+            text-align: center;
+            pointer-events: none;
+          }
+
+          &:not(:nth-child(1)) {
+            min-width: 50px;
+            max-width: 100px;
+          }
+        }
+      }
 
       &__1-1 {
         display: flex;

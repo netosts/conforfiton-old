@@ -292,7 +292,9 @@ export function pgClass(pg, gender, age) {
 }
 
 export function idoso3Dobras(triceps, subscapularis, suprailiac) {
-  return (triceps + subscapularis + suprailiac).toFixed(1);
+  return triceps && subscapularis && suprailiac
+    ? (triceps + subscapularis + suprailiac).toFixed(1)
+    : null;
 }
 
 export function idosoTranWeltman(
