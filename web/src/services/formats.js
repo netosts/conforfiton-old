@@ -71,3 +71,24 @@ export function formatDate(inputDate) {
 
   return formattedDate;
 }
+
+export function formatCreatedAt(value) {
+  if (!value) return null;
+  var inputDate = new Date(value);
+
+  var day = inputDate.getDate();
+  var month = inputDate.getMonth() + 1;
+  var year = inputDate.getFullYear();
+  var hours = inputDate.getHours();
+  var minutes = inputDate.getMinutes();
+
+  var yearLastTwoDigits = year.toString().slice(-2);
+
+  var formattedDateString = `${day.toString().padStart(2, "0")}/${month
+    .toString()
+    .padStart(2, "0")}/${yearLastTwoDigits} - ${hours
+    .toString()
+    .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+
+  return formattedDateString;
+}

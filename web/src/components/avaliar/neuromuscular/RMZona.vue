@@ -51,8 +51,6 @@ async function onSubmit() {
           <th>Exercício</th>
           <th>Peso L.</th>
           <th>Reps</th>
-          <th>1RM</th>
-          <th>Pontos</th>
         </tr>
       </thead>
       <tbody>
@@ -75,16 +73,9 @@ async function onSubmit() {
               rules="required"
             />
           </td>
-          <td>{{ exercise.rm }}</td>
-          <td>{{ exercise.points }}</td>
         </tr>
       </tbody>
     </table>
-
-    <div class="neuro-total">
-      <h3>Total:</h3>
-      <span>{{ total }}</span>
-    </div>
 
     <SubmitButton msg="Salvar" />
   </Form>

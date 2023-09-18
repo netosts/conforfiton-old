@@ -1,22 +1,11 @@
 <script setup>
-import {
-  getNeuromuscularStudentPage,
-  getAntropometriaStudentPage,
-  getCardioStudentPage,
-} from "@/services/api/get";
+import { evaluationsButtons } from "@/services/student/lists";
 
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router/auto";
-
-import { useStudentStore } from "@/stores/student";
 
 import Avaliar from "@/components/Avaliar.vue";
 
-const route = useRoute();
-const store = useStudentStore();
-
 const bodyElement = ref(null);
-const activeEvaluation = ref(null);
 const isAvaliarActive = ref(false);
 
 const props = defineProps({
@@ -39,24 +28,7 @@ function toggleAvaliar(id, name) {
   studentName.value = name;
 }
 
-async function initEvaluations() {
-  try {
-    if (store.evaluations.id !== route.params.id) {
-      const [neuromuscular, antropometria, cardio] = await Promise.all([
-        getNeuromuscularStudentPage(route.params.id),
-        getAntropometriaStudentPage(route.params.id),
-        getCardioStudentPage(route.params.id),
-      ]);
-      store.evaluations.neuromuscular = neuromuscular;
-      store.evaluations.antropometria = antropometria;
-      store.evaluations.cardio = cardio;
-      store.evaluations.id = route.params.id;
-    }
-  } catch {}
-}
-
 onMounted(() => {
-  initEvaluations();
   bodyElement.value = document.body;
 });
 </script>
@@ -69,45 +41,22 @@ onMounted(() => {
     v-show="isAvaliarActive"
   />
 
-  <div class="evaluation-button">
+  <div class="new-evaluation">
     <button @click="toggleAvaliar(student?.person_id, student?.name)">
       Nova Avaliação
     </button>
   </div>
 
-  <section>
-    <h2>Neuromuscular</h2>
-    <div
-      v-for="(item, id) in store.evaluations.neuromuscular"
-      :key="id"
-      class="evaluation"
-    >
-      <button class="evaluation__item" @click="activeEvaluation = id">
-        {{ id + 1 }}
-      </button>
-      <div class="evaluation__show" v-if="activeEvaluation === id">
-        Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
+  <section class="view-container">
+    <h2>Visualizar avaliação</h2>
+    <div class="view-evaluationbox">
+      <div v-for="(item, id) in evaluationsButtons" :key="id">
+        <RouterLink :to="`/student/${student?.person_id}/${item.link}`">
+          <button class="view-evaluationbox__button">
+            {{ item.name }}
+          </button>
+        </RouterLink>
       </div>
-    </div>
-  </section>
-  <section>
-    <h2>Antropometria</h2>
-    <div
-      v-for="(item, id) in store.evaluations.antropometria"
-      :key="id"
-      class="evaluation"
-    >
-      Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
-    </div>
-  </section>
-  <section>
-    <h2>Cardiorrespiratório</h2>
-    <div
-      v-for="(item, id) in store.evaluations.cardio"
-      :key="id"
-      class="evaluation"
-    >
-      Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
     </div>
   </section>
 </template>
@@ -128,23 +77,42 @@ section {
     padding-bottom: 20px;
     color: $txt-title;
   }
+}
+.view-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.view-evaluationbox {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  &__button {
+    width: 300px;
+    padding: 30px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgb(43, 43, 43);
+    cursor: pointer;
+    transition: 0.2s;
 
-  .evaluation {
-    &__item {
-      width: 50px;
-      height: 50px;
-      background-color: black;
-      border-radius: 50%;
-      color: red;
+    &:hover {
+      filter: brightness(0.9);
+    }
+
+    &:active {
+      filter: brightness(0.7);
     }
   }
 }
 
-.evaluation-button {
+.new-evaluation {
   display: flex;
   justify-content: flex-end;
   button {
-    margin-top: -10px;
+    margin-top: -7px;
     margin-bottom: 10px;
     font-weight: 500;
     @include submitButtons($validation, white);

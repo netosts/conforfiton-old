@@ -10,12 +10,18 @@ export const useStudentStore = defineStore("student", () => {
     id: undefined,
     value: undefined,
   });
-  const evaluations = ref({
+  const neuromuscular = ref({
     id: undefined,
-    neuromuscular: undefined,
-    antropometria: undefined,
-    cardio: undefined,
+    value: undefined,
+  });
+  const antropometria = ref({
+    id: undefined,
+    value: undefined,
+  });
+  const cardio = ref({
+    id: undefined,
+    value: undefined,
   });
 
-  return { student, anamnese, evaluations };
+  return { student, anamnese, neuromuscular, antropometria, cardio };
 });

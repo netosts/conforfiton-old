@@ -3,3 +3,9 @@ export const studentButtons = [
   { button: "Anamnese", link: "anamnese" },
   { button: "Avaliações", link: "evaluations" },
 ];
+
+export const evaluationsButtons = [
+  { name: "Neuromuscular", link: "neuromuscular" },
+  { name: "Antropometria", link: "antropometria" },
+  { name: "Cardiorrespiratório", link: "cardio" },
+];

@@ -55,6 +55,7 @@ defineProps({
 
 section {
   padding: 20px;
+  margin-bottom: 20px;
   width: 100%;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
