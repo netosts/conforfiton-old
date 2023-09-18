@@ -24,6 +24,14 @@ async def new_anamnese(email, data: NewAnamnese):
 
     anamnese = Anamnese()
 
+    anamnese.diabetes = data.diabetes
+    anamnese.hypertension = data.hypertension
+
+    anamnese.fc_repouso = data.fc_repouso
+    anamnese.fc_max = data.fc_max
+    anamnese.l1 = data.l1
+    anamnese.l2 = data.l2
+
     anamnese.person_id = person.id
     anamnese.q1 = data.q1.capitalize()
     anamnese.q2 = data.q2.capitalize()

@@ -54,6 +54,9 @@ onMounted(() => {
           >
         </div>
       </div>
+      <button class="profile__edit">
+        <font-awesome-icon icon="fa-solid fa-pen-to-square" size="xl" />
+      </button>
     </div>
 
     <div class="content">
@@ -69,7 +72,6 @@ onMounted(() => {
             </button>
           </RouterLink>
         </div>
-        <button class="profile__edit">Editar Perfil</button>
       </div>
       <div class="content__components">
         <RouterView :student="store.student.value" />
@@ -123,6 +125,28 @@ onMounted(() => {
       color: rgba(255, 255, 255, 0.678);
     }
   }
+
+  &__edit {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    &:active {
+      filter: brightness(0.7);
+    }
+  }
 }
 .content {
   display: flex;
@@ -133,7 +157,7 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    padding: 10px 150px 10px 20px;
+    padding: 10px 20px;
     border-radius: 0 0 4px 4px;
     box-shadow: $box-shadow;
     background-color: $buttons;
@@ -165,12 +189,6 @@ onMounted(() => {
       .router-link-exact-active {
         background-color: rgba(255, 255, 255, 0.12);
       }
-    }
-
-    .profile__edit {
-      position: absolute;
-      right: 20px;
-      @include submitButtons($validation, white);
     }
   }
 }

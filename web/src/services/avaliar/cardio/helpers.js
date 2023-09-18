@@ -23,31 +23,6 @@ export function createCardioForm(weight, cardio_protocol, cardioList, results) {
   return form;
 }
 
-export function fcmax(age, protocol) {
-  if (!protocol) return null;
-  const formulas = {
-    Default: 208 - 0.7 * age,
-    Diabetes: 211 - 0.67 * age,
-    Hypertension: 164 - 0.7 * age,
-  };
-
-  for (const name of Object.keys(formulas)) {
-    if (protocol.includes(name)) {
-      return Math.floor(formulas[name]);
-    }
-  }
-}
-
-export function l1reserva(fcmax, fcrepouso) {
-  const fcreserva = fcmax - fcrepouso;
-  return fcrepouso ? fcrepouso + 0.6 * fcreserva : null;
-}
-
-export function l2reserva(fcmax, fcrepouso) {
-  const fcreserva = fcmax - fcrepouso;
-  return fcrepouso ? fcrepouso + 0.85 * fcreserva : null;
-}
-
 export function l1EllestadConconi(fcmax, l1) {
   return l1 ? ((l1 * 100) / fcmax).toFixed(1) : null;
 }

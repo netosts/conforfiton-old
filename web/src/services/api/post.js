@@ -88,3 +88,13 @@ export async function postCardio(form, id) {
     throw err;
   }
 }
+
+export async function postWeight(id, weight) {
+  try {
+    const response = await http.post(`/weight/${id}`, weight);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}

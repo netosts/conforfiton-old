@@ -21,6 +21,14 @@ class JsonQ13(BaseModel):
 
 
 class NewAnamnese(BaseModel):
+    diabetes: bool
+    hypertension: bool
+
+    fc_repouso: int = Field(ge=0, le=220, default=None)
+    fc_max: int = Field(ge=0, le=220)
+    l1: int = Field(ge=0, le=220, default=None)
+    l2: int = Field(ge=0, le=220, default=None)
+
     q1: constr(max_length=255)
     q2: constr(max_length=100)
     q3: constr(max_length=100)

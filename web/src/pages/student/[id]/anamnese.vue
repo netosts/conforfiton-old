@@ -40,5 +40,10 @@ section {
   border-radius: $border-radius;
   box-shadow: $box-shadow;
   background-color: white;
+
+  h2 {
+    padding-bottom: 20px;
+    color: $txt-title;
+  }
 }
 </style>

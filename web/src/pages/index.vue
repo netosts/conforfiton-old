@@ -1,6 +1,5 @@
 <script setup>
 import http from "../services/api/http";
-import Avaliar from "../components/Avaliar.vue";
 
 import { getUserIdSession } from "@/services/api/token";
 import { translateGender } from "@/services/helpers";
@@ -16,27 +15,11 @@ definePage({
 // VARIABLES
 const bodyElement = ref(null);
 const students = ref([]);
-const isAvaliarActive = ref(false);
 const studentsFilter = ref("ativos");
 const inputBar = ref("");
 const inputFilter = ref("inputName");
 
-// Send Props
-const studentId = ref(null);
-const studentName = ref(null);
-
-// Handle Emits
-const handleAvaliar = (emittedValue) => {
-  return (isAvaliarActive.value = emittedValue);
-};
-
 // FUNCTIONS
-function toggleAvaliar(id, name) {
-  isAvaliarActive.value = !isAvaliarActive.value;
-  bodyElement.value.style.overflow = isAvaliarActive.value ? "hidden" : "auto";
-  studentId.value = id;
-  studentName.value = name;
-}
 
 // Axios Functions
 // Get students from database
@@ -133,13 +116,6 @@ onMounted(() => {
 
 <template>
   <main>
-    <Avaliar
-      :studentName="studentName"
-      :studentId="studentId"
-      @isAvaliarActive="handleAvaliar"
-      v-show="isAvaliarActive"
-    />
-
     <div class="searchbox">
       <div class="searchbox__title">
         <h3>Procurar Alunos</h3>
@@ -189,7 +165,7 @@ onMounted(() => {
                 <div class="student__container__profile__info__name">
                   <p>{{ student.name }}</p>
                 </div>
-                <div class="student__container__profile__info__content">
+                <!-- <div class="student__container__profile__info__content">
                   <p>
                     Sexo:
                     <strong>{{ translateGender(student.gender) }}</strong> |
@@ -206,15 +182,15 @@ onMounted(() => {
                     Peso:
                     <strong>{{ student.weight + "kg" }}</strong>
                   </p>
-                </div>
+                </div> -->
               </div>
             </div>
           </RouterLink>
           <div class="student__container__button">
             <div class="student__container__button__box">
-              <button @click="toggleAvaliar(student.id, student.name)">
-                Avaliar
-              </button>
+              <RouterLink :to="`/student/${student.id}/evaluations`">
+                <button>Avaliação</button>
+              </RouterLink>
             </div>
           </div>
         </div>

@@ -10,10 +10,34 @@ import { useRoute } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
 
+import Avaliar from "@/components/Avaliar.vue";
+
 const route = useRoute();
 const store = useStudentStore();
 
+const bodyElement = ref(null);
 const activeEvaluation = ref(null);
+const isAvaliarActive = ref(false);
+
+const props = defineProps({
+  student: Object,
+});
+
+// Send Props
+const studentId = ref(null);
+const studentName = ref(null);
+
+// Handle Emits
+const handleAvaliar = (emittedValue) => {
+  return (isAvaliarActive.value = emittedValue);
+};
+
+function toggleAvaliar(id, name) {
+  isAvaliarActive.value = !isAvaliarActive.value;
+  bodyElement.value.style.overflow = isAvaliarActive.value ? "hidden" : "auto";
+  studentId.value = id;
+  studentName.value = name;
+}
 
 async function initEvaluations() {
   try {
@@ -33,10 +57,24 @@ async function initEvaluations() {
 
 onMounted(() => {
   initEvaluations();
+  bodyElement.value = document.body;
 });
 </script>
 
 <template>
+  <Avaliar
+    :studentName="studentName"
+    :studentId="studentId"
+    @isAvaliarActive="handleAvaliar"
+    v-show="isAvaliarActive"
+  />
+
+  <div class="evaluation-button">
+    <button @click="toggleAvaliar(student?.person_id, student?.name)">
+      Nova Avaliação
+    </button>
+  </div>
+
   <section>
     <h2>Neuromuscular</h2>
     <div
@@ -99,6 +137,17 @@ section {
       border-radius: 50%;
       color: red;
     }
+  }
+}
+
+.evaluation-button {
+  display: flex;
+  justify-content: flex-end;
+  button {
+    margin-top: -10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    @include submitButtons($validation, white);
   }
 }
 </style>

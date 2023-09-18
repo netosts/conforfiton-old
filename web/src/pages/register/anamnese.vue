@@ -1,6 +1,7 @@
 <script setup>
-import { postStudent, postAnamnese } from "../../services/api/post";
-import { q4Radio, YesOrNoRadio, days } from "../../services/register/lists";
+import { postStudent, postAnamnese } from "@/services/api/post";
+import { q4Radio, YesOrNoRadio, days } from "@/services/register/lists";
+import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
 import { getUserIdSession } from "@/services/api/token";
 import { translateGender, translateDays } from "@/services/helpers";
@@ -8,12 +9,12 @@ import { translateGender, translateDays } from "@/services/helpers";
 import { ref, onMounted } from "vue";
 import { definePage, useRouter } from "vue-router/auto";
 
-import { schema } from "../../services/register/schemas/anamnese";
-import { form } from "../../services/register/forms/anamnese";
+import { schema } from "@/services/register/schemas/anamnese";
+import { form } from "@/services/register/forms/anamnese";
 
 import { Form } from "vee-validate";
-import TextField from "../../components/TextField.vue";
-import SubmitButton from "../../components/SubmitButton.vue";
+import TextField from "@/components/TextField.vue";
+import SubmitButton from "@/components/SubmitButton.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -72,10 +73,15 @@ async function onSubmit(_, { setFieldError }) {
     studentForm.gender = translateGender(studentForm.gender); // from pt to en
     studentForm.created_at = formattedDate;
     studentForm.personal_id = userId;
-
-    console.log(studentForm);
-
     await postStudent(studentForm);
+
+    form.fc_max = fcmax(
+      studentForm.birth_date,
+      form.diabetes,
+      form.hypertension
+    );
+    form.l1 = calculateL1(form.fc_max, form.fc_repouso);
+    form.l2 = calculateL2(form.fc_max, form.fc_repouso);
     await postAnamnese(form, studentForm.email);
 
     alert("Cadastro realizado com sucesso!");
@@ -385,7 +391,23 @@ onMounted(() => {
           :meta="meta"
           type="text"
           label="Alguma patologia (doença) diagnosticada por algum médico?"
-          span="(Hipertensão; doenças cardíacas; diabetes; etc)"
+          span="(Alergias; doenças cardíacas; doenças fúngicas; etc)"
+        />
+        <TextField
+          v-model="form.diabetes"
+          name="diabetes"
+          :meta="meta"
+          type="radio"
+          :radios="YesOrNoRadio"
+          label="Você é diagnosticado com Diabetes?"
+        />
+        <TextField
+          v-model="form.hypertension"
+          name="hypertension"
+          :meta="meta"
+          type="radio"
+          :radios="YesOrNoRadio"
+          label="Você é diagnosticado com Hipertensão?"
         />
         <TextField
           v-model="form.q23"
@@ -402,6 +424,13 @@ onMounted(() => {
           type="radio"
           :radios="YesOrNoRadio"
           label="Seu médico já mencionou alguma vez que você tem alguma condição cardíaca e que você só deve realizar atividade física recomendada por um médico?"
+        />
+        <TextField
+          v-model="form.fc_repouso"
+          name="fc_repouso"
+          :meta="meta"
+          type="number"
+          label="Qual a frequência cardíaca em repouso? Se não souber, por favor não informe."
         />
         <TextField
           v-model="form.q25"
@@ -438,8 +467,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@import "../../assets/styles/variables";
-@import "../../assets/styles/mixins";
+@import "@/assets/styles/variables";
+@import "@/assets/styles/mixins";
 
 main {
   display: flex;

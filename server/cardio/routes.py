@@ -26,11 +26,9 @@ async def new_cardio(person_id, data: NewCardio):
     cardio.weight = data.weight
     cardio.cardio_protocol = data.cardio_protocol
 
-    cardio.fc_repouso = data.fc_repouso
-    cardio.fc_max = data.fc_max
-    cardio.l1 = data.l1
+    cardio.l1_ellestad_conconi = data.l1_ellestad_conconi
+    cardio.l2_ellestad_conconi = data.l2_ellestad_conconi
     cardio.l1_fc_max_percentage = data.l1_fc_max_percentage
-    cardio.l2 = data.l2
     cardio.l2_fc_max_percentage = data.l2_fc_max_percentage
     cardio.distance = data.distance
     cardio.time = data.time
@@ -74,11 +72,7 @@ async def get_cardio_for_student_page(person_id):
     cardio = Cardio.select(
         'weight',
         'cardio_protocol',
-        'fc_repouso',
-        'fc_max',
-        'l1',
         'l1_fc_max_percentage',
-        'l2',
         'l2_fc_max_percentage',
         'distance',
         'time',
