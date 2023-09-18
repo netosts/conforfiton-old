@@ -13,7 +13,6 @@ class CreateTableStudents(Migration):
             table.string('neuromuscular_protocol', 50).nullable()
             table.string('antropometria_protocol', 50).nullable()
             table.string('cardio_protocol', 50).nullable()
-            table.text('note').nullable()
             table.soft_deletes()
 
             table.foreign('person_id').references(

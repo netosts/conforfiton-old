@@ -14,11 +14,9 @@ class CreateTableCardios(Migration):
             table.decimal('weight', 5, 2)
             table.string('cardio_protocol', 50)
 
-            table.small_integer('fc_repouso').nullable()
-            table.small_integer('fc_max')  # bpm
-            table.small_integer('l1')  # bpm
+            table.small_integer('l1_ellestad_conconi').nullable()  # bpm
+            table.small_integer('l2_ellestad_conconi').nullable()  # bpm
             table.decimal('l1_fc_max_percentage', 5, 2).nullable()
-            table.small_integer('l2')  # bpm
             table.decimal('l2_fc_max_percentage', 5, 2).nullable()
             table.small_integer('distance').nullable()  # meters
             table.small_integer('time').nullable()  # minutes

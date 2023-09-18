@@ -175,7 +175,7 @@ async def find_student(person_id):
     else:
         return JSONResponse({
             "error": True,
-            "das": "Student not found."
+            "msg": "Student not found."
         }, 404)
 
 
@@ -198,9 +198,10 @@ async def get_student_for_avaliar_page(person_id):
     newest_weight = Weight.where('person_id', person_id).max('created_at')
     student = di["db"].table('persons as p') \
         .where('p.id', person_id) \
-        .select('p.id', 'p.name', 'p.gender', 'w.weight', 'p.height', 'p.birth_date') \
+        .select('p.id', 'p.name', 'p.gender', 'w.weight', 'p.height', 'p.birth_date', 'a.fc_max') \
         .join('weights as w', 'p.id', '=', 'w.person_id') \
         .where('w.created_at', newest_weight) \
+        .left_join('anamneses as a', 'p.id', '=', 'a.person_id') \
         .first()
 
     if student:

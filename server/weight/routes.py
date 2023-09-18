@@ -15,9 +15,12 @@ weight_router = APIRouter(prefix='/weight')
 
 @weight_router.post('/{person_id}')
 async def new_weight(person_id, data: NewWeight):
-    person = Person.find(person_id)
+    person = Person.select('id', 'name').where('id', person_id).first()
     if not person:
-        return JSONResponse("Person not found", 404)
+        return JSONResponse({
+            "error": True,
+            "msg": "Person not found."
+        }, 404)
 
     weight = Weight()
     weight.person_id = person.id
@@ -31,7 +34,7 @@ async def new_weight(person_id, data: NewWeight):
     else:
         return JSONResponse({
             "error": True,
-            "data": f"Something went wrong while registering {person.name}'s WEIGHT."
+            "data": f"Something went wrong while registering {person.name}'s Weight."
         }, 422)
 
 

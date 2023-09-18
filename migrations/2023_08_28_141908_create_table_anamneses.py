@@ -9,6 +9,15 @@ class CreateTableAnamneses(Migration):
         """
         with self.schema.create('anamneses') as table:
             table.integer('person_id').unsigned().unique()
+
+            table.boolean('diabetes')
+            table.boolean('hypertension')
+
+            table.small_integer('fc_max')
+            table.small_integer('fc_repouso').nullable()
+            table.small_integer('l1').nullable()
+            table.small_integer('l2').nullable()
+
             table.string('q1')
             table.string('q2', 100)
             table.string('q3', 100)

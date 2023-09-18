@@ -1,5 +1,4 @@
 # pylint: skip-file
-from decimal import Decimal
 from pydantic import BaseModel, Field, constr, validator
 from ..base_model.types import created_at, protocol
 
@@ -8,11 +7,9 @@ class NewCardio(BaseModel):
     weight: float = Field(g=0, le=600)
     cardio_protocol: protocol
 
-    fc_repouso: int = Field(ge=0, le=220, default=None)
-    fc_max: int = Field(ge=0, le=220)
-    l1: int = Field(ge=0, le=220)
+    l1_ellestad_conconi: int = Field(ge=0, le=220, default=None)
+    l2_ellestad_conconi: int = Field(ge=0, le=220, default=None)
     l1_fc_max_percentage: float = Field(ge=0, le=100, default=None)
-    l2: int = Field(ge=0, le=220)
     l2_fc_max_percentage: float = Field(ge=0, le=100, default=None)
     distance: int = Field(ge=0, le=10000, default=None)
     time: int = Field(ge=0, le=60, default=None)
