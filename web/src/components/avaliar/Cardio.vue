@@ -2,6 +2,7 @@
 import {
   cardioList,
   results,
+  protocolsList,
   renameProtocol,
 } from "@/services/avaliar/cardio/lists";
 import { createCardioForm } from "@/services/avaliar/cardio/helpers";
@@ -17,7 +18,6 @@ import { ref } from "vue";
 import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
-import Checkbox from "./cardio/Checkbox.vue";
 
 const route = useRoute();
 const store = useAvaliarStore();
@@ -25,12 +25,13 @@ const store = useAvaliarStore();
 const selectProtocol = ref(false);
 const protocolButton = ref(true);
 
-async function onSubmit(values) {
+async function onSubmit() {
   try {
-    const error = Object.values(values).some(
-      (value) => value === null || value === undefined || value === ""
-    );
-    if (error) return alert("Por favor preencha a avaliação corretamente.");
+    const error = cardioList.value.some((object) => !object.value);
+    if (error)
+      return alert(
+        "Por favor preencha a avaliação cardiorrespiratória corretamente."
+      );
 
     const form = await createCardioForm(
       store.student?.weight,
@@ -42,10 +43,10 @@ async function onSubmit(values) {
 
     sessionStorage.setItem("submitted", true);
 
-    alert("Antropometria salvo com sucesso");
+    alert("Cardio salvo com sucesso");
 
-    // Remove Antropometria from the screen
-    const indexToRemove = store.types.indexOf("Antropometria");
+    // Remove Cardio from the screen
+    const indexToRemove = store.types.indexOf("Cardio");
     store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);
@@ -58,10 +59,19 @@ function openSelect() {
   protocolButton.value = false;
 }
 
-async function updateProtocol(value) {
-  const data = { cardio_protocol: value };
+async function updateProtocol() {
+  if (
+    (store.cardio_protocol === "EllestadActive" ||
+      store.cardio_protocol === "EllestadInactive") &&
+    !store.student?.fc_max
+  ) {
+    store.cardio_protocol = null;
+    return alert(
+      "Para o protocolo de Ellestad é necessário fazer Anamnese antes."
+    );
+  }
+  const data = { cardio_protocol: store.cardio_protocol };
   await updateCardioProtocol(store.student?.id, data);
-  store.cardio_protocol = value;
   selectProtocol.value = false;
 }
 </script>
@@ -80,10 +90,21 @@ async function updateProtocol(value) {
           <button type="button" @click="openSelect" v-show="protocolButton">
             Novo protocolo
           </button>
+          <select
+            v-model="store.cardio_protocol"
+            v-show="selectProtocol"
+            @change="updateProtocol"
+          >
+            <option
+              v-for="(protocol, id) in protocolsList"
+              :key="id"
+              :value="protocol.value"
+            >
+              {{ protocol.name }}
+            </option>
+          </select>
         </div>
       </div>
-
-      <Checkbox v-show="selectProtocol" @confirmProtocol="updateProtocol" />
 
       <div class="cardio" v-if="!!store.cardio_protocol">
         <div class="cardio__inputs">
@@ -97,9 +118,8 @@ async function updateProtocol(value) {
               :rules="{
                 required: true,
                 bpm:
-                  item.name === 'fc_repouso' ||
-                  item.name === 'l1' ||
-                  item.name === 'l2' ||
+                  item.name === 'l1_ellestad_conconi' ||
+                  item.name === 'l2_ellestad_conconi' ||
                   item.name === 'fc_5min',
                 distance: item.name === 'distance',
                 time: item.name === 'time',
@@ -107,49 +127,6 @@ async function updateProtocol(value) {
             />
           </div>
         </div>
-
-        <p v-if="results.fc_max">FC MAX: {{ results.fc_max }} bpm</p>
-
-        <p v-if="store.cardio_protocol?.includes('Cooper')">
-          L1: {{ results.l1 }} bpm
-        </p>
-        <p v-if="store.cardio_protocol?.includes('Cooper')">
-          L2: {{ results.l2 }} bpm
-        </p>
-
-        <p v-if="results.l1_fc_max_percentage">
-          L1 (% FC Max): {{ results.l1_fc_max_percentage }} %
-        </p>
-        <p v-if="results.l2_fc_max_percentage">
-          L2 (% FC Max): {{ results.l2_fc_max_percentage }} %
-        </p>
-
-        <p v-if="results.vo2max">VO2MAX: {{ results.vo2max }} ml/kg/min</p>
-        <p v-if="results.vo2max_absolute">
-          VO2MAX Absoluto: {{ results.vo2max_absolute }} l/min
-        </p>
-        <p v-if="results.vo2max_mets">
-          VO2MAX Mets: {{ results.vo2max_mets }} mets
-        </p>
-
-        <p v-if="results.vvo2max">vVO2MAX: {{ results.vvo2max }} Km/h</p>
-        <p v-if="results.vvo2max_pace">
-          Pace: {{ results.vvo2max_pace }} min/km
-        </p>
-
-        <p v-if="store.cardio_protocol?.includes('Weltman')">
-          VL1: {{ results.vl1 }} Km/h
-        </p>
-        <p v-if="store.cardio_protocol?.includes('Weltman')">
-          Pace: {{ results.vl1_pace }} min/km
-        </p>
-
-        <p v-if="store.cardio_protocol?.includes('Weltman')">
-          VL2: {{ results.vl2 }} Km/h
-        </p>
-        <p v-if="store.cardio_protocol?.includes('Weltman')">
-          Pace: {{ results.vl2_pace }} min/km
-        </p>
 
         <p v-if="results.elder_aerobic_power">
           Classificação: {{ results.elder_aerobic_power }}
@@ -227,19 +204,20 @@ section {
             filter: brightness(0.9);
           }
         }
-      }
-      select {
-        padding: 8px 15px 8px 10px;
-        width: 250px;
-        outline: none;
-        border: none;
-        border-radius: $border-radius;
-        background-color: $buttons;
-        cursor: pointer;
-        color: white;
 
-        @include mq(m) {
-          width: 100%;
+        select {
+          padding: 8px 15px 8px 10px;
+          width: 250px;
+          outline: none;
+          border: none;
+          border-radius: $border-radius;
+          background-color: $buttons;
+          cursor: pointer;
+          color: white;
+
+          @include mq(m) {
+            width: 100%;
+          }
         }
       }
     }

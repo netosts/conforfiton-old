@@ -26,10 +26,11 @@ const protocolButton = ref(true);
 
 async function onSubmit(values) {
   try {
-    const error = Object.values(values).some(
-      (value) => value === null || value === undefined || value === ""
-    );
-    if (error) return alert("Por favor preencha a avaliação corretamente.");
+    const error = antropometriaList.value.some((object) => !object.value);
+    if (error)
+      return alert(
+        "Por favor preencha a avaliação antropométrica corretamente."
+      );
     if (values.pg_result > 100)
       return alert("Porcentagem de gordura acima de 100%");
 
@@ -122,9 +123,10 @@ async function updateProtocol() {
         <table class="antropometria__table">
           <thead>
             <tr>
-              <th>Fórmulas</th>
+              <th>Índices</th>
               <th>Resultado</th>
               <th>Classificação</th>
+              <th>Meta</th>
             </tr>
           </thead>
           <tbody>
