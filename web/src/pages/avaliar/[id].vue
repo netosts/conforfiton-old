@@ -8,7 +8,7 @@ import {
 
 import { evaluationComponents } from "@/services/avaliar/lists";
 import { translateGender } from "@/services/helpers";
-import { formatAge } from "@/services/validators/formats";
+import { formatAge } from "@/services/formats";
 
 import { useAvaliarStore } from "@/stores/avaliar";
 

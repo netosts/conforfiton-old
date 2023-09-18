@@ -40,11 +40,3 @@ const daysTranslations = {
 export function translateDays(value) {
   return daysTranslations[value] || value;
 }
-
-export function formatDate(inputDate) {
-  const date = new Date(inputDate);
-  const options = { day: "numeric", month: "long", year: "numeric" };
-  const formattedDate = date.toLocaleDateString("pt-BR", options);
-
-  return formattedDate;
-}

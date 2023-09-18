@@ -5,13 +5,15 @@ import {
   getCardioStudentPage,
 } from "@/services/api/get";
 
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
 
 const route = useRoute();
 const store = useStudentStore();
+
+const activeEvaluation = ref(null);
 
 async function initEvaluations() {
   try {
@@ -36,18 +38,37 @@ onMounted(() => {
 
 <template>
   <section>
-    <h2>Avaliações</h2>
-    <h3>Neuromuscular</h3>
-    <div v-for="(item, id) in store.evaluations.neuromuscular" :key="id">
+    <h2>Neuromuscular</h2>
+    <div
+      v-for="(item, id) in store.evaluations.neuromuscular"
+      :key="id"
+      class="evaluation"
+    >
+      <button class="evaluation__item" @click="activeEvaluation = id">
+        {{ id + 1 }}
+      </button>
+      <div class="evaluation__show" v-if="activeEvaluation === id">
+        Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
+      </div>
+    </div>
+  </section>
+  <section>
+    <h2>Antropometria</h2>
+    <div
+      v-for="(item, id) in store.evaluations.antropometria"
+      :key="id"
+      class="evaluation"
+    >
       Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
     </div>
-    <h3>Antropometria</h3>
-    <div v-for="(item, id) in store.evaluations.antropometria" :key="id">
-      Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
-    </div>
-
-    <h3>Cardiorrespiratório</h3>
-    <div v-for="(item, id) in store.evaluations.cardio" :key="id">
+  </section>
+  <section>
+    <h2>Cardiorrespiratório</h2>
+    <div
+      v-for="(item, id) in store.evaluations.cardio"
+      :key="id"
+      class="evaluation"
+    >
       Avaliação[{{ id + 1 }}] <span>{{ item }}</span>
     </div>
   </section>
@@ -59,9 +80,25 @@ onMounted(() => {
 
 section {
   padding: 20px;
+  margin-bottom: 20px;
   width: 100%;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
   background-color: white;
+
+  h2 {
+    padding-bottom: 20px;
+    color: $txt-title;
+  }
+
+  .evaluation {
+    &__item {
+      width: 50px;
+      height: 50px;
+      background-color: black;
+      border-radius: 50%;
+      color: red;
+    }
+  }
 }
 </style>

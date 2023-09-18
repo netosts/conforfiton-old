@@ -2,7 +2,7 @@ export const imcConfig = [
   { classification: "Magreza 3º", threshold: 0 },
   { classification: "Magreza 2º", threshold: 16 },
   { classification: "Magreza 1º", threshold: 17 },
-  { classification: "Eutrofia", threshold: 18.5 },
+  { classification: "Eutrofia (Normal)", threshold: 18.5 },
   { classification: "Pré-obesidade", threshold: 25 },
   { classification: "Obesidade 1º", threshold: 30 },
   { classification: "Obesidade 2º", threshold: 35 },

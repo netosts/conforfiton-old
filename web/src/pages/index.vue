@@ -7,7 +7,7 @@ import { translateGender } from "@/services/helpers";
 
 import { definePage } from "vue-router/auto";
 import { ref, onMounted, watch } from "vue";
-import { formatAge } from "../services/validators/formats";
+import { formatAge } from "../services/formats";
 
 definePage({
   meta: { requiresAuth: true },
@@ -206,8 +206,6 @@ onMounted(() => {
                     Peso:
                     <strong>{{ student.weight + "kg" }}</strong>
                   </p>
-                  |
-                  <p>Desempenho: Bom</p>
                 </div>
               </div>
             </div>

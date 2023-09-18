@@ -166,7 +166,7 @@ const form = reactive({
   },
   midaxillary_skinfold: {
     value: undefined,
-    name: "midaxiallry",
+    name: "midaxillary_skinfold",
     label: "Axilar Média",
     span: "(dobra cutânea)",
     show: computed(() =>

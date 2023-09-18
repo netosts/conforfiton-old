@@ -57,7 +57,7 @@ export function l2EllestadConconi(fcmax, l2) {
 }
 
 export function vo2maxCooper(distance) {
-  return distance ? (distance - 504.1 / 44.9).toFixed(1) : null;
+  return distance ? ((distance - 504.1) / 44.9).toFixed(1) : null;
 }
 export function vvo2maxCooper(distance) {
   return distance ? ((distance / 12) * 0.06).toFixed(2) : null;

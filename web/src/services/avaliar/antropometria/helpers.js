@@ -251,26 +251,52 @@ export function jacksonPollock7(
   gender,
   formula
 ) {
+  console.log(formula);
   let density;
   if (gender === "Male") {
     density =
       1.112 -
       0.00043499 *
-        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) +
+        (chest +
+          midaxillary +
+          triceps +
+          subscapularis +
+          abs +
+          suprailiac +
+          thighs) +
       0.00000055 *
-        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) **
+        (chest +
+          midaxillary +
+          triceps +
+          subscapularis +
+          abs +
+          suprailiac +
+          thighs) **
           2 -
       0.00028826 * age;
   } else if (gender === "Female") {
     density =
       1.097 -
       0.00046971 *
-        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) +
+        (chest +
+          midaxillary +
+          triceps +
+          subscapularis +
+          abs +
+          suprailiac +
+          thighs) +
       0.00000056 *
-        (chest, midaxillary, triceps, subscapularis, abs, suprailiac, thighs) **
+        (chest +
+          midaxillary +
+          triceps +
+          subscapularis +
+          abs +
+          suprailiac +
+          thighs) **
           2 -
       0.00012828 * age;
   }
+  console.log(density);
 
   const siri = (4.95 / density - 4.5) * 100;
   const brozek = (5.47 / density - 4.142) * 100;
