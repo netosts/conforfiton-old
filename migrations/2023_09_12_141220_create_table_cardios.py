@@ -21,9 +21,9 @@ class CreateTableCardios(Migration):
             table.small_integer('distance').nullable()  # meters
             table.small_integer('time').nullable()  # minutes
             table.small_integer('fc_5min').nullable()  # bpm
-            table.decimal('vo2max', 5, 1)
-            table.decimal('vo2max_absolute', 4, 1)
-            table.decimal('vo2max_mets', 5, 1)
+            table.decimal('vo2max', 5, 1).nullable()
+            table.decimal('vo2max_absolute', 4, 1).nullable()
+            table.decimal('vo2max_mets', 5, 1).nullable()
             table.decimal('vvo2max', 5, 2).nullable()  # km/h
             table.decimal('vvo2max_pace', 4, 2).nullable()
             table.decimal('vl1', 5, 2).nullable()  # km/h

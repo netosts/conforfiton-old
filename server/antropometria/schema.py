@@ -25,13 +25,13 @@ class NewAntropometria(BaseModel):
     thighs_circumference: float = Field(ge=0, le=999, default=None)
     right_biceps_circumference: float = Field(ge=0, le=999, default=None)
     right_forearm_circumference: float = Field(ge=0, le=999, default=None)
-    chest_skinfold: float = Field(ge=0, le=999, default=None)
-    abdominal_skinfold: float = Field(ge=0, le=999, default=None)
-    thighs_skinfold: float = Field(ge=0, le=999, default=None)
-    triceps_skinfold: float = Field(ge=0, le=999, default=None)
-    suprailiac_skinfold: float = Field(ge=0, le=999, default=None)
-    subscapularis_skinfold: float = Field(ge=0, le=999, default=None)
-    midaxillary_skinfold: float = Field(ge=0, le=999, default=None)
+    chest_skin_fold: float = Field(ge=0, le=999, default=None)
+    abdominal_skin_fold: float = Field(ge=0, le=999, default=None)
+    thighs_skin_fold: float = Field(ge=0, le=999, default=None)
+    triceps_skin_fold: float = Field(ge=0, le=999, default=None)
+    suprailiac_skin_fold: float = Field(ge=0, le=999, default=None)
+    subscapularis_skin_fold: float = Field(ge=0, le=999, default=None)
+    midaxillary_skin_fold: float = Field(ge=0, le=999, default=None)
     iliac_circumference: float = Field(ge=0, le=999, default=None)
 
     imc_result: float = Field(ge=0, le=99)
@@ -40,11 +40,20 @@ class NewAntropometria(BaseModel):
     ca_risk: JsonCARisk = None
     rcq_result: float = Field(ge=0, le=9)
     rcq_class: constr(max_length=30, strip_whitespace=True)
+    rcae_result: float = Field(ge=0, le=2)
     rcae_class: constr(max_length=30, strip_whitespace=True)
     iac_result: float = Field(ge=0, le=99)
     iac_class: constr(max_length=30, strip_whitespace=True)
     pg_result: float = Field(ge=0, le=100)
     pg_class: constr(max_length=30, strip_whitespace=True)
+    pg_goal: int = Field(ge=0, le=100)
+    pg_goal_result: float = Field(ge=-99, le=0)
+    mig_result: float = Field(ge=0, le=99)
+    mig_goal: int = Field(ge=0, le=100)
+    fat_weight_result: float = Field(ge=0, le=200)
+    fat_weight_goal: float = Field(ge=0, le=99)
+    mig_weight_result: float = Field(ge=0, le=200)
+    mig_weight_goal: float = Field(ge=0, le=200)
 
     created_at: created_at
 
@@ -61,13 +70,13 @@ class NewAntropometria(BaseModel):
         'thighs_circumference',
         'right_biceps_circumference',
         'right_forearm_circumference',
-        'chest_skinfold',
-        'abdominal_skinfold',
-        'thighs_skinfold',
-        'triceps_skinfold',
-        'suprailiac_skinfold',
-        'subscapularis_skinfold',
-        'midaxillary_skinfold',
+        'chest_skin_fold',
+        'abdominal_skin_fold',
+        'thighs_skin_fold',
+        'triceps_skin_fold',
+        'suprailiac_skin_fold',
+        'subscapularis_skin_fold',
+        'midaxillary_skin_fold',
         'iliac_circumference',
         'imc_result',
         'rcq_result',

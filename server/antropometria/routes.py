@@ -34,13 +34,13 @@ async def new_antropometria(person_id, data: NewAntropometria):
     antropometria.thighs_circumference = data.thighs_circumference
     antropometria.right_biceps_circumference = data.right_biceps_circumference
     antropometria.right_forearm_circumference = data.right_forearm_circumference
-    antropometria.chest_skinfold = data.chest_skinfold
-    antropometria.abdominal_skinfold = data.abdominal_skinfold
-    antropometria.thighs_skinfold = data.thighs_skinfold
-    antropometria.triceps_skinfold = data.triceps_skinfold
-    antropometria.suprailiac_skinfold = data.suprailiac_skinfold
-    antropometria.subscapularis_skinfold = data.subscapularis_skinfold
-    antropometria.midaxillary_skinfold = data.midaxillary_skinfold
+    antropometria.chest_skin_fold = data.chest_skin_fold
+    antropometria.abdominal_skin_fold = data.abdominal_skin_fold
+    antropometria.thighs_skin_fold = data.thighs_skin_fold
+    antropometria.triceps_skin_fold = data.triceps_skin_fold
+    antropometria.suprailiac_skin_fold = data.suprailiac_skin_fold
+    antropometria.subscapularis_skin_fold = data.subscapularis_skin_fold
+    antropometria.midaxillary_skin_fold = data.midaxillary_skin_fold
     antropometria.iliac_circumference = data.iliac_circumference
 
     antropometria.imc_result = data.imc_result
@@ -54,11 +54,20 @@ async def new_antropometria(person_id, data: NewAntropometria):
 
     antropometria.rcq_result = data.rcq_result
     antropometria.rcq_class = data.rcq_class
+    antropometria.rcae_result = data.rcae_result
     antropometria.rcae_class = data.rcae_class
     antropometria.iac_result = data.iac_result
     antropometria.iac_class = data.iac_class
     antropometria.pg_result = data.pg_result
     antropometria.pg_class = data.pg_class
+    antropometria.pg_goal = data.pg_goal
+    antropometria.pg_goal_result = data.pg_goal_result
+    antropometria.mig_result = data.mig_result
+    antropometria.mig_goal = data.mig_goal
+    antropometria.fat_weight_result = data.fat_weight_result
+    antropometria.fat_weight_goal = data.fat_weight_goal
+    antropometria.mig_weight_result = data.mig_weight_result
+    antropometria.mig_weight_goal = data.mig_weight_goal
 
     antropometria.created_at = data.created_at
 
@@ -92,13 +101,13 @@ async def get_antropometria_for_student_page(person_id):
         'thighs_circumference',
         'right_biceps_circumference',
         'right_forearm_circumference',
-        'chest_skinfold',
-        'abdominal_skinfold',
-        'thighs_skinfold',
-        'triceps_skinfold',
-        'suprailiac_skinfold',
-        'subscapularis_skinfold',
-        'midaxillary_skinfold',
+        'chest_skin_fold',
+        'abdominal_skin_fold',
+        'thighs_skin_fold',
+        'triceps_skin_fold',
+        'suprailiac_skin_fold',
+        'subscapularis_skin_fold',
+        'midaxillary_skin_fold',
         'iliac_circumference',
         'imc_result',
         'imc_class',
@@ -106,11 +115,21 @@ async def get_antropometria_for_student_page(person_id):
         'ca_risk',
         'rcq_result',
         'rcq_class',
+        'rcae_result',
         'rcae_class',
         'iac_result',
         'iac_class',
         'pg_result',
         'pg_class',
+        'pg_goal',
+        'pg_goal_result',
+        'mig_result',
+        'mig_goal',
+        'fat_weight_result',
+        'fat_weight_goal',
+        'mig_weight_result',
+        'mig_weight_goal',
+        'created_at'
     ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
     return antropometria
 
