@@ -45,9 +45,7 @@ async function initRequests() {
       );
     }
     if (store.types.includes("Cardio")) {
-      store.student?.age >= 60
-        ? (store.cardio_protocol = "Elder")
-        : (store.cardio_protocol = await getCardioProtocol(store.student?.id));
+      store.cardio_protocol = await getCardioProtocol(store.student?.id);
     }
   } catch {
     alert("Houve um erro e o aluno não pôde ser encontrado.");

@@ -2,8 +2,13 @@
 import { evaluationsButtons } from "@/services/student/lists";
 
 import { onMounted, ref } from "vue";
+import { definePage } from "vue-router/auto";
 
 import Avaliar from "@/components/Avaliar.vue";
+
+definePage({
+  meta: { requiresAuth: true },
+});
 
 const bodyElement = ref(null);
 const isAvaliarActive = ref(false);
@@ -53,7 +58,11 @@ onMounted(() => {
       <div v-for="(item, id) in evaluationsButtons" :key="id">
         <RouterLink :to="`/student/${student?.person_id}/${item.link}`">
           <button class="view-evaluationbox__button">
-            {{ item.name }}
+            <div class="view-evaluationbox__button__text">
+              <h3>{{ item.name }}</h3>
+              <p>{{ item.description }}</p>
+            </div>
+            <img :src="item.img" />
           </button>
         </RouterLink>
       </div>
@@ -74,6 +83,7 @@ section {
   background-color: white;
 
   h2 {
+    text-align: center;
     padding-bottom: 20px;
     color: $txt-title;
   }
@@ -89,12 +99,22 @@ section {
   justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
+  a {
+    text-decoration: none;
+  }
   &__button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 120px;
     width: 300px;
-    padding: 30px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: rgb(43, 43, 43);
+    padding: 20px;
+    border: none;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    background-color: rgb(246, 246, 246);
+    text-align: start;
     cursor: pointer;
     transition: 0.2s;
 
@@ -104,6 +124,22 @@ section {
 
     &:active {
       filter: brightness(0.7);
+    }
+
+    &__text {
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: rgb(43, 43, 43);
+      }
+      p {
+        font-size: 1rem;
+        color: $txt-subtitle;
+      }
+    }
+    img {
+      height: 90px;
+      width: 90px;
     }
   }
 }

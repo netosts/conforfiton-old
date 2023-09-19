@@ -14,7 +14,7 @@ import { useAvaliarStore } from "@/stores/avaliar";
 
 import { ref } from "vue";
 
-import { Form, Field } from "vee-validate";
+import { Form } from "vee-validate";
 import TextField from "../TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
 
@@ -120,131 +120,6 @@ async function updateProtocol() {
           </div>
         </div>
 
-        <table class="antropometria__table">
-          <thead>
-            <tr>
-              <th>Índices</th>
-              <th>Resultado</th>
-              <th>Classificação</th>
-              <th>Meta</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>IMC</td>
-              <td>
-                <Field
-                  v-model="results.imc_result"
-                  name="imc_result"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-              <td>
-                <Field
-                  v-model="results.imc_class"
-                  name="imc_class"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-            </tr>
-            <tr>
-              <td>CA</td>
-              <td>N/A</td>
-              <td>
-                <Field
-                  v-model="results.ca_class"
-                  name="ca_class"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-            </tr>
-            <tr>
-              <td>RCQ</td>
-              <td>
-                <Field
-                  v-model="results.rcq_result"
-                  name="rcq_result"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-              <td>
-                <Field
-                  v-model="results.rcq_class"
-                  name="rcq_class"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-            </tr>
-
-            <tr>
-              <td>RCAE</td>
-              <td>N/A</td>
-              <td>
-                <Field
-                  v-model="results.rcae_class"
-                  name="rcae_class"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-            </tr>
-
-            <tr>
-              <td>IAC</td>
-              <td>
-                <Field
-                  v-model="results.iac_result"
-                  name="iac_result"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-              <td>
-                <Field
-                  v-model="results.iac_class"
-                  name="iac_class"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-            </tr>
-
-            <tr>
-              <td>%G</td>
-              <td>
-                <Field
-                  v-model="results.pg_result"
-                  name="pg_result"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-              <td>
-                <Field
-                  v-model="results.pg_class"
-                  name="pg_class"
-                  v-slot="{ field }"
-                >
-                  <input v-bind="field" type="text" tabindex="-1" />
-                </Field>
-              </td>
-            </tr>
-          </tbody>
-        </table>
         <SubmitButton msg="Salvar" />
       </div>
     </Form>
@@ -331,43 +206,6 @@ section {
       flex-direction: column;
       gap: 10px;
       margin: 0 20px 20px 20px;
-
-      &__table {
-        border-collapse: collapse;
-        border: 1px solid $input-border;
-        color: $txt-aside;
-        text-align: center;
-
-        th,
-        td {
-          border: 1px solid $input-border;
-          padding: 8px;
-        }
-
-        td {
-          font-weight: 500;
-
-          input {
-            width: 100%;
-            border: none;
-            text-align: center;
-            pointer-events: none;
-          }
-
-          &:not(:nth-child(1)) {
-            min-width: 50px;
-            max-width: 100px;
-          }
-        }
-      }
-
-      &__1-1 {
-        display: flex;
-        gap: 10px;
-        div {
-          flex: 1;
-        }
-      }
 
       &__containers {
         padding: 10px;

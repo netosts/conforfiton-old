@@ -158,35 +158,21 @@ export const results = reactive({
   ),
 });
 
-export const protocolsList = [
-  { id: "cooper", value: "Cooper", name: "Teste de Cooper" },
-  { id: "weltman", value: "Weltman", name: "Teste de Weltman" },
-  { id: "active", value: "EllestadActive", name: "Ellestad Adultos Ativos" },
-  {
-    id: "inactive",
-    value: "EllestadInactive",
-    name: "Ellestad Adultos Iniciantes/Inativos",
-  },
-  { id: "bicycle", value: "Bicycle", name: "Bicicleta FOX 5min" },
-];
+export const protocolsType = {
+  default: [
+    { id: "cooper", value: "Cooper", name: "Teste de Cooper" },
+    { id: "weltman", value: "Weltman", name: "Teste de Weltman" },
+    { id: "active", value: "EllestadActive", name: "Ellestad Adultos Ativos" },
+    {
+      id: "inactive",
+      value: "EllestadInactive",
+      name: "Ellestad Adultos Iniciantes/Inativos",
+    },
+    { id: "bicycle", value: "Bicycle", name: "Bicicleta FOX 5min" },
+  ],
+  idoso: [{ value: "Elder", name: "Potência Aeróbica em Idosos" }],
+};
 
-export const renameProtocol = computed(() => {
-  if (store.cardio_protocol === "Elder") {
-    return "Potência Aeróbica em Idosos";
-  }
-
-  const findItem = protocolsList.find(
-    (item) => item.value === store.cardio_protocol
-  );
-
-  return findItem ? findItem.name : "Sem Protocolo";
-
-  let vo2maxLabel = null;
-
-  for (const item of vo2maxList) {
-    if (store.cardio_protocol?.includes(item.value)) {
-      vo2maxLabel = item.label;
-    }
-  }
-  return vo2maxLabel ? vo2maxLabel : "Sem Protocolo";
+export const protocolsList = computed(() => {
+  return store.student?.age >= 60 ? protocolsType.idoso : protocolsType.default;
 });

@@ -52,12 +52,7 @@ async function onSubmit() {
         />
       </div>
     </div>
-    <p>Teste de Repetições Máximas - Abdominal: {{ results.sit_up_result }}</p>
-    <p>
-      Teste de Repetições Máximas - Flexão de braço:
-      {{ results.push_up_result }}
-    </p>
-    <p>Potência de Membros Inferiores - Salto: {{ results.jump_result }}</p>
+
     <SubmitButton msg="Salvar" />
   </Form>
 </template>

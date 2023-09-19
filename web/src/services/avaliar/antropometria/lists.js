@@ -5,6 +5,7 @@ import {
   caRisk,
   calculateRcq,
   rcqClass,
+  calculateRcae,
   rcaeClass,
   calculateIac,
   iacClass,
@@ -17,6 +18,13 @@ import {
   idoso3Dobras,
   idosoTranWeltman,
   filterShow,
+  calculateMig,
+  calculateFatWeight,
+  calculateMigWeight,
+  calculatePgGoal,
+  calculateMigGoal,
+  calculateFatWeightGoal,
+  calculateMigWeightGoal,
 } from "./helpers";
 
 import { reactive, computed } from "vue";
@@ -85,94 +93,94 @@ const form = reactive({
       )
     ),
   },
-  chest_skinfold: {
+  chest_skin_fold: {
     value: undefined,
-    name: "chest_skinfold",
+    name: "chest_skin_fold",
     label: "Peitoral",
     span: "(dobra cutânea)",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.chest_skinfold.name,
+        form.chest_skin_fold.name,
         store.antropometria_protocol
       )
     ),
   },
-  abdominal_skinfold: {
+  abdominal_skin_fold: {
     value: undefined,
-    name: "abdominal_skinfold",
+    name: "abdominal_skin_fold",
     label: "Abdominal",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.abdominal_skinfold.name,
+        form.abdominal_skin_fold.name,
         store.antropometria_protocol
       )
     ),
   },
-  thighs_skinfold: {
+  thighs_skin_fold: {
     value: undefined,
-    name: "thighs_skinfold",
+    name: "thighs_skin_fold",
     label: "Coxa",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.thighs_skinfold.name,
+        form.thighs_skin_fold.name,
         store.antropometria_protocol
       )
     ),
   },
-  triceps_skinfold: {
+  triceps_skin_fold: {
     value: undefined,
-    name: "triceps_skinfold",
+    name: "triceps_skin_fold",
     label: "Tríceps",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.triceps_skinfold.name,
+        form.triceps_skin_fold.name,
         store.antropometria_protocol
       )
     ),
   },
-  suprailiac_skinfold: {
+  suprailiac_skin_fold: {
     value: undefined,
-    name: "suprailiac_skinfold",
+    name: "suprailiac_skin_fold",
     label: "Suprailíaca",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.suprailiac_skinfold.name,
+        form.suprailiac_skin_fold.name,
         store.antropometria_protocol
       )
     ),
   },
-  subscapularis_skinfold: {
+  subscapularis_skin_fold: {
     value: undefined,
-    name: "subscapularis_skinfold",
+    name: "subscapularis_skin_fold",
     label: "Subescapular",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.subscapularis_skinfold.name,
+        form.subscapularis_skin_fold.name,
         store.antropometria_protocol
       )
     ),
   },
-  midaxillary_skinfold: {
+  midaxillary_skin_fold: {
     value: undefined,
-    name: "midaxillary_skinfold",
+    name: "midaxillary_skin_fold",
     label: "Axilar Média",
     span: "(dobra cutânea)",
     show: computed(() =>
       filterShow(
         store.student?.gender,
-        form.midaxillary_skinfold.name,
+        form.midaxillary_skin_fold.name,
         store.antropometria_protocol
       )
     ),
@@ -188,6 +196,12 @@ const form = reactive({
         store.antropometria_protocol
       )
     ),
+  },
+  pg_goal: {
+    value: undefined,
+    name: "pg_goal",
+    label: "Meta %G",
+    show: true,
   },
 });
 
@@ -212,9 +226,10 @@ export const results = reactive({
   rcq_class: computed(() =>
     rcqClass(results.rcq_result, store.student?.gender, store.student?.age)
   ),
-  rcae_class: computed(() =>
-    rcaeClass(form.abdominal_circumference.value, store.student?.height)
+  rcae_result: computed(() =>
+    calculateRcae(form.abdominal_circumference.value, store.student?.height)
   ),
+  rcae_class: computed(() => rcaeClass(results.rcae_result)),
   iac_result: computed(() =>
     calculateIac(form.hip_circumference.value, store.student?.height)
   ),
@@ -244,21 +259,21 @@ export const results = reactive({
       const searchStr = "JacksonPollock3";
       const formula = store.antropometria_protocol.substring(searchStr.length);
       return jacksonPollock3(
-        form.chest_skinfold.value,
-        form.abdominal_skinfold.value,
-        form.thighs_skinfold.value,
-        form.triceps_skinfold.value,
-        form.suprailiac_skinfold.value,
+        form.chest_skin_fold.value,
+        form.abdominal_skin_fold.value,
+        form.thighs_skin_fold.value,
+        form.triceps_skin_fold.value,
+        form.suprailiac_skin_fold.value,
         store.student?.age,
         store.student?.gender,
         formula
       );
     } else if (store.antropometria_protocol === "Falkner") {
       return falkner(
-        form.triceps_skinfold.value,
-        form.subscapularis_skinfold.value,
-        form.suprailiac_skinfold.value,
-        form.abdominal_skinfold.value
+        form.triceps_skin_fold.value,
+        form.subscapularis_skin_fold.value,
+        form.suprailiac_skin_fold.value,
+        form.abdominal_skin_fold.value
       );
     } else if (
       store.antropometria_protocol === "JacksonPollock7Siri" ||
@@ -267,22 +282,22 @@ export const results = reactive({
       const searchStr = "JacksonPollock7";
       const formula = store.antropometria_protocol.substring(searchStr.length);
       return jacksonPollock7(
-        form.chest_skinfold.value,
-        form.midaxillary_skinfold.value,
-        form.triceps_skinfold.value,
-        form.subscapularis_skinfold.value,
-        form.abdominal_skinfold.value,
-        form.suprailiac_skinfold.value,
-        form.thighs_skinfold.value,
+        form.chest_skin_fold.value,
+        form.midaxillary_skin_fold.value,
+        form.triceps_skin_fold.value,
+        form.subscapularis_skin_fold.value,
+        form.abdominal_skin_fold.value,
+        form.suprailiac_skin_fold.value,
+        form.thighs_skin_fold.value,
         store.student?.age,
         store.student?.gender,
         formula
       );
     } else if (store.antropometria_protocol === "Idoso3Dobras") {
       return idoso3Dobras(
-        form.triceps_skinfold.value,
-        form.subscapularis_skinfold.value,
-        form.suprailiac_skinfold.value
+        form.triceps_skin_fold.value,
+        form.subscapularis_skin_fold.value,
+        form.suprailiac_skin_fold.value
       );
     } else if (store.antropometria_protocol === "IdosoTranWeltman") {
       return idosoTranWeltman(
@@ -298,6 +313,27 @@ export const results = reactive({
   }),
   pg_class: computed(() =>
     pgClass(results.pg_result, store.student?.gender, store.student?.age)
+  ),
+  pg_goal_result: computed(() =>
+    calculatePgGoal(results.pg_result, form.pg_goal.value)
+  ),
+  mig_result: computed(() => calculateMig(results.pg_result)),
+  mig_goal: computed(() => calculateMigGoal(form.pg_goal.value)),
+  fat_weight_result: computed(() =>
+    calculateFatWeight(store.student?.weight, results.pg_result)
+  ),
+  fat_weight_goal: computed(() =>
+    calculateFatWeightGoal(
+      form.pg_goal.value,
+      results.fat_weight_result,
+      store.student?.weight
+    )
+  ),
+  mig_weight_result: computed(() =>
+    calculateMigWeight(store.student?.weight, results.mig_result)
+  ),
+  mig_weight_goal: computed(() =>
+    calculateMigWeightGoal(results.fat_weight_goal, store.student?.weight)
   ),
 });
 

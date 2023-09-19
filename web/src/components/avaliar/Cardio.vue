@@ -3,7 +3,6 @@ import {
   cardioList,
   results,
   protocolsList,
-  renameProtocol,
 } from "@/services/avaliar/cardio/lists";
 import { createCardioForm } from "@/services/avaliar/cardio/helpers";
 
@@ -54,6 +53,12 @@ async function onSubmit() {
   }
 }
 
+function renameProtocol(value) {
+  if (!value) return "Sem protocolo";
+  const findProtocol = protocolsList.value.find((item) => item.value === value);
+  return findProtocol.name;
+}
+
 function openSelect() {
   selectProtocol.value = !selectProtocol.value;
   protocolButton.value = false;
@@ -84,7 +89,7 @@ async function updateProtocol() {
       <div class="protocol">
         <p>
           Protocolo:
-          <span>{{ renameProtocol }}</span>
+          <span>{{ renameProtocol(store.cardio_protocol) }}</span>
         </p>
         <div class="protocol__update" v-if="store.cardio_protocol !== 'Elder'">
           <button type="button" @click="openSelect" v-show="protocolButton">

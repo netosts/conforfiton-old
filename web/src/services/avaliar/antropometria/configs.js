@@ -554,7 +554,7 @@ export const filterConfig = [
   },
   {
     gender: "Male",
-    area: "chest_skinfold",
+    area: "chest_skin_fold",
     protocols: [
       "JacksonPollock3Siri",
       "JacksonPollock3Brozek",
@@ -564,12 +564,12 @@ export const filterConfig = [
   },
   {
     gender: "Female",
-    area: "chest_skinfold",
+    area: "chest_skin_fold",
     protocols: ["JacksonPollock7Siri", "JacksonPollock7Brozek"],
   },
   {
     gender: "Male",
-    area: "abdominal_skinfold",
+    area: "abdominal_skin_fold",
     protocols: [
       "Falkner",
       "JacksonPollock3Siri",
@@ -580,12 +580,12 @@ export const filterConfig = [
   },
   {
     gender: "Female",
-    area: "abdominal_skinfold",
+    area: "abdominal_skin_fold",
     protocols: ["Falkner", "JacksonPollock7Siri", "JacksonPollock7Brozek"],
   },
   {
     gender: "Male",
-    area: "thighs_skinfold",
+    area: "thighs_skin_fold",
     protocols: [
       "JacksonPollock3Siri",
       "JacksonPollock3Brozek",
@@ -595,7 +595,7 @@ export const filterConfig = [
   },
   {
     gender: "Female",
-    area: "thighs_skinfold",
+    area: "thighs_skin_fold",
     protocols: [
       "Default",
       "JacksonPollock3Siri",
@@ -606,7 +606,7 @@ export const filterConfig = [
   },
   {
     gender: "Male",
-    area: "triceps_skinfold",
+    area: "triceps_skin_fold",
     protocols: [
       "Falkner",
       "Idoso3Dobras",
@@ -616,7 +616,7 @@ export const filterConfig = [
   },
   {
     gender: "Female",
-    area: "triceps_skinfold",
+    area: "triceps_skin_fold",
     protocols: [
       "JacksonPollock3Siri",
       "JacksonPollock3Brozek",
@@ -628,7 +628,7 @@ export const filterConfig = [
   },
   {
     gender: "Male",
-    area: "suprailiac_skinfold",
+    area: "suprailiac_skin_fold",
     protocols: [
       "Falkner",
       "Idoso3Dobras",
@@ -638,7 +638,7 @@ export const filterConfig = [
   },
   {
     gender: "Female",
-    area: "suprailiac_skinfold",
+    area: "suprailiac_skin_fold",
     protocols: [
       "JacksonPollock3Siri",
       "JacksonPollock3Brozek",
@@ -650,7 +650,7 @@ export const filterConfig = [
   },
   {
     gender: "Male",
-    area: "subscapularis_skinfold",
+    area: "subscapularis_skin_fold",
     protocols: [
       "Falkner",
       "Idoso3Dobras",
@@ -660,7 +660,7 @@ export const filterConfig = [
   },
   {
     gender: "Female",
-    area: "subscapularis_skinfold",
+    area: "subscapularis_skin_fold",
     protocols: [
       "Falkner",
       "Idoso3Dobras",
@@ -670,12 +670,12 @@ export const filterConfig = [
   },
   {
     gender: "Male",
-    area: "midaxillary_skinfold",
+    area: "midaxillary_skin_fold",
     protocols: ["JacksonPollock7Siri", "JacksonPollock7Brozek"],
   },
   {
     gender: "Female",
-    area: "midaxillary_skinfold",
+    area: "midaxillary_skin_fold",
     protocols: ["JacksonPollock7Siri", "JacksonPollock7Brozek"],
   },
   {

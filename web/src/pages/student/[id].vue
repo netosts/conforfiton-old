@@ -3,11 +3,13 @@ import { getStudent } from "@/services/api/get";
 
 import { studentButtons } from "@/services/student/lists";
 import { translateRole } from "@/services/helpers";
+import { formatAge } from "@/services/formats";
 
 import { onMounted } from "vue";
 import { useRoute, useRouter, definePage } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
+import { useAvaliarStore } from "@/stores/avaliar";
 
 definePage({
   meta: { requiresAuth: true },
@@ -17,12 +19,16 @@ definePage({
 const route = useRoute();
 const router = useRouter();
 const store = useStudentStore();
+const avaliarStore = useAvaliarStore();
 
 // FUNCTIONS
 async function initStudent() {
   try {
     if (store.student.id !== route.params.id) {
       store.student.value = await getStudent(route.params.id);
+      avaliarStore["student"] = {
+        age: formatAge(store.student.value.birth_date),
+      };
       store.student.id = route.params.id;
     }
   } catch (err) {

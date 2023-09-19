@@ -117,9 +117,13 @@ export function rcqClass(rcq, gender, age) {
   return findClass ? findClass.classification : null;
 }
 
-export function rcaeClass(abs, height) {
+export function calculateRcae(abs, height) {
   if (!abs) return null;
-  const rcae = abs / height;
+  return (abs / height).toFixed(2);
+}
+
+export function rcaeClass(rcae) {
+  if (!rcae) return null;
   return rcae > 0.5 ? "Risco elevado" : "Risco baixo";
 }
 
@@ -366,3 +370,61 @@ export function filterShow(gender, area, storeProtocol) {
   }
   return false;
 }
+
+export function calculateMig(pg) {
+  return pg ? (100 - pg).toFixed(1) : null;
+}
+
+export function calculateFatWeight(weight, pg) {
+  return pg ? ((pg / 100) * weight).toFixed(2) : null;
+}
+
+export function calculateMigWeight(weight, mig) {
+  return mig ? ((mig / 100) * weight).toFixed(2) : null;
+}
+
+export function calculatePgGoal(pg, pgGoal) {
+  if (!pg || !pgGoal) return null;
+  return -(pg - pgGoal).toFixed(1);
+}
+
+export function calculateMigGoal(pgGoal) {
+  return pgGoal ? 100 - pgGoal : null;
+}
+
+export function calculateFatWeightGoal(pgGoal, fatWeight, weight) {
+  if (!pgGoal || !fatWeight) return null;
+  const goal = (pgGoal / 100) * weight;
+  return (fatWeight - goal).toFixed(2);
+}
+
+export function calculateMigWeightGoal(fatWeightGoal, weight) {
+  return fatWeightGoal ? weight - fatWeightGoal : null;
+}
+
+// export function sumSkinFolds(
+//   chest,
+//   abdominal,
+//   thighs,
+//   triceps,
+//   suprailiac,
+//   subscapularis,
+//   midaxillary
+// ) {
+//   const sum =
+//     chest +
+//     abdominal +
+//     thighs +
+//     triceps +
+//     suprailiac +
+//     subscapularis +
+//     midaxillary;
+//   return sum ? sum : null;
+// }
+
+// export function calculatePeripheralAdiposity(biceps, triceps) {
+
+// }
+// export function calculateCentralAdiposity() {
+
+// }

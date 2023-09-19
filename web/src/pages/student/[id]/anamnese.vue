@@ -6,6 +6,12 @@ import { useRoute } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
 
+import { definePage } from "vue-router/auto";
+
+definePage({
+  meta: { requiresAuth: true },
+});
+
 const route = useRoute();
 const store = useStudentStore();
 
