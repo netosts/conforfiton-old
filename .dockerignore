@@ -1,6 +1,5 @@
 .vscode/
 web/
-server/**/__pycache__/
 
 .gitignore
 
