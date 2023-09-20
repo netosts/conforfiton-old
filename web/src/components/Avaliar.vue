@@ -9,6 +9,7 @@ import { useRouter } from "vue-router/auto";
 const bodyElement = ref(null);
 const router = useRouter();
 const store = useAvaliarStore();
+const date = ref(null);
 
 // Emits
 const emit = defineEmits(["isAvaliarActive"]);
@@ -27,6 +28,7 @@ function closeAvaliar() {
 
 function onSubmit(values) {
   store.types = values.avaliar;
+  store.evaluatedAt = values.date;
   bodyElement.value.style.overflow = "auto";
   router.push(`/avaliar/${props.studentId}`);
 }
@@ -52,13 +54,17 @@ onMounted(() => {
           </div>
         </div>
         <div class="container__content">
+          <div class="container__content__date">
+            <label for="date">Data</label>
+            <Field v-model="date" name="date" id="date" type="date" />
+          </div>
           <div class="container__content__checkbox">
             <label for="neuromuscular">Neuromuscular</label>
             <Field
               name="avaliar"
               id="neuromuscular"
               type="checkbox"
-              value="Neuromuscular"
+              value="neuromuscular"
             />
           </div>
           <div class="container__content__checkbox">
@@ -67,19 +73,20 @@ onMounted(() => {
               name="avaliar"
               id="antropometria"
               type="checkbox"
-              value="Antropometria"
+              value="antropometria"
             />
           </div>
           <div class="container__content__checkbox">
             <label for="cardio">Cardiorrespiratório</label>
-            <Field name="avaliar" id="cardio" type="checkbox" value="Cardio" />
+            <Field name="avaliar" id="cardio" type="checkbox" value="cardio" />
           </div>
         </div>
         <div class="container__submit">
           <div
             class="submit"
             :class="{
-              'submit--disabled': !values.avaliar?.length ? true : false,
+              'submit--disabled':
+                !values.avaliar?.length || !values.date ? true : false,
             }"
           >
             <button type="submit" class="submit__btn">Avaliar</button>
@@ -165,6 +172,25 @@ aside {
       flex-direction: column;
       gap: 5px;
       padding: 20px 10px 10px 10px;
+
+      &__date {
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid $input-border;
+
+        label {
+          flex: 1;
+          color: $txt-aside;
+          padding: 5px 15px;
+        }
+
+        input {
+          border: none;
+          background-color: transparent;
+          margin-right: 10px;
+          outline: none;
+        }
+      }
 
       &__checkbox {
         display: flex;

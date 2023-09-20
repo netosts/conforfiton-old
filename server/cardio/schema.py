@@ -1,6 +1,6 @@
 # pylint: skip-file
 from pydantic import BaseModel, Field, constr, validator
-from ..base_model.types import created_at, protocol
+from ..base_model.types import evaluated_at, protocol
 
 
 class NewCardio(BaseModel):
@@ -27,7 +27,7 @@ class NewCardio(BaseModel):
     weekly_caloric_expenditure: int = Field(ge=0, le=10000)
     daily_caloric_expenditure: int = Field(ge=0, le=2000)
 
-    created_at: created_at
+    created_at: evaluated_at
 
     @validator("*", pre=True, always=True)
     def check_none(cls, value):

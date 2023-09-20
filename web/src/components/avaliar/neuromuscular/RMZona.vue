@@ -22,6 +22,7 @@ const store = useAvaliarStore();
 async function onSubmit() {
   try {
     const form = await createNeuromuscularForm(
+      store.evaluatedAt,
       store.neuromuscular_protocol,
       exerciseList,
       total

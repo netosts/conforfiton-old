@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 export const useAvaliarStore = defineStore("avaliar", () => {
   const types = ref([]);
+  const evaluatedAt = ref(null);
 
   const student = ref(null);
 
@@ -14,6 +15,7 @@ export const useAvaliarStore = defineStore("avaliar", () => {
 
   return {
     types,
+    evaluatedAt,
     student,
     rmConfig,
     antropometria_protocol,

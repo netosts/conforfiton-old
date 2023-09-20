@@ -45,9 +45,9 @@ onMounted(() => {
     @isAvaliarActive="handleAvaliar"
     v-show="isAvaliarActive"
   />
-
   <div class="new-evaluation">
     <button @click="toggleAvaliar(student?.person_id, student?.name)">
+      <font-awesome-icon icon="fa-solid fa-plus" />
       Nova Avaliação
     </button>
   </div>
@@ -93,57 +93,63 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-.view-evaluationbox {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  a {
-    text-decoration: none;
-  }
-  &__button {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    height: 120px;
-    width: 300px;
-    padding: 20px;
-    border: none;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    background-color: rgb(246, 246, 246);
-    text-align: start;
-    cursor: pointer;
-    transition: 0.2s;
 
-    &:hover {
-      filter: brightness(0.9);
+  .view-evaluationbox {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    @include mq(l-xl) {
+      display: flex;
     }
 
-    &:active {
-      filter: brightness(0.7);
+    a {
+      text-decoration: none;
     }
+    &__button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      height: 120px;
+      width: 300px;
+      padding: 20px;
+      border: none;
+      border-radius: $border-radius;
+      box-shadow: $box-shadow;
+      background-color: rgb(246, 246, 246);
+      text-align: start;
+      cursor: pointer;
+      transition: 0.2s;
 
-    &__text {
-      h3 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: rgb(43, 43, 43);
+      &:hover {
+        filter: brightness(0.9);
       }
-      p {
-        font-size: 1rem;
-        color: $txt-subtitle;
+
+      &:active {
+        filter: brightness(0.7);
       }
-    }
-    img {
-      height: 90px;
-      width: 90px;
+
+      &__text {
+        h3 {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: rgb(43, 43, 43);
+        }
+        p {
+          font-size: 1rem;
+          color: $txt-subtitle;
+        }
+      }
+      img {
+        height: 90px;
+        width: 90px;
+      }
     }
   }
 }
-
 .new-evaluation {
   display: flex;
   justify-content: flex-end;
@@ -152,6 +158,7 @@ section {
     margin-bottom: 10px;
     font-weight: 500;
     @include submitButtons($validation, white);
+    font-size: 1rem;
   }
 }
 </style>

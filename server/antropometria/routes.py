@@ -60,8 +60,9 @@ async def new_antropometria(person_id, data: NewAntropometria):
     antropometria.iac_class = data.iac_class
     antropometria.pg_result = data.pg_result
     antropometria.pg_class = data.pg_class
+
     antropometria.pg_goal = data.pg_goal
-    antropometria.pg_goal_result = data.pg_goal_result
+    antropometria.weight_goal = data.weight_goal
     antropometria.mig_result = data.mig_result
     antropometria.mig_goal = data.mig_goal
     antropometria.fat_weight_result = data.fat_weight_result
@@ -122,7 +123,7 @@ async def get_antropometria_for_student_page(person_id):
         'pg_result',
         'pg_class',
         'pg_goal',
-        'pg_goal_result',
+        'weight_goal',
         'mig_result',
         'mig_goal',
         'fat_weight_result',

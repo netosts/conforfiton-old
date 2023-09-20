@@ -6,16 +6,15 @@ import {
 } from "./configs";
 
 export function createNeuromuscularForm(
+  evaluatedAt,
   neuromuscular_protocol,
   exerciseList,
   total
 ) {
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString();
   const form = {
     neuromuscular_protocol,
     total_points: total.value,
-    created_at: formattedDate,
+    created_at: evaluatedAt,
   };
   const properties = ["lifted", "reps", "rm", "points"];
 

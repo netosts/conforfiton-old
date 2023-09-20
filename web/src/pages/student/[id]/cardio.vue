@@ -1,7 +1,7 @@
 <script setup>
 import { getCardioStudentPage } from "@/services/api/get";
 
-import { formatCreatedAt } from "@/services/formats";
+import { formatEvaluatedAt } from "@/services/formats";
 import { protocolsList } from "@/services/avaliar/cardio/lists";
 
 import { onMounted, ref } from "vue";
@@ -56,7 +56,7 @@ onMounted(() => {
         @click="evaluationResult = item"
       >
         <p>{{ renameProtocol(item.cardio_protocol) }}</p>
-        <p>{{ formatCreatedAt(item.created_at) }}</p>
+        <p>{{ formatEvaluatedAt(item.created_at) }}</p>
       </div>
     </div>
     <div class="indicators" v-if="evaluationResult">
@@ -230,26 +230,30 @@ section {
       text-align: center;
       font-weight: 600;
       color: $txt-title;
-      border: 1px solid $input-border;
+      border-bottom: 1px solid $input-border;
     }
 
     table {
       border-collapse: collapse;
       border: 1px solid $input-border;
 
+      th {
+        background-color: $buttons;
+        color: white;
+      }
+
       th,
       td {
         border: 1px solid $input-border;
         padding: 8px;
         text-align: center;
-        color: $txt-aside;
       }
 
       td {
         font-weight: 500;
+        color: $txt-aside;
 
         &:nth-child(1) {
-          color: $txt-subtitle;
           font-weight: 700;
         }
 

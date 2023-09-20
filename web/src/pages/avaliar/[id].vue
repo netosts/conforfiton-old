@@ -34,17 +34,17 @@ async function initRequests() {
   try {
     store.student = await getStudentAvaliar(route.params.id);
     store.student["age"] = formatAge(store.student.birth_date);
-    if (store.types.includes("Neuromuscular")) {
+    if (store.types.includes("neuromuscular")) {
       store.neuromuscular_protocol = await getNeuromuscularProtocol(
         store.student?.id
       );
     }
-    if (store.types.includes("Antropometria")) {
+    if (store.types.includes("antropometria")) {
       store.antropometria_protocol = await getAntropometriaProtocol(
         store.student?.id
       );
     }
-    if (store.types.includes("Cardio")) {
+    if (store.types.includes("cardio")) {
       store.cardio_protocol = await getCardioProtocol(store.student?.id);
     }
   } catch {
@@ -184,6 +184,11 @@ main {
       background-color: $readonly;
       font-weight: 600;
 
+      @include mq(m) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
       .register-field {
         max-width: 80px;
         margin: 0 50px;
@@ -199,9 +204,19 @@ main {
 
       p:nth-child(1) {
         border-right: 2px solid $background;
+        @include mq(m) {
+          border-bottom: 2px solid $background;
+        }
       }
 
       p:nth-child(2) {
+        border-right: 2px solid $background;
+        @include mq(m) {
+          border-right: none;
+          border-bottom: 2px solid $background;
+        }
+      }
+      p:nth-child(3) {
         border-right: 2px solid $background;
       }
     }

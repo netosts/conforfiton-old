@@ -1,7 +1,7 @@
 <script setup>
 import { getAntropometriaStudentPage } from "@/services/api/get";
 
-import { formatCreatedAt } from "@/services/formats";
+import { formatEvaluatedAt } from "@/services/formats";
 import { protocolsList } from "@/services/avaliar/antropometria/lists";
 
 import { onMounted, ref } from "vue";
@@ -58,7 +58,7 @@ onMounted(() => {
         @click="evaluationResult = item"
       >
         <p>{{ renameProtocol(item.antropometria_protocol) }}</p>
-        <p>{{ formatCreatedAt(item.created_at) }}</p>
+        <p>{{ formatEvaluatedAt(item.created_at) }}</p>
       </div>
     </div>
     <div class="indicators" v-if="evaluationResult">
@@ -76,12 +76,12 @@ onMounted(() => {
           <tbody>
             <tr>
               <td>IMC</td>
-              <td>{{ evaluationResult.imc_result }}</td>
+              <td>{{ evaluationResult.imc_result }} kg/m²</td>
               <td class="emphasize">{{ evaluationResult.imc_class }}</td>
             </tr>
             <tr>
               <td>CA</td>
-              <td>{{ evaluationResult.abdominal_circumference }}</td>
+              <td>{{ evaluationResult.abdominal_circumference }} cm</td>
               <td class="emphasize">{{ evaluationResult.ca_class }}</td>
             </tr>
             <tr>
@@ -169,27 +169,32 @@ onMounted(() => {
           </thead>
           <tbody>
             <tr>
-              <td>%Gordura</td>
-              <td>{{ evaluationResult.pg_result }}%</td>
-              <td class="emphasize">{{ evaluationResult.pg_goal_result }}%</td>
+              <td>Peso</td>
+              <td>{{ evaluationResult.weight }} kg</td>
+              <td class="emphasize">{{ evaluationResult.weight_goal }} kg</td>
             </tr>
             <tr>
-              <td>%MIG (Massa isenta de gordura)</td>
+              <td>Gordura</td>
+              <td>{{ evaluationResult.pg_result }}%</td>
+              <td class="emphasize">{{ evaluationResult.pg_goal }}%</td>
+            </tr>
+            <tr>
+              <td>MIG (Massa isenta de gordura)</td>
               <td>{{ evaluationResult.mig_result }}%</td>
               <td class="emphasize">{{ evaluationResult.mig_goal }}%</td>
             </tr>
             <tr>
-              <td>Peso Gordura (kg)</td>
-              <td>{{ evaluationResult.fat_weight_result }}kg</td>
+              <td>Peso Gordura</td>
+              <td>{{ evaluationResult.fat_weight_result }} kg</td>
               <td class="emphasize">
-                {{ evaluationResult.fat_weight_goal }}kg
+                {{ evaluationResult.fat_weight_goal }} kg
               </td>
             </tr>
             <tr>
               <td>Peso MIG</td>
-              <td>{{ evaluationResult.mig_weight_result }}kg</td>
+              <td>{{ evaluationResult.mig_weight_result }} kg</td>
               <td class="emphasize">
-                {{ evaluationResult.mig_weight_goal }}kg
+                {{ evaluationResult.mig_weight_goal }} kg
               </td>
             </tr>
           </tbody>
@@ -331,26 +336,30 @@ section {
       text-align: center;
       font-weight: 600;
       color: $txt-title;
-      border: 1px solid $input-border;
+      border-bottom: 1px solid $input-border;
     }
 
     table {
       border-collapse: collapse;
       border: 1px solid $input-border;
 
+      th {
+        background-color: $buttons;
+        color: white;
+      }
+
       th,
       td {
         border: 1px solid $input-border;
         padding: 8px;
         text-align: center;
-        color: $txt-aside;
       }
 
       td {
         font-weight: 500;
+        color: $txt-aside;
 
         &:nth-child(1) {
-          color: $txt-subtitle;
           font-weight: 700;
         }
 

@@ -34,6 +34,7 @@ async function onSubmit() {
 
     const form = await createCardioForm(
       store.student?.weight,
+      store.evaluatedAt,
       store.cardio_protocol,
       cardioList.value,
       results

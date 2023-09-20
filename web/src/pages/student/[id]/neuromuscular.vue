@@ -1,7 +1,7 @@
 <script setup>
 import { getNeuromuscularStudentPage } from "@/services/api/get";
 
-import { formatCreatedAt } from "@/services/formats";
+import { formatEvaluatedAt } from "@/services/formats";
 import { protocolsList } from "@/services/avaliar/neuromuscular/lists";
 
 import { onMounted, ref } from "vue";
@@ -54,7 +54,7 @@ onMounted(() => {
         @click="evaluationResult = item"
       >
         <p>{{ renameProtocol(item.neuromuscular_protocol) }}</p>
-        <p>{{ formatCreatedAt(item.created_at) }}</p>
+        <p>{{ formatEvaluatedAt(item.created_at) }}</p>
       </div>
     </div>
     <div class="indicators" v-if="evaluationResult">
@@ -65,6 +65,7 @@ onMounted(() => {
           evaluationResult.neuromuscular_protocol === 'RMEpley'
         "
       >
+        <h3>Teste de 1RM Zona</h3>
         <table>
           <thead>
             <tr>
@@ -127,10 +128,11 @@ onMounted(() => {
           </tbody>
         </table>
         <div class="total">
-          <h3>Total:</h3>
+          <h4>Total:</h4>
           <span>{{ evaluationResult.total_points }}</span>
         </div>
       </div>
+
       <div
         class="rmlfp"
         v-if="evaluationResult.neuromuscular_protocol === 'RMLFP'"
@@ -233,26 +235,30 @@ section {
       text-align: center;
       font-weight: 600;
       color: $txt-title;
-      border: 1px solid $input-border;
+      border-bottom: 1px solid $input-border;
     }
 
     table {
       border-collapse: collapse;
       border: 1px solid $input-border;
 
+      th {
+        background-color: $buttons;
+        color: white;
+      }
+
       th,
       td {
         border: 1px solid $input-border;
         padding: 8px;
         text-align: center;
-        color: $txt-aside;
       }
 
       td {
         font-weight: 500;
+        color: $txt-aside;
 
         &:nth-child(1) {
-          color: $txt-subtitle;
           font-weight: 700;
         }
 
@@ -272,9 +278,10 @@ section {
       margin-bottom: 10px;
       border: 1px solid $input-border;
 
-      h3 {
+      h4 {
         padding: 0 10px;
         font-size: 1.2rem;
+        color: $txt-aside;
       }
 
       span {

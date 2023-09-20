@@ -1,12 +1,16 @@
 import { elderAerobicPowerConfig } from "./configs";
 
-export function createCardioForm(weight, cardio_protocol, cardioList, results) {
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString();
+export function createCardioForm(
+  weight,
+  evaluatedAt,
+  cardio_protocol,
+  cardioList,
+  results
+) {
   const form = {
     weight,
     cardio_protocol,
-    created_at: formattedDate,
+    created_at: evaluatedAt,
   };
 
   const extractedValues = cardioList.map((proxy) => proxy.value);

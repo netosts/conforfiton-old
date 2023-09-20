@@ -17,6 +17,7 @@ const store = useAvaliarStore();
 async function onSubmit() {
   try {
     const form = await createNeuromuscularRmlForm(
+      store.evaluatedAt,
       store.neuromuscular_protocol,
       RMLFPList,
       results

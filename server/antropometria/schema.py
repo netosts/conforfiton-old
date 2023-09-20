@@ -1,7 +1,6 @@
 # pylint: skip-file
-from decimal import Decimal
 from pydantic import BaseModel, Field, constr, validator
-from ..base_model.types import created_at, protocol
+from ..base_model.types import evaluated_at, protocol
 
 
 class JsonCARisk(BaseModel):
@@ -44,10 +43,11 @@ class NewAntropometria(BaseModel):
     rcae_class: constr(max_length=30, strip_whitespace=True)
     iac_result: float = Field(ge=0, le=99)
     iac_class: constr(max_length=30, strip_whitespace=True)
-    pg_result: float = Field(ge=0, le=100)
+    pg_result: float = Field(ge=0, le=99)
     pg_class: constr(max_length=30, strip_whitespace=True)
-    pg_goal: int = Field(ge=0, le=100)
-    pg_goal_result: float = Field(ge=-99, le=0)
+
+    weight_goal: float = Field(ge=0, le=600)
+    pg_goal: float = Field(ge=0, le=99)
     mig_result: float = Field(ge=0, le=99)
     mig_goal: int = Field(ge=0, le=100)
     fat_weight_result: float = Field(ge=0, le=200)
@@ -55,46 +55,12 @@ class NewAntropometria(BaseModel):
     mig_weight_result: float = Field(ge=0, le=200)
     mig_weight_goal: float = Field(ge=0, le=200)
 
-    created_at: created_at
+    created_at: evaluated_at
 
     @validator("*", pre=True, always=True)
     def check_none(cls, value):
         if value == "string" or value == "":
             return None
-        return value
-
-    @validator(
-        'abdominal_circumference',
-        'waist_circumference',
-        'hip_circumference',
-        'thighs_circumference',
-        'right_biceps_circumference',
-        'right_forearm_circumference',
-        'chest_skin_fold',
-        'abdominal_skin_fold',
-        'thighs_skin_fold',
-        'triceps_skin_fold',
-        'suprailiac_skin_fold',
-        'subscapularis_skin_fold',
-        'midaxillary_skin_fold',
-        'iliac_circumference',
-        'imc_result',
-        'rcq_result',
-        'iac_result',
-    )
-    def validate_two_decimals(cls, value):
-        if value is not None:
-            decimal = Decimal(str(value))
-            if decimal.as_tuple().exponent < -2:
-                raise ValueError("Values must have up to 2 decimal numbers.")
-        return value
-
-    @validator('pg_result')
-    def validate_one_decimal(cls, value):
-        if value is not None:
-            decimal = Decimal(str(value))
-            if decimal.as_tuple().exponent < -1:
-                raise ValueError("Values must have up to 1 decimal number.")
         return value
 
 

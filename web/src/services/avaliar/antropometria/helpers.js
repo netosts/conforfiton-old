@@ -12,16 +12,15 @@ import {
 
 export function createAntropometriaForm(
   weight,
+  evaluatedAt,
   antropometria_protocol,
   antropometriaList,
   results
 ) {
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString();
   const form = {
     weight,
     antropometria_protocol,
-    created_at: formattedDate,
+    created_at: evaluatedAt,
   };
 
   const extractedValues = antropometriaList.map((proxy) => proxy.value);
@@ -383,19 +382,17 @@ export function calculateMigWeight(weight, mig) {
   return mig ? ((mig / 100) * weight).toFixed(2) : null;
 }
 
-export function calculatePgGoal(pg, pgGoal) {
-  if (!pg || !pgGoal) return null;
-  return -(pg - pgGoal).toFixed(1);
+export function calculateWeightGoal(fatWeight, fatWeightGoal, weight) {
+  const exceededFatWeight = fatWeight - fatWeightGoal;
+  return exceededFatWeight ? (weight - exceededFatWeight).toFixed(2) : null;
 }
 
 export function calculateMigGoal(pgGoal) {
   return pgGoal ? 100 - pgGoal : null;
 }
 
-export function calculateFatWeightGoal(pgGoal, fatWeight, weight) {
-  if (!pgGoal || !fatWeight) return null;
-  const goal = (pgGoal / 100) * weight;
-  return (fatWeight - goal).toFixed(2);
+export function calculateFatWeightGoal(pgGoal, weight) {
+  return pgGoal ? ((pgGoal / 100) * weight).toFixed(2) : null;
 }
 
 export function calculateMigWeightGoal(fatWeightGoal, weight) {

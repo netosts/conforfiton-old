@@ -21,7 +21,7 @@ import {
   calculateMig,
   calculateFatWeight,
   calculateMigWeight,
-  calculatePgGoal,
+  calculateWeightGoal,
   calculateMigGoal,
   calculateFatWeightGoal,
   calculateMigWeightGoal,
@@ -314,8 +314,12 @@ export const results = reactive({
   pg_class: computed(() =>
     pgClass(results.pg_result, store.student?.gender, store.student?.age)
   ),
-  pg_goal_result: computed(() =>
-    calculatePgGoal(results.pg_result, form.pg_goal.value)
+  weight_goal: computed(() =>
+    calculateWeightGoal(
+      results.fat_weight_result,
+      results.fat_weight_goal,
+      store.student?.weight
+    )
   ),
   mig_result: computed(() => calculateMig(results.pg_result)),
   mig_goal: computed(() => calculateMigGoal(form.pg_goal.value)),
@@ -323,11 +327,7 @@ export const results = reactive({
     calculateFatWeight(store.student?.weight, results.pg_result)
   ),
   fat_weight_goal: computed(() =>
-    calculateFatWeightGoal(
-      form.pg_goal.value,
-      results.fat_weight_result,
-      store.student?.weight
-    )
+    calculateFatWeightGoal(form.pg_goal.value, store.student?.weight)
   ),
   mig_weight_result: computed(() =>
     calculateMigWeight(store.student?.weight, results.mig_result)

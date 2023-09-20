@@ -1,7 +1,7 @@
 # pylint: skip-file
 from pydantic import BaseModel, Field, constr
 
-from ..base_model.types import created_at, protocol
+from ..base_model.types import evaluated_at, protocol
 
 
 class NewNeuromuscular(BaseModel):
@@ -39,7 +39,7 @@ class NewNeuromuscular(BaseModel):
 
     total_points: int = Field(ge=0, le=60)
 
-    created_at: created_at
+    created_at: evaluated_at
 
 
 class UpdateNeuromuscular(BaseModel):
@@ -57,4 +57,4 @@ class NewNeuromuscularRml(BaseModel):
     push_up_result: constr(max_length=15, strip_whitespace=True) = None
     jump_result: constr(max_length=15, strip_whitespace=True) = None
 
-    created_at: created_at
+    created_at: evaluated_at

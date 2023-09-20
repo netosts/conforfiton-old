@@ -31,11 +31,17 @@ async function onSubmit(values) {
       return alert(
         "Por favor preencha a avaliação antropométrica corretamente."
       );
-    if (values.pg_result > 100)
+    if (results.pg_result > 99) {
       return alert("Porcentagem de gordura acima de 100%");
+    } else if (values.pg_goal >= results.pg_result) {
+      return alert(
+        "Meta %G precisa ser menor que a porcentagem de gordura atual."
+      );
+    }
 
     const form = await createAntropometriaForm(
       store.student?.weight,
+      store.evaluatedAt,
       store.antropometria_protocol,
       antropometriaList.value,
       results

@@ -3,7 +3,7 @@ import Antropometria from "@/components/avaliar/Antropometria.vue";
 import Cardio from "@/components/avaliar/Cardio.vue";
 
 export const evaluationComponents = [
-  { component: Neuromuscular, includes: "Neuromuscular" },
-  { component: Antropometria, includes: "Antropometria" },
-  { component: Cardio, includes: "Cardio" },
+  { component: Neuromuscular, includes: "neuromuscular" },
+  { component: Antropometria, includes: "antropometria" },
+  { component: Cardio, includes: "cardio" },
 ];
