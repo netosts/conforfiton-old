@@ -39,6 +39,7 @@ class CreateTableNeuromusculars(Migration):
             table.small_integer('leg_curl_points')
 
             table.small_integer('total_points')
+            table.string('classification', 15)
 
             table.timestamp('created_at')
             table.soft_deletes()

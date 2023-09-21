@@ -56,6 +56,7 @@ async def new_neuromuscular(person_id, data: NewNeuromuscular):
     neuromuscular.leg_curl_points = data.leg_curl_points
 
     neuromuscular.total_points = data.total_points
+    neuromuscular.classification = data.classification
     neuromuscular.created_at = data.created_at
 
     if neuromuscular.save():
@@ -148,6 +149,7 @@ async def get_neuromuscular_for_student_page(person_id):
         'leg_curl_rm',
         'leg_curl_points',
         'total_points',
+        'classification',
         'created_at',
     ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
 

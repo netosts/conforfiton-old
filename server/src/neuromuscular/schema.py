@@ -38,6 +38,7 @@ class NewNeuromuscular(BaseModel):
     leg_curl_points: int = Field(ge=0, le=10)
 
     total_points: int = Field(ge=0, le=60)
+    classification: constr(max_length=15, strip_whitespace=True)
 
     created_at: evaluated_at
 
