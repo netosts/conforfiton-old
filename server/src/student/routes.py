@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from .model import Student
-from .schema import NewStudent
+from .schema import NewStudent, EditStudent
 from ..person.model import Person
 from ..weight.model import Weight
 
@@ -25,7 +25,7 @@ async def new_student(data: NewStudent):
     if cpf > 0:
         return JSONResponse({
             "error": True,
-            "data": "The provided CPF is already registered in the database."
+            "msg": "The provided CPF is already registered in the database."
         }, 409)
 
     # Email duplicate validation
@@ -33,7 +33,7 @@ async def new_student(data: NewStudent):
     if email > 0:
         return JSONResponse({
             "error": True,
-            "data": "The provided Email is already registered in the database."
+            "msg": "The provided Email is already registered in the database."
         }, 409)
 
     # Phone Number duplicate validation
@@ -41,7 +41,7 @@ async def new_student(data: NewStudent):
     if phone_number > 0:
         return JSONResponse({
             "error": True,
-            "data": "The provided Phone Number is already registered in the database."
+            "msg": "The provided Phone Number is already registered in the database."
         }, 409)
 
     person = Person()
@@ -64,7 +64,7 @@ async def new_student(data: NewStudent):
         if not weight.save():
             return JSONResponse({
                 "error": True,
-                "data": f"Something went wrong while registering {person.name}'s WEIGHT."
+                "msg": f"Something went wrong while registering {person.name}'s WEIGHT."
             }, 422)
 
         student = Student()
@@ -74,12 +74,36 @@ async def new_student(data: NewStudent):
     if student.save():
         return JSONResponse({
             "error": False,
-            "data": f"{person.name} was successfully registered."
+            "msg": f"{person.name} was successfully registered."
         }, 200)
     else:
         return JSONResponse({
             "error": True,
-            "data": f"Something went wrong and {person.name} could not be registered."
+            "msg": f"Something went wrong and {person.name} could not be registered."
+        }, 422)
+
+
+@student_router.put('/{person_id}')
+async def edit_student(person_id, data: EditStudent):
+    person = Person.find(person_id)
+    person.name = data.name
+    person.cpf = data.cpf
+    person.phone_number = data.phone_number
+    person.email = data.email
+    person.birth_date = data.birth_date
+    person.gender = data.gender
+    person.shirt_size = data.shirt_size
+    person.shorts_size = data.shorts_size
+    person.height = data.height
+    if person.save():
+        return JSONResponse({
+            "error": False,
+            "msg": f"{person.name} was successfully edited."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and {person.name} was not edited."
         }, 422)
 
 

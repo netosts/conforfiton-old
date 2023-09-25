@@ -11,8 +11,8 @@ class Period(IntEnum):
 
 
 class JsonQ4(BaseModel):
-    treinando: bool
-    tempo: int
+    training: bool
+    time: str
 
 
 class JsonQ13(BaseModel):
@@ -29,8 +29,8 @@ class NewAnamnese(BaseModel):
     l1: int = Field(ge=0, le=220, default=None)
     l2: int = Field(ge=0, le=220, default=None)
 
-    q1: constr(max_length=255)
-    q2: constr(max_length=100)
+    q1: constr(max_length=100)
+    q2: constr(max_length=100) = None
     q3: constr(max_length=100)
     q4: JsonQ4
     q5: constr(max_length=255)

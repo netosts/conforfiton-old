@@ -74,3 +74,23 @@ async def count_email(email):  # how many of the specified Email are in the data
 async def count_phone_number(phone_number):
     phone_number = Person.where('phone_number', phone_number).count()
     return phone_number
+
+
+@app.get('/cpf/{cpf}/{person_id}')  # CPF
+async def count_cpf_edit_student(cpf, person_id):
+    cpf = Person.where('cpf', cpf).where(
+        'id', '!=', person_id).count()
+    return cpf
+
+
+@app.get('/email/{email}/{person_id}')  # EMAIL
+async def count_email_edit_student(email, person_id):
+    email = Person.where('email', email).where('id', '!=', person_id).count()
+    return email
+
+
+@app.get('/phone_number/{phone_number}/{person_id}')  # PHONE_NUMBER
+async def count_phone_number_edit_student(phone_number, person_id):
+    phone_number = Person.where('phone_number', phone_number).where(
+        'id', '!=', person_id).count()
+    return phone_number
