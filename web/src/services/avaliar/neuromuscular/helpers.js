@@ -3,17 +3,20 @@ import {
   sitUpConfig,
   pushUpConfig,
   jumpConfig,
+  neuromuscularConfig,
 } from "./configs";
 
 export function createNeuromuscularForm(
   evaluatedAt,
   neuromuscular_protocol,
   exerciseList,
-  total
+  total,
+  classification
 ) {
   const form = {
     neuromuscular_protocol,
     total_points: total.value,
+    classification,
     created_at: evaluatedAt,
   };
   const properties = ["lifted", "reps", "rm", "points"];
@@ -30,15 +33,14 @@ export function createNeuromuscularForm(
 }
 
 export function createNeuromuscularRmlForm(
+  evaluatedAt,
   neuromuscular_protocol,
   RMLFPList,
   results
 ) {
-  const currentDate = new Date();
-  const formattedDate = currentDate.toISOString();
   const form = {
     neuromuscular_protocol,
-    created_at: formattedDate,
+    created_at: evaluatedAt,
   };
 
   Object.values(RMLFPList).map((item) => {
@@ -147,5 +149,12 @@ export function jumpClass(gender, age, jump) {
   const findItem = filteredItems
     .sort((a, b) => b.threshold - a.threshold)
     .find((item) => jump >= item.threshold);
+  return findItem ? findItem.classification : null;
+}
+
+export function neuromuscularClass(totalPoints) {
+  const findItem = neuromuscularConfig
+    .sort((a, b) => b.threshold - a.threshold)
+    .find((item) => totalPoints.value >= item.threshold);
   return findItem ? findItem.classification : null;
 }

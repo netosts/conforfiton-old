@@ -1,13 +1,16 @@
 <script setup>
-import { postStudent, postAnamnese } from "@/services/api/post";
+import { postStudentAnamnese } from "@/services/api/post";
+import { getStudent } from "@/services/api/get";
 import { q4Radio, YesOrNoRadio, days } from "@/services/register/lists";
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
-import { getUserIdSession } from "@/services/api/token";
-import { translateGender, translateDays } from "@/services/helpers";
+import { translateDays } from "@/services/helpers";
+import { formatAge } from "@/services/formats";
 
-import { ref, onMounted } from "vue";
-import { definePage, useRouter } from "vue-router/auto";
+import { useStudentStore } from "@/stores/student";
+
+import { onMounted } from "vue";
+import { definePage, useRouter, useRoute } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/anamnese";
 import { form } from "@/services/register/forms/anamnese";
@@ -20,10 +23,9 @@ definePage({
   meta: { requiresAuth: true },
 });
 
+const route = useRoute();
 const router = useRouter();
-// VARIABLES
-const q4Calc = ref(null);
-const transformTime = ref("dia");
+const store = useStudentStore();
 
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {
@@ -61,34 +63,25 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
-    const studentForm = JSON.parse(sessionStorage.getItem("registerStudent"));
-
-    const userId = getUserIdSession();
-
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString();
-
-    studentForm.cpf = studentForm.cpf.replace(/\D/g, "");
-    studentForm.phone_number = studentForm.phone_number.replace(/\D/g, "");
-    studentForm.gender = translateGender(studentForm.gender); // from pt to en
-    studentForm.created_at = formattedDate;
-    studentForm.personal_id = userId;
-    await postStudent(studentForm);
-
+    if (store.student.id !== route.params.id) {
+      store.student.value = await getStudent(route.params.id);
+      avaliarStore["student"] = {
+        age: formatAge(store.student.value.birth_date),
+      };
+      store.student.id = route.params.id;
+    }
     form.fc_max = fcmax(
-      studentForm.birth_date,
+      store.student.value.birth_date,
       form.diabetes,
       form.hypertension
     );
     form.l1 = calculateL1(form.fc_max, form.fc_repouso);
     form.l2 = calculateL2(form.fc_max, form.fc_repouso);
-    await postAnamnese(form, studentForm.email);
+    await postStudentAnamnese(form, route.params.id);
 
     alert("Cadastro realizado com sucesso!");
 
-    sessionStorage.removeItem("registerStudent");
-    sessionStorage.setItem("submitted", true);
-    router.push("/");
+    router.push(`/student/${route.params.id}/anamnese`);
   } catch (err) {
     console.error(err);
     throw err;
@@ -130,18 +123,6 @@ function disableCheckbox(value) {
   }
 }
 
-function pushToTime() {
-  if (transformTime.value === "dia") {
-    form.q4.tempo = q4Calc.value;
-  }
-  if (transformTime.value === "mes") {
-    form.q4.tempo = q4Calc.value * 30;
-  }
-  if (transformTime.value === "ano") {
-    form.q4.tempo = q4Calc.value * 365;
-  }
-}
-
 onMounted(() => {
   form.q13 = [];
 });
@@ -157,7 +138,7 @@ onMounted(() => {
     >
       <section class="form__section">
         <div class="form__section__title">
-          <RouterLink to="/register" class="back">
+          <RouterLink :to="`/student/${route.params.id}/anamnese`" class="back">
             <font-awesome-icon icon="fa-solid fa-chevron-left" size="xl" />
           </RouterLink>
           <h2>Formulário Anamnese</h2>
@@ -168,14 +149,14 @@ onMounted(() => {
           :meta="meta"
           type="textarea"
           rows="2"
-          label="Quais são seus objetivos com o início de um programa de treinamento físico?"
+          label="Qual o seu principal objetivo com o início de um programa de treinamento físico?"
         />
         <TextField
           v-model="form.q2"
           name="q2"
           :meta="meta"
           type="text"
-          label="Desses, qual o principal?"
+          label="E qual o objetivo secundário?"
           :class="{ 'input--disabled': !form.q1 }"
           :tabindex="!form.q1 ? '-1' : null"
         />
@@ -187,35 +168,22 @@ onMounted(() => {
           label="Em quanto tempo espera atingir esses objetivos?"
         />
         <TextField
-          v-model="form.q4.treinando"
+          v-model="form.q4.training"
           name="q4a"
           :meta="meta"
           type="radio"
           :radios="q4Radio"
           label="Você está parado(a) ou treinando?"
         />
-        <div
-          class="q4time"
-          :class="{ 'input--disabled': form.q4.treinando === undefined }"
-        >
-          <TextField
-            v-model="q4Calc"
-            @input="pushToTime"
-            name="q4b"
-            :meta="meta"
-            type="number"
-            label="Há quanto tempo?"
-            :tabindex="form.q4.treinando === undefined ? '-1' : null"
-          />
-          <div class="q4time__select">
-            <label for="q4c">Dia/Mês/Ano</label>
-            <select v-model="transformTime" @change="pushToTime" id="q4c">
-              <option value="dia">Dia(s)</option>
-              <option value="mes">Mês</option>
-              <option value="ano">Ano</option>
-            </select>
-          </div>
-        </div>
+        <TextField
+          v-model="form.q4.time"
+          name="q4b"
+          :meta="meta"
+          type="text"
+          label="Há quanto tempo?"
+          :class="{ 'input--disabled': form.q4.training === undefined }"
+          :tabindex="form.q4.training === undefined ? '-1' : null"
+        />
         <TextField
           v-model="form.q5"
           name="q5"
@@ -386,14 +354,6 @@ onMounted(() => {
           label="Se sim, onde? Leve ou aguda? Esporádica ou crônica? Qual a intensidade dessa(s) dor(es) de 0 a 10?"
         />
         <TextField
-          v-model="form.q22"
-          name="q22"
-          :meta="meta"
-          type="text"
-          label="Alguma patologia (doença) diagnosticada por algum médico?"
-          span="(Alergias; doenças cardíacas; doenças fúngicas; etc)"
-        />
-        <TextField
           v-model="form.diabetes"
           name="diabetes"
           :meta="meta"
@@ -408,6 +368,14 @@ onMounted(() => {
           type="radio"
           :radios="YesOrNoRadio"
           label="Você é diagnosticado com Hipertensão?"
+        />
+        <TextField
+          v-model="form.q22"
+          name="q22"
+          :meta="meta"
+          type="text"
+          label="Alguma patologia (doença) diagnosticada por algum médico?"
+          span="(Alergias; doenças cardíacas; doenças fúngicas; etc)"
         />
         <TextField
           v-model="form.q23"

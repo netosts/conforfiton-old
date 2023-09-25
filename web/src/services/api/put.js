@@ -35,3 +35,13 @@ export async function updateCardioProtocol(person_id, value) {
     throw err;
   }
 }
+
+export async function editStudent(person_id, form) {
+  try {
+    const response = await http.put(`/student/${person_id}`, form);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}

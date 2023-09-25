@@ -129,7 +129,7 @@ export function rcaeClass(rcae) {
 export function calculateIac(hip, height) {
   const meters = height / 100;
 
-  const iac = hip / (meters * Math.sqrt(meters)) - 18;
+  const iac = hip / meters ** 2 - 18;
 
   return iac > 0 ? iac.toFixed(2) : null;
 }
@@ -254,7 +254,6 @@ export function jacksonPollock7(
   gender,
   formula
 ) {
-  console.log(formula);
   let density;
   if (gender === "Male") {
     density =
@@ -299,7 +298,6 @@ export function jacksonPollock7(
           2 -
       0.00012828 * age;
   }
-  console.log(density);
 
   const siri = (4.95 / density - 4.5) * 100;
   const brozek = (5.47 / density - 4.142) * 100;

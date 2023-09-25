@@ -37,6 +37,19 @@ export async function postAnamnese(form, email) {
   }
 }
 
+export async function postStudentAnamnese(form, person_id) {
+  try {
+    const response = await http.post(`/anamnese/student/${person_id}`, form);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    alert(
+      `${err.response.status}(${err.response.statusText}): ANAMNESE NÃO FOI CRIADA`
+    );
+    throw err;
+  }
+}
+
 export async function postNeuromuscular(form, id) {
   try {
     const response = await http.post(`/neuromuscular/${id}`, form);

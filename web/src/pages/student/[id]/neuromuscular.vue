@@ -79,7 +79,7 @@ onMounted(() => {
           <tbody>
             <tr>
               <td>Supino</td>
-              <td>{{ evaluationResult.bench_press_lifted }}</td>
+              <td>{{ evaluationResult.bench_press_lifted }} kg</td>
               <td>{{ evaluationResult.bench_press_reps }}</td>
               <td>{{ evaluationResult.bench_press_rm }}</td>
               <td class="emphasize">
@@ -88,7 +88,7 @@ onMounted(() => {
             </tr>
             <tr>
               <td>Rosca Direta</td>
-              <td>{{ evaluationResult.barbell_curl_lifted }}</td>
+              <td>{{ evaluationResult.barbell_curl_lifted }} kg</td>
               <td>{{ evaluationResult.barbell_curl_reps }}</td>
               <td>{{ evaluationResult.barbell_curl_rm }}</td>
               <td class="emphasize">
@@ -97,21 +97,21 @@ onMounted(() => {
             </tr>
             <tr>
               <td>Puxada Pela Frente</td>
-              <td>{{ evaluationResult.pull_down_lifted }}</td>
+              <td>{{ evaluationResult.pull_down_lifted }} kg</td>
               <td>{{ evaluationResult.pull_down_reps }}</td>
               <td>{{ evaluationResult.pull_down_rm }}</td>
               <td class="emphasize">{{ evaluationResult.pull_down_points }}</td>
             </tr>
             <tr>
               <td>Leg Press</td>
-              <td>{{ evaluationResult.leg_press_lifted }}</td>
+              <td>{{ evaluationResult.leg_press_lifted }} kg</td>
               <td>{{ evaluationResult.leg_press_reps }}</td>
               <td>{{ evaluationResult.leg_press_rm }}</td>
               <td class="emphasize">{{ evaluationResult.leg_press_points }}</td>
             </tr>
             <tr>
               <td>Extenção de Joelhos</td>
-              <td>{{ evaluationResult.leg_extension_lifted }}</td>
+              <td>{{ evaluationResult.leg_extension_lifted }} kg</td>
               <td>{{ evaluationResult.leg_extension_reps }}</td>
               <td>{{ evaluationResult.leg_extension_rm }}</td>
               <td class="emphasize">
@@ -120,7 +120,7 @@ onMounted(() => {
             </tr>
             <tr>
               <td>Flexão de Joelhos</td>
-              <td>{{ evaluationResult.leg_curl_lifted }}</td>
+              <td>{{ evaluationResult.leg_curl_lifted }} kg</td>
               <td>{{ evaluationResult.leg_curl_reps }}</td>
               <td>{{ evaluationResult.leg_curl_rm }}</td>
               <td class="emphasize">{{ evaluationResult.leg_curl_points }}</td>
@@ -130,6 +130,10 @@ onMounted(() => {
         <div class="total">
           <h4>Total:</h4>
           <span>{{ evaluationResult.total_points }}</span>
+        </div>
+        <div class="total">
+          <h4>Desempenho:</h4>
+          <span>{{ evaluationResult.classification }}</span>
         </div>
       </div>
 
@@ -275,7 +279,6 @@ section {
     }
     .total {
       display: flex;
-      margin-bottom: 10px;
       border: 1px solid $input-border;
 
       h4 {

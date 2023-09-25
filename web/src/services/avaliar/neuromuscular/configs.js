@@ -444,3 +444,11 @@ export const jumpConfig = [
   },
   { gender: "Female", age: 15, threshold: 223, classification: "Excelente" },
 ];
+
+export const neuromuscularConfig = [
+  { threshold: 0, classification: "Ruim" },
+  { threshold: 13, classification: "Abaixo da Média" },
+  { threshold: 25, classification: "Média" },
+  { threshold: 37, classification: "Acima da Média" },
+  { threshold: 48, classification: "Excelente" },
+];

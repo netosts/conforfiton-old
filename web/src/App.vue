@@ -22,10 +22,11 @@ const hiders = [
   "/print",
   "/register",
   "/register/anamnese",
+  /\/register\/anamnese\/\d+/,
 ];
 
 watch(route, () => {
-  if (hiders.includes(route.path)) {
+  if (hiders.some((item) => route.path.match(item))) {
     hideBars.value = true;
   } else {
     hideBars.value = false;

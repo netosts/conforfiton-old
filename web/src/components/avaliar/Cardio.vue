@@ -46,7 +46,7 @@ async function onSubmit() {
     alert("Cardio salvo com sucesso");
 
     // Remove Cardio from the screen
-    const indexToRemove = store.types.indexOf("Cardio");
+    const indexToRemove = store.types.indexOf("cardio");
     store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);

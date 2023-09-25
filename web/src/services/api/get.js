@@ -173,3 +173,43 @@ export async function getCardioStudentPage(person_id) {
       throw err;
     });
 }
+
+export async function getOverviewInformation(person_id) {
+  return http
+    .get(`/anamnese/overview/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err.response);
+      throw err;
+    });
+}
+
+export async function countCpfDuplicateEditStudent(cpf, person_id) {
+  return http
+    .get(`/cpf/${cpf}/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}
+
+export async function countEmailDuplicateEditStudent(email, person_id) {
+  return http
+    .get(`/email/${email}/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}
+
+export async function countPhoneDuplicateEditStudent(phone_number, person_id) {
+  return http
+    .get(`/phone_number/${phone_number}/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}

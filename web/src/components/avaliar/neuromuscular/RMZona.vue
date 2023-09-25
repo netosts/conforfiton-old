@@ -2,6 +2,7 @@
 import {
   repsList,
   total,
+  classification,
   exerciseList,
 } from "@/services/avaliar/neuromuscular/lists";
 
@@ -25,7 +26,8 @@ async function onSubmit() {
       store.evaluatedAt,
       store.neuromuscular_protocol,
       exerciseList,
-      total
+      total,
+      classification.value
     );
 
     await postNeuromuscular(form, route.params.id);
@@ -35,7 +37,7 @@ async function onSubmit() {
     alert("Neuromuscular salvo com sucesso");
 
     // Remove Neuromuscular from the screen
-    const indexToRemove = store.types.indexOf("Neuromuscular");
+    const indexToRemove = store.types.indexOf("neuromuscular");
     store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);

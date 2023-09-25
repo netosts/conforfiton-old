@@ -30,7 +30,7 @@ async function onSubmit() {
     alert("Neuromuscular salvo com sucesso");
 
     // Remove Neuromuscular from the screen
-    const indexToRemove = store.types.indexOf("Neuromuscular");
+    const indexToRemove = store.types.indexOf("neuromuscular");
     store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);

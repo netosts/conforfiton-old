@@ -40,7 +40,7 @@ async function onSubmit(_, { setErrors }) {
 
     const data = await getToken(payload);
 
-    setExpToken(data.access_token, 3 * 60 * 60 * 1000); // Set expiry by milliseconds
+    setExpToken(data.access_token, 8 * 60 * 60 * 1000); // Set expiry by milliseconds
     setUserIdLocal(data.user_id);
     setUserIdSession(data.user_id);
 

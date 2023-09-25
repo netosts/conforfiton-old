@@ -5,6 +5,7 @@ import {
   sitUpClass,
   pushUpClass,
   jumpClass,
+  neuromuscularClass,
 } from "./helpers";
 import { computed, reactive } from "vue";
 import { useAvaliarStore } from "@/stores/avaliar";
@@ -144,6 +145,8 @@ export const total = computed(() => {
   const total = points.reduce((total, points) => total + points, 0);
   return total ? total : 0;
 });
+
+export const classification = computed(() => neuromuscularClass(total));
 
 const protocolsType = {
   default: [

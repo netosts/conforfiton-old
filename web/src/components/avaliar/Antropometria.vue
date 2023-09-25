@@ -53,7 +53,7 @@ async function onSubmit(values) {
     alert("Antropometria salvo com sucesso");
 
     // Remove Antropometria from the screen
-    const indexToRemove = store.types.indexOf("Antropometria");
+    const indexToRemove = store.types.indexOf("antropometria");
     store.types.splice(indexToRemove, 1);
   } catch (err) {
     console.error(err);

@@ -218,7 +218,7 @@ main {
 
     .back {
       position: absolute;
-      top: 11px;
+      top: 40px;
       @include tool();
       color: $buttons;
     }

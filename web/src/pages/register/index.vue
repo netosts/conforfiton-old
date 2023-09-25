@@ -318,54 +318,6 @@ main {
         }
       }
 
-      .q4time {
-        display: flex;
-        gap: 20px;
-
-        .register-field {
-          flex: 1;
-        }
-
-        &__select {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-          flex: 1;
-
-          select {
-            @include createInput();
-          }
-        }
-      }
-
-      table {
-        border-collapse: collapse;
-        border: 1px solid $input-border;
-
-        th,
-        td {
-          border: 1px solid $input-border;
-          padding: 8px;
-          text-align: center;
-        }
-
-        th {
-          background-color: $buttons;
-          color: white;
-        }
-
-        td {
-          font-weight: 500;
-          color: $txt-aside;
-        }
-      }
-
-      .final {
-        margin: 10px;
-        font-weight: 500;
-        text-align: center;
-      }
-
       .submitbox {
         display: flex;
         justify-content: space-between;

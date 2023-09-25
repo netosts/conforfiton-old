@@ -13,7 +13,7 @@ const form = reactive({
       i + 1 === 13 ? [] : undefined,
     ])
   ),
-  q4: { treinando: undefined, tempo: undefined },
+  q4: { training: undefined, time: undefined },
 });
 
 export { form };
