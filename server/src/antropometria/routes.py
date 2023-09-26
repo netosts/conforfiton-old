@@ -19,7 +19,7 @@ async def new_antropometria(person_id, data: NewAntropometria):
     if not person:
         return JSONResponse({
             "error": True,
-            "data": "Person not found."
+            "msg": "Person not found."
         }, 404)
 
     antropometria = Antropometria()
@@ -75,12 +75,12 @@ async def new_antropometria(person_id, data: NewAntropometria):
     if antropometria.save():
         return JSONResponse({
             "error": False,
-            "data": f"{person.name}'s Antropometria successfully created."
+            "msg": f"{person.name}'s Antropometria successfully created."
         }, 200)
     else:
         return JSONResponse({
             "error": True,
-            "data": f"Something went wrong while registering {person.name}'s Antropometria."
+            "msg": f"Something went wrong while registering {person.name}'s Antropometria."
         }, 422)
 
 
@@ -94,6 +94,7 @@ async def get_antropometria_protocol(person_id):
 @antropometria_router.get('/student/{person_id}')
 async def get_antropometria_for_student_page(person_id):
     antropometria = Antropometria.select(
+        'id',
         'weight',
         'antropometria_protocol',
         'abdominal_circumference',
@@ -113,7 +114,6 @@ async def get_antropometria_for_student_page(person_id):
         'imc_result',
         'imc_class',
         'ca_class',
-        'ca_risk',
         'rcq_result',
         'rcq_class',
         'rcae_result',
@@ -142,10 +142,25 @@ async def update_antropometria_protocol(person_id, data: UpdateAntropometria):
     if student.save():
         return JSONResponse({
             "error": False,
-            "data": f"Antropometria protocol was successfully updated."
+            "msg": f"Antropometria protocol was successfully updated."
         }, 200)
     else:
         return JSONResponse({
             "error": True,
-            "data": f"Something went wrong and Antropometria protocol could not be updated."
+            "msg": f"Something went wrong and Antropometria protocol could not be updated."
+        }, 422)
+
+
+@antropometria_router.delete("/{evaluation_id}")
+async def delete_antropometria(evaluation_id):
+    evaluation = Antropometria.where('id', evaluation_id)
+    if evaluation.delete():
+        return JSONResponse({
+            "error": False,
+            "msg": "Antropometria was deleted successfully"
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and Antropometria could not be deleted."
         }, 422)

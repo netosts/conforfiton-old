@@ -70,6 +70,7 @@ async def get_cardio_protocol(person_id):
 @cardio_router.get('/student/{person_id}')
 async def get_cardio_for_student_page(person_id):
     cardio = Cardio.select(
+        'id',
         'weight',
         'cardio_protocol',
         'l1_fc_max_percentage',
@@ -108,4 +109,19 @@ async def update_cardio_protocol(person_id, data: UpdateCardio):
         return JSONResponse({
             "error": True,
             "data": f"Something went wrong and Cardio protocol could not be updated."
+        }, 422)
+
+
+@cardio_router.delete("/{evaluation_id}")
+async def delete_cardio(evaluation_id):
+    evaluation = Cardio.where('id', evaluation_id)
+    if evaluation.delete():
+        return JSONResponse({
+            "error": False,
+            "msg": "Cardio was deleted successfully"
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and Cardio could not be deleted."
         }, 422)

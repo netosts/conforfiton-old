@@ -123,6 +123,7 @@ async def get_neuromuscular_protocol(person_id):
 @neuromuscular_router.get('/student/{person_id}')
 async def get_neuromuscular_for_student_page(person_id):
     neuro = Neuromuscular.select(
+        'id',
         'neuromuscular_protocol',
         'bench_press_lifted',
         'bench_press_reps',
@@ -154,6 +155,7 @@ async def get_neuromuscular_for_student_page(person_id):
     ).where('person_id', person_id).order_by('created_at', 'desc').get().serialize()
 
     rml = NeuromuscularRml.select(
+        'id',
         'neuromuscular_protocol',
         'sit_up',
         'push_up',
@@ -183,4 +185,34 @@ async def update_neuromuscular_protocol(person_id, data: UpdateNeuromuscular):
         return JSONResponse({
             "error": True,
             "data": f"Something went wrong and Neuromuscular protocol could not be updated."
+        }, 422)
+
+
+@neuromuscular_router.delete("/{evaluation_id}")
+async def delete_neuromuscular(evaluation_id):
+    evaluation = Neuromuscular.where('id', evaluation_id)
+    if evaluation.delete():
+        return JSONResponse({
+            "error": False,
+            "msg": "Neuromuscular was deleted successfully"
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and Neuromuscular could not be deleted."
+        }, 422)
+
+
+@neuromuscular_router.delete("/rml/{evaluation_id}")
+async def delete_neuromuscular_rml(evaluation_id):
+    evaluation = NeuromuscularRml.where('id', evaluation_id)
+    if evaluation.delete():
+        return JSONResponse({
+            "error": False,
+            "msg": "Neuromuscular Rml was deleted successfully"
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and Neuromuscular Rml could not be deleted."
         }, 422)
