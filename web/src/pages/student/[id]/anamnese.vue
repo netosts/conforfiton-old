@@ -1,7 +1,7 @@
 <script setup>
 import { getAnamnese } from "@/services/api/get";
 
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
@@ -33,18 +33,25 @@ async function initAnamnese() {
   }
 }
 
-onMounted(() => {
-  initAnamnese();
+onMounted(async () => {
+  await initAnamnese();
+  store.anamnese.initiated = true;
 });
 </script>
 
 <template>
   <section>
     <h2>Anamnese</h2>
-    <div class="content" v-if="store.anamnese.value">
+    <div
+      class="content"
+      v-if="store.anamnese.value && store.anamnese.initiated"
+    >
       <pre>{{ store.anamnese.value }}</pre>
     </div>
-    <div class="no-anamnese" v-else>
+    <div
+      class="no-anamnese"
+      v-if="!store.anamnese.value && store.anamnese.initiated"
+    >
       <h3>Anamnese não foi cadastrada</h3>
       <RouterLink :to="`/register/anamnese/${student?.person_id}`">
         <button>

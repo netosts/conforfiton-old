@@ -96,10 +96,16 @@ onMounted(() => {
   <main>
     <section class="student">
       <div class="top">
-        <RouterLink to="/" class="voltar">
+        <RouterLink to="/" class="back">
           <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
         </RouterLink>
         <h1>{{ store.student?.name }}</h1>
+        <RouterLink
+          :to="`/student/${store.student?.id}/evaluations`"
+          class="evaluation"
+        >
+          <font-awesome-icon icon="fa-solid fa-dna" size="xl" />
+        </RouterLink>
       </div>
 
       <div class="student__details">
@@ -164,9 +170,17 @@ main {
       padding: 10px;
       box-shadow: $box-shadow;
 
-      .voltar {
+      .back {
         position: absolute;
         top: 5px;
+        @include tool();
+        color: $buttons;
+      }
+
+      .evaluation {
+        position: absolute;
+        top: 5px;
+        right: 10px;
         @include tool();
         color: $buttons;
       }

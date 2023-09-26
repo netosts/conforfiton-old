@@ -33,16 +33,20 @@ async function initAnamnese() {
   }
 }
 
-onMounted(() => {
-  initAnamnese();
+onMounted(async () => {
+  await initAnamnese();
+  store.overview.initiated = true;
 });
 </script>
 
 <template>
   <section>
-    <div class="overview-container" v-if="store.overview.value">
+    <h2>Avaliação Morfofuncional</h2>
+    <div
+      class="overview-container"
+      v-if="store.overview.value && store.overview.initiated"
+    >
       <div class="morphofunctional">
-        <h2>Avaliação Morfofuncional</h2>
         <div class="morphofunctional__content">
           <p>
             {{ student?.name }} está
@@ -81,7 +85,10 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="no-anamnese" v-else>
+    <div
+      class="no-anamnese"
+      v-if="!store.overview.value && store.overview.initiated"
+    >
       <h3>Anamnese não foi cadastrada</h3>
       <RouterLink :to="`/register/anamnese/${student?.person_id}`">
         <button>
@@ -104,15 +111,15 @@ section {
   box-shadow: $box-shadow;
   background-color: white;
 
+  h2 {
+    padding-bottom: 20px;
+    color: $txt-title;
+  }
+
   .overview-container {
     display: flex;
     flex-direction: column;
     gap: 20px;
-
-    h2 {
-      padding-bottom: 20px;
-      color: $txt-title;
-    }
 
     .morphofunctional,
     .training-zone {

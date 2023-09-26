@@ -9,10 +9,12 @@ export const useStudentStore = defineStore("student", () => {
   const overview = ref({
     id: undefined,
     value: undefined,
+    initiated: false,
   });
   const anamnese = ref({
     id: undefined,
     value: undefined,
+    initiated: false,
   });
   const neuromuscular = ref({
     id: undefined,

@@ -8,6 +8,7 @@ import { onMounted, ref } from "vue";
 
 import { useStudentStore } from "@/stores/student";
 import { useRoute, definePage } from "vue-router/auto";
+import DeleteConfirmation from "@/components/DeleteConfirmation.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -20,6 +21,12 @@ const props = defineProps({
 const route = useRoute();
 const store = useStudentStore();
 const evaluationResult = ref(null);
+const isDeleteActive = ref(false);
+const evaluationToDelete = ref(null);
+
+function handleDelete(emittedValue) {
+  isDeleteActive.value = emittedValue;
+}
 
 async function initEvaluation() {
   try {
@@ -30,6 +37,16 @@ async function initEvaluation() {
       store.antropometria.id = route.params.id;
     }
   } catch {}
+}
+
+function deleteEvaluation(protocol, date, id) {
+  date = formatEvaluatedAt(date);
+  evaluationToDelete.value = {
+    type: "antropometria",
+    id,
+    name: `${protocol} (${date})`,
+  };
+  isDeleteActive.value = true;
 }
 
 function renameProtocol(value) {
@@ -44,6 +61,11 @@ onMounted(() => {
 </script>
 
 <template>
+  <DeleteConfirmation
+    :evaluation="evaluationToDelete"
+    @isDeleteActive="handleDelete"
+    v-if="isDeleteActive"
+  />
   <section>
     <h2>Antropométrica</h2>
     <div class="evaluation">
@@ -52,13 +74,25 @@ onMounted(() => {
         :key="id"
         class="evaluation__items"
         :class="{
-          'evaluation__items--active':
-            evaluationResult?.created_at === item.created_at,
+          'evaluation__items--active': evaluationResult?.id === item.id,
         }"
-        @click="evaluationResult = item"
       >
-        <p>{{ renameProtocol(item.antropometria_protocol) }}</p>
-        <p>{{ formatEvaluatedAt(item.created_at) }}</p>
+        <button
+          @click="
+            deleteEvaluation(
+              item.antropometria_protocol,
+              item.created_at,
+              item.id
+            )
+          "
+          class="evaluation__items__delete"
+        >
+          <font-awesome-icon icon="fa-solid fa-xmark" size="xl" />
+        </button>
+        <div @click="evaluationResult = item" class="evaluation__items__text">
+          <p>{{ renameProtocol(item.antropometria_protocol) }}</p>
+          <p>{{ formatEvaluatedAt(item.created_at) }}</p>
+        </div>
       </div>
     </div>
     <div class="indicators" v-if="evaluationResult">
@@ -98,61 +132,6 @@ onMounted(() => {
               <td>IAC</td>
               <td>{{ evaluationResult.iac_result }}</td>
               <td class="emphasize">{{ evaluationResult.iac_class }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <table v-if="evaluationResult.ca_risk">
-          <thead>
-            <tr>
-              <th>+ 1cm Circunferência Abdominal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <span class="emphasize"
-                  >{{ evaluationResult.ca_risk.dc }}% risco DC</span
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="emphasize"
-                  >{{ evaluationResult.ca_risk.diabetes_ii }}% risco Diabetes
-                  II</span
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="emphasize"
-                  >{{ evaluationResult.ca_risk.hypertension }}% risco
-                  Hipertensão</span
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="emphasize"
-                  >{{ evaluationResult.ca_risk.cancer }}% risco Câncer</span
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="emphasize"
-                  >{{ evaluationResult.ca_risk.depression }}% risco
-                  Depressão</span
-                >
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span class="emphasize">
-                  {{ evaluationResult.ca_risk.metabolic_syndrome }}% Síndrome
-                  Metabólica
-                </span>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -272,6 +251,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import "@/assets/styles/variables";
 @import "@/assets/styles/mixins";
+@import "@/assets/styles/animations";
 
 section {
   display: flex;
@@ -294,28 +274,55 @@ section {
   flex-wrap: wrap;
 
   &__items {
-    width: 150px;
-    padding: 10px 20px;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    background-color: rgb(246, 246, 246);
+    position: relative;
     text-align: center;
     font-size: 13px;
     font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s;
 
-    &:hover {
-      background-color: rgb(228, 228, 228);
-    }
+    &__text {
+      position: relative;
+      z-index: 10;
+      width: 150px;
+      padding: 10px 20px;
+      border-radius: $border-radius;
+      box-shadow: $box-shadow;
+      background-color: rgb(246, 246, 246);
+      cursor: pointer;
+      transition: 0.2s;
+      &:hover {
+        background-color: rgb(228, 228, 228);
+      }
 
-    &:active {
-      filter: brightness(0.7);
+      &:active {
+        filter: brightness(0.7);
+      }
     }
 
     &--active {
-      background-color: $logo-color;
-      color: white;
+      .evaluation__items__text {
+        background-color: $logo-color;
+        color: white;
+      }
+    }
+
+    &__delete {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      z-index: 100;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background-color: transparent;
+      color: rgba(85, 85, 85, 0.588);
+      cursor: pointer;
+      transition: 0.2s;
+
+      &:hover {
+        color: $txt-aside;
+        background-color: rgb(228, 228, 228);
+      }
     }
   }
 }
