@@ -1,5 +1,6 @@
 .vscode/
 web/
+web/node_modules/
 
 .gitignore
 
