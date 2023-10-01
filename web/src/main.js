@@ -24,6 +24,7 @@ import {
   faArrowRightToBracket,
   faPenToSquare,
   faDna,
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import { faMoon } from "@fortawesome/free-regular-svg-icons";
 
@@ -91,7 +92,8 @@ library.add(
   faRotateRight,
   faArrowRightToBracket,
   faPenToSquare,
-  faDna
+  faDna,
+  faGear
 );
 
 app.use(router);

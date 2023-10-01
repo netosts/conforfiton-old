@@ -45,12 +45,6 @@ onMounted(() => {
     @isAvaliarActive="handleAvaliar"
     v-show="isAvaliarActive"
   />
-  <div class="new-evaluation">
-    <button @click="toggleAvaliar(student?.person_id, student?.name)">
-      <font-awesome-icon icon="fa-solid fa-plus" />
-      Nova Avaliação
-    </button>
-  </div>
 
   <section class="view-container">
     <h2>Visualizar avaliação</h2>
@@ -68,6 +62,13 @@ onMounted(() => {
       </div>
     </div>
   </section>
+
+  <aside class="new-evaluation">
+    <button @click="toggleAvaliar(student?.person_id, student?.name)">
+      <font-awesome-icon icon="fa-solid fa-plus" />
+      Iniciar Nova Avaliação
+    </button>
+  </aside>
 </template>
 
 <style lang="scss" scoped>
@@ -76,6 +77,7 @@ onMounted(() => {
 
 section {
   padding: 20px;
+  padding-bottom: 40px;
   margin-bottom: 20px;
   width: 100%;
   border-radius: $border-radius;
@@ -154,11 +156,26 @@ section {
   display: flex;
   justify-content: flex-end;
   button {
+    flex: 1;
     margin-top: -7px;
     margin-bottom: 10px;
     font-weight: 500;
-    @include submitButtons($validation, white);
     font-size: 1rem;
+    padding: 16px 20px;
+    border: none;
+    border-radius: $border-radius;
+    background-color: $buttons;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+
+    &:active {
+      filter: brightness(0.7);
+    }
   }
 }
 </style>

@@ -172,7 +172,7 @@ onMounted(() => {
           label="Em quanto tempo espera atingir esses objetivos?"
         />
         <TextField
-          v-model="form.q4.treinando"
+          v-model="form.q4.training"
           name="q4a"
           :meta="meta"
           type="radio"

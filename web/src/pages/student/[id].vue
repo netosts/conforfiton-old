@@ -60,7 +60,7 @@ onMounted(() => {
           >
         </div>
       </div>
-      <RouterLink :to="`/student/${route.params.id}/edit`">
+      <RouterLink :to="`/student/${route.params.id}/update-profile`">
         <button class="profile__edit">
           <font-awesome-icon icon="fa-solid fa-pen-to-square" size="xl" />
         </button>

@@ -77,6 +77,7 @@ section {
   h2 {
     padding-bottom: 20px;
     color: $txt-title;
+    text-align: center;
   }
 
   .content {

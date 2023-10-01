@@ -134,18 +134,6 @@ async function updateProtocol() {
           </div>
         </div>
 
-        <p v-if="results.elder_aerobic_power">
-          Classificação: {{ results.elder_aerobic_power }}
-        </p>
-
-        <p v-if="results.weekly_caloric_expenditure">
-          Gasto Calórico - Semanal:
-          {{ results.weekly_caloric_expenditure }} kcal
-        </p>
-        <p v-if="results.daily_caloric_expenditure">
-          Gasto Calórico - Diário: {{ results.daily_caloric_expenditure }} kcal
-        </p>
-
         <SubmitButton msg="Salvar" />
       </div>
     </Form>

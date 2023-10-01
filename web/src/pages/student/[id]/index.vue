@@ -19,7 +19,7 @@ defineProps({
 const route = useRoute();
 const store = useStudentStore();
 
-async function initAnamnese() {
+async function initOverview() {
   try {
     if (store.overview.id !== route.params.id) {
       store.overview.value = await getOverviewInformation(route.params.id);
@@ -34,7 +34,7 @@ async function initAnamnese() {
 }
 
 onMounted(async () => {
-  await initAnamnese();
+  await initOverview();
   store.overview.initiated = true;
 });
 </script>
@@ -48,6 +48,12 @@ onMounted(async () => {
     >
       <div class="morphofunctional">
         <div class="morphofunctional__content">
+          <RouterLink
+            :to="`/student/${route.params.id}/edit-morphofunctional`"
+            class="morphofunctional__content__edit"
+          >
+            <font-awesome-icon icon="fa-solid fa-gear" size="lg" />
+          </RouterLink>
           <p>
             {{ student?.name }} está
             {{
@@ -55,32 +61,60 @@ onMounted(async () => {
                 ? "em atividade"
                 : "em sedentarismo"
             }}
-            há {{ store.overview.value?.q4.time }}
+            há "<strong>{{ store.overview.value?.q4.time }}</strong
+            >"; tem como objetivo principal "<strong>{{
+              store.overview.value?.q1
+            }}</strong
+            >" e secundário "<strong>{{ store.overview.value?.q2 }}</strong
+            >".
           </p>
-          <p>Seu principal objetivo é: "{{ store.overview.value?.q1 }}"</p>
           <p>
-            E tem como objetivo secundário: "{{ store.overview.value?.q2 }}"
+            {{
+              store.overview.value?.q20
+                ? `Apresenta dor/desconforto muscular: "${store.overview.value?.q21}".`
+                : "Não apresenta dor/desconforto muscular."
+            }}
+            <br />
+            {{
+              store.overview.value?.diabetes
+                ? "Tem diabetes."
+                : "Não tem diabetes."
+            }}
+            <br />
+            {{
+              store.overview.value?.hypertension
+                ? "Tem hipertensão."
+                : "Não tem hipertensão."
+            }}
+            <br />
+            Suas patologias são: {{ store.overview.value?.q22 }}
           </p>
           <p>
-            Dores/Desconfortos: "{{
-              store.overview.value?.q20 ? store.overview.value?.q21 : "Nenhum"
-            }}"
+            Sua frequência cardíaca máxima é
+            <strong>{{ store.overview.value?.fc_max }}bpm</strong> e a de
+            repouso é
+            <strong>{{
+              store.overview.value?.fc_repouso
+                ? `${store.overview.value?.fc_repouso}bpm`
+                : "[NÃO INCLUÍDO]"
+            }}</strong
+            >. <br />
+            Sua zona alvo é: <br />
+            L1:
+            <strong>{{
+              store.overview.value?.l1
+                ? `${store.overview.value?.l1}bpm`
+                : "[NÃO INCLUÍDO]"
+            }}</strong
+            >. <br />
+            L2:
+            <strong>{{
+              store.overview.value?.l2
+                ? `${store.overview.value?.l2}bpm`
+                : "[NÃO INCLUÍDO]"
+            }}</strong
+            >. <br />
           </p>
-          <p>Diabetes: {{ store.overview.value?.diabetes ? "Sim" : "Não" }}</p>
-          <p>
-            Hipertensão:
-            {{ store.overview.value?.hypertension ? "Sim" : "Não" }}
-          </p>
-          <p>Patologias: {{ store.overview.value?.q22 }}</p>
-        </div>
-      </div>
-      <div class="training-zone">
-        <h2>Zonas de Treino</h2>
-        <div class="training-zone__content">
-          <p>FC Max: {{ store.overview.value?.fc_max }}</p>
-          <p>FC Repouso: {{ store.overview.value?.fc_repouso }}</p>
-          <p>L1: {{ store.overview.value?.l1 }}</p>
-          <p>L2: {{ store.overview.value?.l2 }}</p>
         </div>
       </div>
     </div>
@@ -114,6 +148,7 @@ section {
   h2 {
     padding-bottom: 20px;
     color: $txt-title;
+    text-align: center;
   }
 
   .overview-container {
@@ -124,20 +159,35 @@ section {
     .morphofunctional,
     .training-zone {
       &__content {
+        position: relative;
         display: flex;
         flex-direction: column;
         gap: 16px;
-        padding: 10px 20px;
+        padding: 20px 50px 20px 20px;
         border: 1px solid $input-border;
         border-radius: $border-radius;
         box-shadow: $box-shadow;
-        p {
-          color: $buttons;
-          font-weight: 600;
-        }
         p::before {
-          content: "- ";
+          content: "• ";
           color: black;
+        }
+        &__edit {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          padding: 10px;
+          color: $txt-aside;
+          cursor: pointer;
+          transition: 0.2s;
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+          }
         }
       }
     }
