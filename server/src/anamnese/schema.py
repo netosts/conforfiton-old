@@ -21,6 +21,9 @@ class JsonQ13(BaseModel):
 
 
 class NewAnamnese(BaseModel):
+    menstruation: bool = None
+    iud: bool = None
+    physical_limitation: constr(max_length=255)
     diabetes: bool
     hypertension: bool
 

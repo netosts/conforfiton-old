@@ -10,6 +10,9 @@ class CreateTableAnamneses(Migration):
         with self.schema.create('anamneses') as table:
             table.integer('person_id').unsigned().unique()
 
+            table.boolean('menstruation').nullable()
+            table.boolean('iud').nullable()
+            table.string('physical_limitation')
             table.boolean('diabetes')
             table.boolean('hypertension')
 
@@ -18,8 +21,8 @@ class CreateTableAnamneses(Migration):
             table.small_integer('l1').nullable()
             table.small_integer('l2').nullable()
 
-            table.string('q1')
-            table.string('q2', 100)
+            table.string('q1', 100)
+            table.string('q2', 100).nullable()
             table.string('q3', 100)
             table.json('q4')
             table.string('q5')

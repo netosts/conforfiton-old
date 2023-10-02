@@ -54,14 +54,6 @@ class NewStudent(BaseModel):
             raise ValueError("Maximum age exceeded.")
         return value
 
-    @validator('weight')
-    def validate_weight(cls, value):
-        if value is not None:
-            peso_decimal = Decimal(str(value))
-            if peso_decimal.as_tuple().exponent < -2:
-                raise ValueError("Weight must have up to 2 decimal numbers.")
-        return value
-
 
 class EditStudent(BaseModel):
     name: name
