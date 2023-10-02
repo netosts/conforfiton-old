@@ -76,20 +76,6 @@ export function between(value, min, max) {
   return true;
 }
 
-export function maxDecimal(value, limit) {
-  if (!value) {
-    return true;
-  }
-
-  const decimalRegex = new RegExp(`^\\d+(\\.\\d{1,${limit}})?$`);
-
-  if (!decimalRegex.test(value)) {
-    return `Máximo de ${limit} casas decimais.`;
-  }
-
-  return true;
-}
-
 export function password(value) {
   // Check individual requirements and return corresponding error messages
   if (value.length < 8) {

@@ -1,6 +1,9 @@
 import { reactive } from "vue";
 
-const form = reactive({
+export const form = reactive({
+  menstruation: undefined,
+  iud: undefined,
+  physical_limitation: undefined,
   diabetes: undefined,
   hypertension: undefined,
   fc_max: undefined,
@@ -15,5 +18,3 @@ const form = reactive({
   ),
   q4: { training: undefined, time: undefined },
 });
-
-export { form };

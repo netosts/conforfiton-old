@@ -8,5 +8,5 @@ export const schema = {
   shirt_size: "required",
   shorts_size: "required",
   height: "required|between:100,250",
-  weight: "required|between:0,600|maxDecimal:2",
+  weight: "required|between:0,600",
 };

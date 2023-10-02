@@ -40,3 +40,13 @@ const daysTranslations = {
 export function translateDays(value) {
   return daysTranslations[value] || value;
 }
+
+const menstruationTranslations = {
+  "Sim, menstruo regularmente": true,
+  "Não, não menstruo": false,
+  "Prefiro não responder": null,
+};
+
+export function translateMenstruation(value) {
+  return menstruationTranslations[value] || value;
+}

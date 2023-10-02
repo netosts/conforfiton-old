@@ -1,7 +1,12 @@
 <script setup>
 import { postStudentAnamnese } from "@/services/api/post";
 import { getStudent } from "@/services/api/get";
-import { q4Radio, YesOrNoRadio, days } from "@/services/register/lists";
+import {
+  q4Radio,
+  YesOrNoRadio,
+  days,
+  menstruationAnswers,
+} from "@/services/register/lists";
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
 import { translateDays } from "@/services/helpers";
@@ -63,13 +68,6 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
-    if (store.student.id !== route.params.id) {
-      store.student.value = await getStudent(route.params.id);
-      avaliarStore["student"] = {
-        age: formatAge(store.student.value.birth_date),
-      };
-      store.student.id = route.params.id;
-    }
     form.fc_max = fcmax(
       store.student.value.birth_date,
       form.diabetes,
@@ -123,8 +121,20 @@ function disableCheckbox(value) {
   }
 }
 
+async function initStudent() {
+  try {
+    if (store.student.id !== route.params.id) {
+      store.student.value = await getStudent(route.params.id);
+      store.student.id = route.params.id;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 onMounted(() => {
   form.q13 = [];
+  initStudent();
 });
 </script>
 
@@ -143,6 +153,32 @@ onMounted(() => {
           </RouterLink>
           <h2>Formulário Anamnese</h2>
         </div>
+        <TextField
+          v-if="store.student.value?.gender === 'Female'"
+          v-model="form.iud"
+          name="iud"
+          :meta="meta"
+          type="radio"
+          :radios="YesOrNoRadio"
+          label="Faz uso de Dispositivos intrauterinos (DIU)?"
+        />
+        <TextField
+          v-if="store.student.value?.gender === 'Female'"
+          v-model="form.menstruation"
+          name="menstruation"
+          :meta="meta"
+          type="select"
+          :options="menstruationAnswers"
+          label="Você menstrua regularmente?"
+        />
+        <TextField
+          v-model="form.physical_limitation"
+          name="physical_limitation"
+          :meta="meta"
+          type="textarea"
+          rows="2"
+          label="Possue algum tipo de limitação física?"
+        />
         <TextField
           v-model="form.q1"
           name="q1"

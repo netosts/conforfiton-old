@@ -1,12 +1,21 @@
 <script setup>
 import { postStudent, postAnamnese } from "@/services/api/post";
-import { q4Radio, YesOrNoRadio, days } from "@/services/register/lists";
+import {
+  q4Radio,
+  YesOrNoRadio,
+  days,
+  menstruationAnswers,
+} from "@/services/register/lists";
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
 import { getUserIdSession } from "@/services/api/token";
-import { translateGender, translateDays } from "@/services/helpers";
+import {
+  translateGender,
+  translateDays,
+  translateMenstruation,
+} from "@/services/helpers";
 
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { definePage, useRouter } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/anamnese";
@@ -21,6 +30,7 @@ definePage({
 });
 
 const router = useRouter();
+const studentForm = ref(null);
 
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {
@@ -58,28 +68,30 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
-    const studentForm = JSON.parse(sessionStorage.getItem("registerStudent"));
-
     const userId = getUserIdSession();
 
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();
 
-    studentForm.cpf = studentForm.cpf.replace(/\D/g, "");
-    studentForm.phone_number = studentForm.phone_number.replace(/\D/g, "");
-    studentForm.gender = translateGender(studentForm.gender); // from pt to en
-    studentForm.created_at = formattedDate;
-    studentForm.personal_id = userId;
-    await postStudent(studentForm);
+    studentForm.value.cpf = studentForm.value.cpf.replace(/\D/g, "");
+    studentForm.value.phone_number = studentForm.value.phone_number.replace(
+      /\D/g,
+      ""
+    );
+    studentForm.value.gender = translateGender(studentForm.value.gender); // from pt to en
+    studentForm.value.created_at = formattedDate;
+    studentForm.value.personal_id = userId;
+    await postStudent(studentForm.value);
 
+    form.menstruation = translateMenstruation(form.menstruation);
     form.fc_max = fcmax(
-      studentForm.birth_date,
+      studentForm.value.birth_date,
       form.diabetes,
       form.hypertension
     );
     form.l1 = calculateL1(form.fc_max, form.fc_repouso);
     form.l2 = calculateL2(form.fc_max, form.fc_repouso);
-    await postAnamnese(form, studentForm.email);
+    await postAnamnese(form, studentForm.value.email);
 
     alert("Cadastro realizado com sucesso!");
 
@@ -127,7 +139,16 @@ function disableCheckbox(value) {
   }
 }
 
-onMounted(() => {
+async function initStudentForm() {
+  try {
+    studentForm.value = JSON.parse(sessionStorage.getItem("registerStudent"));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+onMounted(async () => {
+  await initStudentForm();
   form.q13 = [];
 });
 </script>
@@ -147,6 +168,32 @@ onMounted(() => {
           </RouterLink>
           <h2>Formulário Anamnese</h2>
         </div>
+        <TextField
+          v-if="studentForm?.gender === 'Feminino'"
+          v-model="form.iud"
+          name="iud"
+          :meta="meta"
+          type="radio"
+          :radios="YesOrNoRadio"
+          label="Faz uso de Dispositivos intrauterinos (DIU)?"
+        />
+        <TextField
+          v-if="studentForm?.gender === 'Feminino'"
+          v-model="form.menstruation"
+          name="menstruation"
+          :meta="meta"
+          type="select"
+          :options="menstruationAnswers"
+          label="Você menstrua regularmente?"
+        />
+        <TextField
+          v-model="form.physical_limitation"
+          name="physical_limitation"
+          :meta="meta"
+          type="textarea"
+          rows="2"
+          label="Possue algum tipo de limitação física?"
+        />
         <TextField
           v-model="form.q1"
           name="q1"

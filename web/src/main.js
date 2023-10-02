@@ -36,7 +36,6 @@ import {
   minLength,
   maxLength,
   between,
-  maxDecimal,
   password,
   asymbol,
   name,
@@ -63,7 +62,6 @@ defineRule("email", (value) => email(value));
 defineRule("minLength", (value, [limit]) => minLength(value, limit));
 defineRule("maxLength", (value, [limit]) => maxLength(value, limit));
 defineRule("between", (value, [min, max]) => between(value, min, max));
-defineRule("maxDecimal", (value, [limit]) => maxDecimal(value, limit));
 defineRule("password", (value) => password(value));
 defineRule("asymbol", (value) => asymbol(value));
 defineRule("name", (value) => name(value));
