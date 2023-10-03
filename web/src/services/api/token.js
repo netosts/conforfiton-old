@@ -36,9 +36,9 @@ export function setExpToken(tokenValue, ttl) {
   localStorage.setItem("token", JSON.stringify(item));
 }
 
-export function getUserIdSession() {
+export function getSecondUserIdLocal() {
   try {
-    const itemStr = sessionStorage.getItem("u:u");
+    const itemStr = localStorage.getItem("u:u");
     if (!itemStr) {
       return null;
     }
@@ -59,10 +59,10 @@ export function getUserIdSession() {
   }
 }
 
-export function setUserIdSession(id) {
+export function setSecondUserIdLocal(id) {
   const item = encrypt(id);
 
-  sessionStorage.setItem("u:u", JSON.stringify(item));
+  localStorage.setItem("u:u", JSON.stringify(item));
 }
 
 export function getUserIdLocal() {

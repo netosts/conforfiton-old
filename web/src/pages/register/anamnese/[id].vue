@@ -172,12 +172,11 @@ onMounted(() => {
           label="Você menstrua regularmente?"
         />
         <TextField
-          v-model="form.physical_limitation"
-          name="physical_limitation"
+          v-model="form.alcohol_ingestion"
+          name="alcohol_ingestion"
           :meta="meta"
-          type="textarea"
-          rows="2"
-          label="Possue algum tipo de limitação física?"
+          type="text"
+          label="Consome álcool? Se sim, quantas vezes por semana?"
         />
         <TextField
           v-model="form.q1"
@@ -379,6 +378,14 @@ onMounted(() => {
           type="radio"
           :radios="YesOrNoRadio"
           label="Você tem algum tipo de dor ou desconforto (muscular ou articular)?"
+        />
+        <TextField
+          v-model="form.physical_limitation"
+          name="physical_limitation"
+          :meta="meta"
+          type="textarea"
+          rows="2"
+          label="Possue algum tipo de limitação física?"
         />
         <TextField
           v-model="form.q21"

@@ -1,7 +1,7 @@
 <script setup>
 import { getOverviewInformation } from "@/services/api/get";
 
-import { onMounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router/auto";
 
 import { useStudentStore } from "@/stores/student";
@@ -36,6 +36,10 @@ async function initOverview() {
 onMounted(async () => {
   await initOverview();
   store.overview.initiated = true;
+});
+
+onUnmounted(() => {
+  store.overview.initiated = false;
 });
 </script>
 

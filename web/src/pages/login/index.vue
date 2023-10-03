@@ -3,7 +3,7 @@ import { getToken } from "@/services/api/post";
 import { getPersonalCredentials } from "@/services/api/get";
 import {
   setExpToken,
-  setUserIdSession,
+  setSecondUserIdLocal,
   setUserIdLocal,
 } from "@/services/api/token";
 
@@ -42,7 +42,7 @@ async function onSubmit(_, { setErrors }) {
 
     setExpToken(data.access_token, 8 * 60 * 60 * 1000); // Set expiry by milliseconds
     setUserIdLocal(data.user_id);
-    setUserIdSession(data.user_id);
+    setSecondUserIdLocal(data.user_id);
 
     const credentials = await getPersonalCredentials(data.user_id);
 

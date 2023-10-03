@@ -41,6 +41,16 @@ export function translateDays(value) {
   return daysTranslations[value] || value;
 }
 
+const periodsTranslations = {
+  MORNING: "Manhã",
+  AFTERNOON: "Tarde",
+  NIGHT: "Noite",
+};
+
+export function translatePeriods(value) {
+  return periodsTranslations[value] || value;
+}
+
 const menstruationTranslations = {
   "Sim, menstruo regularmente": true,
   "Não, não menstruo": false,

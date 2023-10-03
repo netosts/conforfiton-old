@@ -1,4 +1,6 @@
 export const schema = {
+  alcohol_ingestion: "required|maxLength:100|asymbol",
+  physical_limitation: "required|maxLength:255|asymbol",
   diabetes: "required",
   hypertension: "required",
   fc_repouso: "between:0,220",

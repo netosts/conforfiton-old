@@ -3,6 +3,7 @@ import { reactive } from "vue";
 export const form = reactive({
   menstruation: undefined,
   iud: undefined,
+  alcohol_ingestion: undefined,
   physical_limitation: undefined,
   diabetes: undefined,
   hypertension: undefined,

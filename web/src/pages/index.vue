@@ -1,12 +1,10 @@
 <script setup>
 import http from "../services/api/http";
 
-import { getUserIdSession } from "@/services/api/token";
-import { translateGender } from "@/services/helpers";
+import { getSecondUserIdLocal } from "@/services/api/token";
 
 import { definePage } from "vue-router/auto";
 import { ref, onMounted, watch } from "vue";
-import { formatAge } from "../services/formats";
 
 definePage({
   meta: { requiresAuth: true },
@@ -27,7 +25,7 @@ function getActiveStudents(value, limit) {
   if (inputBar.value === "") {
     value = "%";
   }
-  const personal_id = getUserIdSession();
+  const personal_id = getSecondUserIdLocal();
   http
     .get(
       `/student/active/${inputFilter.value}/${value}/${limit}/${personal_id}`

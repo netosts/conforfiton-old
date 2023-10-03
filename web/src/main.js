@@ -51,6 +51,8 @@ import { createApp } from "vue";
 import { createPinia } from "pinia"; // PINIA APP
 import App from "./App.vue";
 import router from "./router";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faCircleMinus } from "@fortawesome/free-solid-svg-icons";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -91,7 +93,9 @@ library.add(
   faArrowRightToBracket,
   faPenToSquare,
   faDna,
-  faGear
+  faGear,
+  faCirclePlus,
+  faCircleMinus
 );
 
 app.use(router);

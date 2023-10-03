@@ -11,7 +11,7 @@ function onReset() {
 </script>
 
 <template>
-  <div class="submitbox">
+  <div class="submitbox" :tabindex="!meta.valid ? '-1' : null">
     <div
       class="submitbox__submit"
       :class="{ 'submitbox__submit--disabled': meta ? !meta.valid : null }"

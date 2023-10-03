@@ -80,10 +80,6 @@ watch(sidebarIsActive, (newValue) => {
             <font-awesome-icon icon="fa-solid fa-plus" size="sm" />
             Novo Aluno
           </RouterLink>
-          <RouterLink to="/print">
-            <font-awesome-icon icon="fa-solid fa-print" size="sm" />
-            Imprimir Avaliação
-          </RouterLink>
         </div>
       </div>
     </div>

@@ -22,27 +22,15 @@ onClickOutside(tooltip, closePopup);
 <template>
   <header>
     <div class="topbar">
-      <div class="user" @click="userPopup = !userPopup">
+      <div ref="tooltip" class="user" @click="userPopup = !userPopup">
         <div class="user__image"></div>
         <div class="user__info">
           <p class="user__info-name">{{ personal?.name }}</p>
           <p class="user__info-credential">{{ personal?.role }}</p>
         </div>
         <Transition name="slide-fade">
-          <div ref="tooltip" class="user__tooltip" v-show="userPopup">
+          <div class="user__tooltip" v-show="userPopup">
             <span>Bem vindo {{ personal?.name }}!</span>
-            <RouterLink to="/profile"
-              ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink
-            >
-            <RouterLink to="/profile"
-              ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink
-            >
-            <RouterLink to="/profile"
-              ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink
-            >
-            <RouterLink to="/profile"
-              ><font-awesome-icon icon="fa-solid fa-user" /> Perfil</RouterLink
-            >
             <button @click="logout">
               <font-awesome-icon icon="fa-solid fa-arrow-right-to-bracket" />
               Sair

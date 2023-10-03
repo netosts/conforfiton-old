@@ -195,6 +195,13 @@ onMounted(async () => {
           label="Possue algum tipo de limitação física?"
         />
         <TextField
+          v-model="form.alcohol_ingestion"
+          name="alcohol_ingestion"
+          :meta="meta"
+          type="text"
+          label="Consome álcool? Se sim, quantas vezes por semana?"
+        />
+        <TextField
           v-model="form.q1"
           name="q1"
           :meta="meta"
