@@ -7,7 +7,7 @@ import {
 import { postStudent } from "@/services/api/post";
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
 import { translateGender } from "@/services/helpers";
-import { getUserIdSession } from "@/services/api/token";
+import { getSecondUserIdLocal } from "@/services/api/token";
 
 import { definePage } from "vue-router/auto";
 
@@ -61,7 +61,7 @@ async function onSubmit(_, { setFieldError }) {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();
 
-    const userId = getUserIdSession();
+    const userId = getSecondUserIdLocal();
 
     form.gender = translateGender(form.gender); // from pt to en
     form.created_at = formattedDate;

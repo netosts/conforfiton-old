@@ -8,7 +8,7 @@ import {
 } from "@/services/register/lists";
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
-import { getUserIdSession } from "@/services/api/token";
+import { getSecondUserIdLocal } from "@/services/api/token";
 import {
   translateGender,
   translateDays,
@@ -68,7 +68,7 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
-    const userId = getUserIdSession();
+    const userId = getSecondUserIdLocal();
 
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();

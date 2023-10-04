@@ -10,7 +10,6 @@ import {
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
 import { translateDays } from "@/services/helpers";
-import { formatAge } from "@/services/formats";
 
 import { useStudentStore } from "@/stores/student";
 
