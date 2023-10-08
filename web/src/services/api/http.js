@@ -2,7 +2,7 @@ import axios from "axios";
 import { getExpToken, getSecondUserIdLocal, getUserIdLocal } from "./token";
 
 const http = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://api.hml.conforfiton.com.br",
   withCredentials: true,
 });
 
