@@ -77,19 +77,6 @@ export async function countPhoneDuplicate(phone_number) {
     });
 }
 
-// Check if token is valid
-// export function getAuthorization(http, token) {
-//   return http.get('/user/verify', {
-//     headers: {
-//       Authorization: 'Bearer ' + token
-//     }
-//   }).then((res) => res.data)
-//     .catch((err) => {
-//       console.error(err);
-//       throw err;
-//     });
-// };
-
 // Get protocol used in neuromuscular valuation
 export async function getNeuromuscularProtocol(id) {
   return http
@@ -140,9 +127,6 @@ export async function getAnamnese(person_id) {
     .catch((err) => {
       console.error(err);
       throw err;
-      // if (err.response.data.data === "Anamnese not found.") {
-      //   alert("O aluno ainda não tem anamnese.");
-      // }
     });
 }
 

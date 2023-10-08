@@ -113,6 +113,10 @@ async def inputbar_active_students(inputFilter, inputBar, limit, personal_id):
     # p = persons table
     # w = weights table
     # s = students table
+
+    if inputBar == '*':
+        inputBar = '%'
+
     limit = int(limit)
     max_peso = di["db"].raw(
         'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')
@@ -137,6 +141,10 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit, personal_id):
     # p = pessoa
     # w = peso
     # s = student
+
+    if inputBar == '*':
+        inputBar = '%'
+
     limit = int(limit)
     max_peso = di["db"].raw(
         'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')
@@ -161,6 +169,10 @@ async def inputbar_all_students(inputFilter, inputBar, limit, personal_id):
     # p = pessoa
     # w = peso
     # s = student
+
+    if inputBar == '*':
+        inputBar = '%'
+
     limit = int(limit)
     max_peso = di["db"].raw(
         'w."person_id" and w."created_at" = (select max("created_at") from weights where "person_id" = w."person_id")')

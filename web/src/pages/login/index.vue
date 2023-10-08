@@ -26,8 +26,8 @@ const login = reactive({
 });
 
 const schema = {
-  email: "required|maxLength:30",
-  password: "required|password|maxLength:30",
+  email: "required",
+  password: "required",
 };
 
 async function onSubmit(_, { setErrors }) {

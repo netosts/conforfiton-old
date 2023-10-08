@@ -23,7 +23,7 @@ const inputFilter = ref("inputName");
 // Get students from database
 function getActiveStudents(value, limit) {
   if (inputBar.value === "") {
-    value = "%";
+    value = "*";
   }
   const personal_id = getSecondUserIdLocal();
   http
@@ -40,7 +40,7 @@ function getActiveStudents(value, limit) {
 
 function getInactiveStudents(value, limit) {
   if (inputBar.value === "") {
-    value = "%";
+    value = "*";
   }
   const personal_id = getUserIdSession();
   http
@@ -57,7 +57,7 @@ function getInactiveStudents(value, limit) {
 
 function getAllStudents(value, limit) {
   if (inputBar.value === "") {
-    value = "%";
+    value = "*";
   }
   const personal_id = getUserIdSession();
   http
@@ -74,11 +74,11 @@ function getAllStudents(value, limit) {
 function filterNget() {
   // Show students based on filter
   if (studentsFilter.value === "ativos") {
-    getActiveStudents("%", 5);
+    getActiveStudents("*", 5);
   } else if (studentsFilter.value === "desativados") {
-    getInactiveStudents("%", 5);
+    getInactiveStudents("*", 5);
   } else if (studentsFilter.value === "todos") {
-    getAllStudents("%", 5);
+    getAllStudents("*", 5);
   }
 }
 
@@ -87,17 +87,17 @@ watch(inputBar, (newValue) => {
   if (studentsFilter.value === "ativos" && newValue !== "") {
     getActiveStudents(newValue, 100);
   } else if (studentsFilter.value === "ativos" && newValue === "") {
-    getActiveStudents("%", 5);
+    getActiveStudents("*", 5);
   }
   if (studentsFilter.value === "desativados" && newValue !== "") {
     getInactiveStudents(newValue, 100);
   } else if (studentsFilter.value === "desativados" && newValue === "") {
-    getInactiveStudents("%", 5);
+    getInactiveStudents("*", 5);
   }
   if (studentsFilter.value === "todos" && newValue !== "") {
     getAllStudents(newValue, 100);
   } else if (studentsFilter.value === "todos" && newValue === "") {
-    getAllStudents("%", 5);
+    getAllStudents("*", 5);
   }
 });
 
@@ -107,7 +107,7 @@ onMounted(() => {
     sessionStorage.removeItem("submitted");
     location.reload();
   }
-  getActiveStudents("%", 100);
+  getActiveStudents("*", 100);
   bodyElement.value = document.body;
 });
 </script>
