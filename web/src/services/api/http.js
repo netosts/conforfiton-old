@@ -1,8 +1,9 @@
 import axios from "axios";
 import { getExpToken, getSecondUserIdLocal, getUserIdLocal } from "./token";
+import { apiUrl } from "./env.js";
 
 const http = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: apiUrl,
   withCredentials: true,
 });
 

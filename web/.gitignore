@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+src/services/api/env.js
 letsencrypt
 nginx/data
 node_modules

@@ -2,7 +2,7 @@ import http from "./http";
 
 export async function postStudent(form) {
   try {
-    const response = await http.post("/student", form);
+    const response = await http.post("/student/", form);
     console.log("ALUNO CRIADO COM SUCESSO..");
     return response.data;
   } catch (err) {
