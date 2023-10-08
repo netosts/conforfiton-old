@@ -1,0 +1,64 @@
+version: "3.2"
+services:
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    hostname: postgres
+    volumes:
+      # - /mnt/volume_nyc1_01/ivar/data:/var/lib/postgresql/data
+      - ./server/ivar/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: conforfit_db
+      POSTGRES_USER: conforfit
+      POSTGRES_PASSWORD: "Y5tGv7H8I"
+    command:
+      [
+        "-c",
+        "shared_buffers=256MB",
+        "-c",
+        "max_connections=2000"
+      ]
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  server:
+    restart: unless-stopped
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: sh -c "uvicorn src.main:app --reload --port=8000 --host=0.0.0.0"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  web:
+    restart: unless-stopped
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./web/nginx/data:/data
+      - ./web/letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

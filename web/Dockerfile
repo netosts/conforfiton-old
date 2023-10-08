@@ -21,6 +21,8 @@ FROM nginx:stable-alpine as production-stage
 # copy the build application from the previous state to the nginx container
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
 # expose the port 80
 EXPOSE 80
 

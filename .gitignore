@@ -1,10 +1,9 @@
 # configs
 etc/
 ivar/
-/docker-compose.yaml
 
 .vscode/
 
 requirements.txt
 
-senhas.md
+.env
