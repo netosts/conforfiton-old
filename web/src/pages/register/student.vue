@@ -6,7 +6,7 @@ import {
 } from "@/services/api/get";
 import { postStudent } from "@/services/api/post";
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
-import { translateGender } from "@/services/helpers";
+import { translateGenderToEN } from "@/services/helpers";
 import { getSecondUserIdLocal } from "@/services/api/token";
 
 import { definePage } from "vue-router/auto";
@@ -63,7 +63,7 @@ async function onSubmit(_, { setFieldError }) {
 
     const userId = getSecondUserIdLocal();
 
-    form.gender = translateGender(form.gender); // from pt to en
+    form.gender = translateGenderToEN(form.gender); // from pt to en
     form.created_at = formattedDate;
     form.personal_id = userId;
 
@@ -72,7 +72,8 @@ async function onSubmit(_, { setFieldError }) {
     alert(`${form.name} cadastrado com sucesso!`);
 
     sessionStorage.removeItem("registerStudent");
-    location.reload();
+    sessionStorage.setItem("submitted", true);
+    router.push("/");
   } catch (err) {
     console.error(err);
     throw err;

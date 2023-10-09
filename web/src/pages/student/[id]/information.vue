@@ -6,7 +6,7 @@ import {
   formatTelefone,
   formatCpf,
 } from "@/services/formats";
-import { translateGender } from "@/services/helpers";
+import { translateGenderToPT } from "@/services/helpers";
 defineProps({
   student: Object,
 });
@@ -20,7 +20,7 @@ defineProps({
       Idade: <span>{{ formatAge(student?.birth_date) }}</span>
     </p>
     <p>
-      Sexo: <span>{{ translateGender(student?.gender) }}</span>
+      Sexo: <span>{{ translateGenderToPT(student?.gender) }}</span>
     </p>
     <p>
       CPF: <span>{{ formatCpf(student?.cpf) }}</span>

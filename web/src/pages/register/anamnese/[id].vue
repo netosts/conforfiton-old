@@ -9,7 +9,7 @@ import {
 } from "@/services/register/lists";
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
-import { translateDays } from "@/services/helpers";
+import { translateDays, translateMenstruation } from "@/services/helpers";
 
 import { useStudentStore } from "@/stores/student";
 
@@ -67,6 +67,7 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
+    form.menstruation = translateMenstruation(form.menstruation);
     form.fc_max = fcmax(
       store.student.value.birth_date,
       form.diabetes,
@@ -78,6 +79,7 @@ async function onSubmit(_, { setFieldError }) {
 
     alert("Cadastro realizado com sucesso!");
 
+    sessionStorage.setItem("submitted", true);
     router.push(`/student/${route.params.id}/anamnese`);
   } catch (err) {
     console.error(err);

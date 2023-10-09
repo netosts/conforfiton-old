@@ -7,7 +7,7 @@ import {
 import { editStudent } from "@/services/api/put";
 
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
-import { translateGender } from "@/services/helpers";
+import { translateGenderToPT, translateGenderToEN } from "@/services/helpers";
 import { formatCpf, formatTelefone } from "@/services/formats";
 
 import { reactive, onMounted } from "vue";
@@ -17,7 +17,6 @@ import { definePage, useRoute, useRouter } from "vue-router/auto";
 import { schema } from "@/services/student/edit/schema";
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
-import SubmitButton from "@/components/SubmitButton.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -35,7 +34,7 @@ const form = reactive({
   cpf: formatCpf(props.student?.cpf),
   phone_number: formatTelefone(props.student?.phone_number),
   email: props.student?.email,
-  gender: translateGender(props.student?.gender),
+  gender: translateGenderToPT(props.student?.gender),
   birth_date: props.student?.birth_date,
   shirt_size: props.student?.shirt_size,
   shorts_size: props.student?.shorts_size,
@@ -79,7 +78,7 @@ async function onSubmit(_, { setFieldError }) {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();
 
-    form.gender = translateGender(form.gender); // from pt to en
+    form.gender = translateGenderToEN(form.gender); // from pt to en
     form.created_at = formattedDate;
 
     await editStudent(route.params.id, form);
