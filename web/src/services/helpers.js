@@ -1,12 +1,19 @@
-const genderTranslations = {
-  Masculino: "Male",
-  Feminino: "Female",
+const genderTranslationsToPT = {
   Male: "Masculino",
   Female: "Feminino",
 };
 
-export function translateGender(value) {
-  return genderTranslations[value] || value;
+const genderTranslationsToEN = {
+  Masculino: "Male",
+  Feminino: "Female",
+};
+
+export function translateGenderToPT(value) {
+  return genderTranslationsToPT[value] || value;
+}
+
+export function translateGenderToEN(value) {
+  return genderTranslationsToEN[value] || value;
 }
 
 const roleTranslations = {
@@ -54,9 +61,9 @@ export function translatePeriods(value) {
 const menstruationTranslations = {
   "Sim, menstruo regularmente": true,
   "Não, não menstruo": false,
-  "Prefiro não responder": null,
+  "Prefiro não responder": undefined,
 };
 
 export function translateMenstruation(value) {
-  return menstruationTranslations[value] || value;
+  return menstruationTranslations[value];
 }

@@ -71,7 +71,6 @@ async def new_anamnese(email, data: NewAnamnese):
     anamnese.q25 = data.q25
 
     anamnese.q26 = data.q26.capitalize()
-    student.personal_goal = data.q26.capitalize()
 
     if data.q27 is not None:
         anamnese.q27 = data.q27.capitalize()
@@ -148,7 +147,6 @@ async def new_student_anamnese(person_id, data: NewAnamnese):
     anamnese.q25 = data.q25
 
     anamnese.q26 = data.q26.capitalize()
-    student.personal_goal = data.q26.capitalize()
 
     if data.q27 is not None:
         anamnese.q27 = data.q27.capitalize()

@@ -9,7 +9,7 @@ import {
 import { postWeight } from "@/services/api/post";
 
 import { evaluationComponents } from "@/services/avaliar/lists";
-import { translateGender } from "@/services/helpers";
+import { translateGenderToPT } from "@/services/helpers";
 import { formatAge } from "@/services/formats";
 
 import { useAvaliarStore } from "@/stores/avaliar";
@@ -116,7 +116,7 @@ onMounted(() => {
           type="number"
           name="weight"
         />
-        <p>Sexo: {{ translateGender(store.student?.gender) }}</p>
+        <p>Sexo: {{ translateGenderToPT(store.student?.gender) }}</p>
         <p>Altura: {{ store.student?.height }}cm</p>
         <p>Idade: {{ store.student?.age }}</p>
       </div>

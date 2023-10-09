@@ -10,7 +10,7 @@ import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
 import { getSecondUserIdLocal } from "@/services/api/token";
 import {
-  translateGender,
+  translateGenderToEN,
   translateDays,
   translateMenstruation,
 } from "@/services/helpers";
@@ -78,7 +78,7 @@ async function onSubmit(_, { setFieldError }) {
       /\D/g,
       ""
     );
-    studentForm.value.gender = translateGender(studentForm.value.gender); // from pt to en
+    studentForm.value.gender = translateGenderToEN(studentForm.value.gender); // from pt to en
     studentForm.value.created_at = formattedDate;
     studentForm.value.personal_id = userId;
     await postStudent(studentForm.value);

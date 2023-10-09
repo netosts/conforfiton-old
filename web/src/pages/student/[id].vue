@@ -40,6 +40,10 @@ async function initStudent() {
 
 // DOM Mount
 onMounted(() => {
+  if (sessionStorage.getItem("submitted")) {
+    sessionStorage.removeItem("submitted");
+    location.reload();
+  }
   initStudent();
 });
 </script>
