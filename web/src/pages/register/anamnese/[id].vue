@@ -153,31 +153,6 @@ onMounted(() => {
           <h2>Formulário Anamnese</h2>
         </div>
         <TextField
-          v-if="store.student.value?.gender === 'Female'"
-          v-model="form.iud"
-          name="iud"
-          :meta="meta"
-          type="radio"
-          :radios="YesOrNoRadio"
-          label="Faz uso de Dispositivos intrauterinos (DIU)?"
-        />
-        <TextField
-          v-if="store.student.value?.gender === 'Female'"
-          v-model="form.menstruation"
-          name="menstruation"
-          :meta="meta"
-          type="select"
-          :options="menstruationAnswers"
-          label="Você menstrua regularmente?"
-        />
-        <TextField
-          v-model="form.alcohol_ingestion"
-          name="alcohol_ingestion"
-          :meta="meta"
-          type="text"
-          label="Consome álcool? Se sim, quantas vezes por semana?"
-        />
-        <TextField
           v-model="form.q1"
           name="q1"
           :meta="meta"
@@ -379,14 +354,6 @@ onMounted(() => {
           label="Você tem algum tipo de dor ou desconforto (muscular ou articular)?"
         />
         <TextField
-          v-model="form.physical_limitation"
-          name="physical_limitation"
-          :meta="meta"
-          type="textarea"
-          rows="2"
-          label="Possue algum tipo de limitação física?"
-        />
-        <TextField
           v-model="form.q21"
           name="q21"
           :meta="meta"
@@ -394,6 +361,14 @@ onMounted(() => {
           rows="2"
           v-show="form.q20"
           label="Se sim, onde? Leve ou aguda? Esporádica ou crônica? Qual a intensidade dessa(s) dor(es) de 0 a 10?"
+        />
+        <TextField
+          v-model="form.physical_limitation"
+          name="physical_limitation"
+          :meta="meta"
+          type="textarea"
+          rows="2"
+          label="Possue algum tipo de limitação física?"
         />
         <TextField
           v-model="form.diabetes"
@@ -426,6 +401,31 @@ onMounted(() => {
           type="textarea"
           rows="2"
           label="Faz uso de medicamentos de forma rotineira? Se sim, quais?"
+        />
+        <TextField
+          v-if="store.student.value?.gender === 'Female'"
+          v-model="form.iud"
+          name="iud"
+          :meta="meta"
+          type="radio"
+          :radios="YesOrNoRadio"
+          label="Faz uso de Dispositivos intrauterinos (DIU)?"
+        />
+        <TextField
+          v-if="store.student.value?.gender === 'Female'"
+          v-model="form.menstruation"
+          name="menstruation"
+          :meta="meta"
+          type="select"
+          :options="menstruationAnswers"
+          label="Você menstrua regularmente?"
+        />
+        <TextField
+          v-model="form.alcohol_ingestion"
+          name="alcohol_ingestion"
+          :meta="meta"
+          type="text"
+          label="Consome álcool? Se sim, quantas vezes por semana?"
         />
         <TextField
           v-model="form.q24"

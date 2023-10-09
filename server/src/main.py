@@ -58,19 +58,18 @@ app.include_router(cardio_router)
 
 
 @app.get('/cpf/{cpf}')  # CPF
-async def count_cpf(cpf):  # how many of the specified CPF are in the database
+async def count_cpf(cpf):
     cpf = Person.where('cpf', cpf).count()
     return cpf
 
 
 @app.get('/email/{email}')  # EMAIL
-async def count_email(email):  # how many of the specified Email are in the database
+async def count_email(email):
     email = Person.where('email', email).count()
     return email
 
 
 @app.get('/phone_number/{phone_number}')  # PHONE_NUMBER
-# how many of the specified Phone number are in the database
 async def count_phone_number(phone_number):
     phone_number = Person.where('phone_number', phone_number).count()
     return phone_number

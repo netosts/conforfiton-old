@@ -29,6 +29,9 @@ async def new_anamnese(email, data: NewAnamnese):
 
     anamnese.person_id = person.id
 
+    anamnese.menstruation = data.menstruation
+    anamnese.iud = data.iud
+    anamnese.physical_limitation = data.physical_limitation
     anamnese.diabetes = data.diabetes
     anamnese.hypertension = data.hypertension
 

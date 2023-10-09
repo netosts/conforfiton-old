@@ -33,17 +33,6 @@ export async function getStudentAvaliar(id) {
     });
 }
 
-// Get RM Config
-export async function getRmConfig(gender) {
-  return http
-    .get(`/rm_config/${gender}`)
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error(err.response);
-      throw err;
-    });
-}
-
 // Return how many of the specified CPF are in the database
 export async function countCpfDuplicate(cpf) {
   return http
