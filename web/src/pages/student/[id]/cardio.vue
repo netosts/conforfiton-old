@@ -25,7 +25,14 @@ const isDeleteActive = ref(false);
 const evaluationToDelete = ref(null);
 
 function handleDelete(emittedValue) {
-  isDeleteActive.value = emittedValue;
+  if (evaluationResult.value?.id === emittedValue) {
+    evaluationResult.value = null;
+  }
+  isDeleteActive.value = false;
+}
+
+function handleCloseButton(_) {
+  isDeleteActive.value = false;
 }
 
 async function initEvaluation() {
@@ -61,7 +68,8 @@ onMounted(() => {
 <template>
   <DeleteConfirmation
     :evaluation="evaluationToDelete"
-    @isDeleteActive="handleDelete"
+    @deactivateDelete="handleDelete"
+    @closeDeleteButton="handleCloseButton"
     v-if="isDeleteActive"
   />
   <section>

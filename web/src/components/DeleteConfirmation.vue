@@ -13,11 +13,16 @@ const store = useStudentStore();
 const bodyElement = ref(null);
 
 // Emits
-const emit = defineEmits(["isDeleteActive"]);
+const emit = defineEmits(["deactivateDelete", "closeDeleteButton"]);
 
 // FUNCTIONS
 function closeDelete() {
-  emit("isDeleteActive", false);
+  emit("deactivateDelete", props.evaluation.id);
+  bodyElement.value.style.overflow = "auto";
+}
+
+function closeDeleteButton() {
+  emit("closeDeleteButton");
   bodyElement.value.style.overflow = "auto";
 }
 
@@ -75,7 +80,7 @@ onMounted(() => {
         </p>
       </div>
       <div class="container__submit">
-        <button @click="closeDelete" class="container__submit__no">
+        <button @click="closeDeleteButton" class="container__submit__no">
           Cancelar
         </button>
         <button @click="onSubmit" class="container__submit__yes">Delete</button>
