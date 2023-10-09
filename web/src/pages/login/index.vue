@@ -53,7 +53,7 @@ async function onSubmit(_, { setErrors }) {
     console.error(e);
     setErrors({
       email: " ",
-      password: "Usuário ou senha inválido.",
+      password: "Email ou senha inválido.",
     });
   }
 }
@@ -85,9 +85,9 @@ async function onSubmit(_, { setErrors }) {
           />
         </div>
       </div>
-      <div class="login__register">
+      <!-- <div class="login__register">
         <RouterLink to="/login/register"> Criar conta </RouterLink>
-      </div>
+      </div> -->
       <div class="login__buttons">
         <button type="submit" class="submit">LOGIN</button>
       </div>
@@ -152,6 +152,7 @@ aside {
 
     &__buttons {
       display: flex;
+      margin-top: 10px;
 
       .submit {
         flex: 1;
