@@ -21,12 +21,14 @@ class JsonQ13(BaseModel):
 
 
 class NewAnamnese(BaseModel):
+    alcohol_ingestion: constr(max_length=100)
     menstruation: bool = None
     iud: bool = None
     physical_limitation: constr(max_length=255)
     diabetes: bool
     hypertension: bool
 
+    fc_max_formula: constr(max_length=12)
     fc_repouso: int = Field(ge=0, le=220, default=None)
     fc_max: int = Field(ge=0, le=220)
     l1: int = Field(ge=0, le=220, default=None)
@@ -65,3 +67,25 @@ class NewAnamnese(BaseModel):
         if value == "string" or value == "":
             return None
         return value
+
+
+class UpdateMorphofunctional(BaseModel):
+    alcohol_ingestion: constr(max_length=100)
+    menstruation: bool = None
+    iud: bool = None
+    physical_limitation: constr(max_length=255)
+    diabetes: bool
+    hypertension: bool
+
+    fc_max_formula: constr(max_length=12)
+    fc_repouso: int = Field(ge=0, le=220, default=None)
+    fc_max: int = Field(ge=0, le=220, default=None)
+    l1: int = Field(ge=0, le=220, default=None)
+    l2: int = Field(ge=0, le=220, default=None)
+
+    q1: constr(max_length=100)
+    q2: constr(max_length=100) = None
+    q4: JsonQ4
+    q20: bool
+    q21: constr(max_length=255) = None
+    q22: constr(max_length=100)

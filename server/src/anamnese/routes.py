@@ -2,9 +2,8 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from .model import Anamnese
-from .schema import NewAnamnese
+from .schema import NewAnamnese, UpdateMorphofunctional
 from ..person.model import Person
-from ..student.model import Student
 
 from fastapi.encoders import jsonable_encoder
 from .schema import Period
@@ -23,15 +22,14 @@ async def new_anamnese(email, data: NewAnamnese):
             "msg": "Person not found."
         }, 404)
 
-    student = Student.find(person.id)
-
     anamnese = Anamnese()
 
     anamnese.person_id = person.id
 
     anamnese.menstruation = data.menstruation
     anamnese.iud = data.iud
-    anamnese.physical_limitation = data.physical_limitation
+    anamnese.alcohol_ingestion = data.alcohol_ingestion.capitalize()
+    anamnese.physical_limitation = data.physical_limitation.capitalize()
     anamnese.diabetes = data.diabetes
     anamnese.hypertension = data.hypertension
 
@@ -40,6 +38,7 @@ async def new_anamnese(email, data: NewAnamnese):
     anamnese.l1 = data.l1
     anamnese.l2 = data.l2
 
+    anamnese.fc_max_formula = data.fc_max_formula
     anamnese.q1 = data.q1.capitalize()
     anamnese.q2 = data.q2.capitalize()
     anamnese.q3 = data.q3.capitalize()
@@ -99,18 +98,18 @@ async def new_student_anamnese(person_id, data: NewAnamnese):
             "msg": "Person not found."
         }, 404)
 
-    student = Student.find(person.id)
-
     anamnese = Anamnese()
 
     anamnese.person_id = person.id
 
     anamnese.menstruation = data.menstruation
     anamnese.iud = data.iud
-    anamnese.physical_limitation = data.physical_limitation
+    anamnese.alcohol_ingestion = data.alcohol_ingestion.capitalize()
+    anamnese.physical_limitation = data.physical_limitation.capitalize()
     anamnese.diabetes = data.diabetes
     anamnese.hypertension = data.hypertension
 
+    anamnese.fc_max_formula = data.fc_max_formula
     anamnese.fc_repouso = data.fc_repouso
     anamnese.fc_max = data.fc_max
     anamnese.l1 = data.l1
@@ -154,7 +153,6 @@ async def new_student_anamnese(person_id, data: NewAnamnese):
         anamnese.q27 = data.q27
 
     if anamnese.save():
-        student.save()
         return JSONResponse({
             "error": False,
             "msg": f"{person.name}'s Anamnese successfully created."
@@ -181,6 +179,7 @@ async def get_anamnese(person_id):
 @anamnese_router.get("/overview/{person_id}")
 async def get_overview_information(person_id):
     anamnese = Anamnese.select(
+        'fc_max_formula',
         'q1',
         'q2',
         'q4',
@@ -189,6 +188,10 @@ async def get_overview_information(person_id):
         'diabetes',
         'hypertension',
         'q22',
+        'iud',
+        'menstruation',
+        'alcohol_ingestion',
+        'physical_limitation',
         'fc_max',
         'fc_repouso',
         'l1',
@@ -202,3 +205,43 @@ async def get_overview_information(person_id):
             "error": True,
             "msg": f"Anamnese not found."
         }, 404)
+
+
+@anamnese_router.put('/{person_id}')
+async def update_morphofunctional(person_id, data: UpdateMorphofunctional):
+    anamnese = Anamnese.find(person_id)
+
+    anamnese.alcohol_ingestion = data.alcohol_ingestion
+    anamnese.menstruation = data.menstruation
+    anamnese.iud = data.iud
+    anamnese.physical_limitation = data.physical_limitation.capitalize()
+    anamnese.diabetes = data.diabetes
+    anamnese.hypertension = data.hypertension
+
+    anamnese.fc_max_formula = data.fc_max_formula
+    anamnese.fc_repouso = data.fc_repouso
+    if data.fc_max_formula is not None:
+        anamnese.fc_max = data.fc_max
+    anamnese.l1 = data.l1
+    anamnese.l2 = data.l2
+
+    anamnese.q1 = data.q1.capitalize()
+    anamnese.q2 = data.q2.capitalize()
+    anamnese.q4 = json.dumps(data.q4.__dict__)
+    anamnese.q20 = data.q20
+    if data.q21 is not None:
+        anamnese.q21 = data.q21.capitalize()
+    else:
+        anamnese.q21 = data.q21
+    anamnese.q22 = data.q22.capitalize()
+
+    if anamnese.save():
+        return JSONResponse({
+            "error": False,
+            "msg": f"Morphofunctional was successfully updated."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and Morphofunctional was not updated."
+        }, 422)
