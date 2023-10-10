@@ -112,7 +112,7 @@ onMounted(() => {
               <th>Indicador</th>
               <th>Avaliação</th>
               <th>Classificação</th>
-              <th>Meta</th>
+              <!-- <th>Meta</th> -->
             </tr>
           </thead>
           <tbody>
@@ -283,13 +283,14 @@ section {
 
   &__items {
     position: relative;
+    z-index: 1;
     text-align: center;
     font-size: 13px;
     font-weight: 500;
 
     &__text {
       position: relative;
-      z-index: 10;
+      z-index: 1;
       width: 150px;
       padding: 10px 20px;
       border-radius: $border-radius;

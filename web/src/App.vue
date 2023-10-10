@@ -57,7 +57,7 @@ header {
   top: 0;
   right: 0;
   left: 75px;
-  z-index: 1;
+  z-index: 10;
   transition: 0.2s;
 
   @include mq(l-xl) {
@@ -98,9 +98,14 @@ header {
   }
 
   @include mq(s) {
-    left: 0;
+    left: 0px;
     margin-right: 15px;
     transition: none;
+  }
+
+  @include mq(xs-s) {
+    margin-left: 10px;
+    margin-right: 10px;
   }
 }
 

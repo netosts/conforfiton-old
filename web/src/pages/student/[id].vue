@@ -119,6 +119,7 @@ onMounted(() => {
     gap: 10px;
 
     &__credentials {
+      padding-right: 40px;
       p {
         font-size: 1.5rem;
         font-weight: 500;

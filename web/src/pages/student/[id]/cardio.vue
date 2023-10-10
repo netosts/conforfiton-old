@@ -229,6 +229,7 @@ section {
 
   &__items {
     position: relative;
+    z-index: 1;
     text-align: center;
     font-size: 13px;
     font-weight: 500;

@@ -218,6 +218,11 @@ main {
   flex-direction: column;
   gap: 16px;
   margin: 30px;
+  transition: 0.2s;
+
+  @include mq(xs-s) {
+    margin: 10px;
+  }
 
   .top {
     display: flex;
@@ -234,6 +239,10 @@ main {
       top: 40px;
       @include tool();
       color: $buttons;
+
+      @include mq(xs-s) {
+        top: 20px;
+      }
     }
 
     h1 {

@@ -97,7 +97,7 @@ watch(sidebarIsActive, (newValue) => {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 100;
   width: 250px;
   height: 100%;
   transition: 0.2s;
