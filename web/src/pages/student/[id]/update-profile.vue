@@ -14,7 +14,7 @@ import { reactive, onMounted } from "vue";
 
 import { definePage, useRoute, useRouter } from "vue-router/auto";
 
-import { schema } from "@/services/student/edit/schema";
+import { schema } from "@/services/student/update-profile/schema";
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
 

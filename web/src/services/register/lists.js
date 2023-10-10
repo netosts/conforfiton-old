@@ -46,3 +46,9 @@ export const menstruationAnswers = [
   "Não, não menstruo",
   "Prefiro não responder",
 ];
+
+export const updateMenstruationAnswers = [
+  "Sim, menstrua regularmente",
+  "Não, não menstrua",
+  "Prefere não responder",
+];

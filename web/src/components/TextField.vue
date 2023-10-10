@@ -80,15 +80,20 @@ const { errorMessage, handleChange, meta } = useField(name);
 
     <Field
       v-else-if="type === 'textarea'"
-      :name="name"
-      :id="name"
-      :as="type"
-      :placeholder="placeholder"
-      :rows="rows"
+      :value="value"
       @update:model-value="value = $event"
+      :name="name"
       :tabindex="tabindex"
       :rules="rules"
-    />
+      v-slot="{ field }"
+    >
+      <textarea
+        v-bind="field"
+        :id="name"
+        :placeholder="placeholder"
+        :rows="rows"
+      ></textarea>
+    </Field>
 
     <div
       v-else-if="type === 'radio'"

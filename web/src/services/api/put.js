@@ -45,3 +45,13 @@ export async function editStudent(person_id, form) {
     throw err;
   }
 }
+
+export async function updateMorphofunctional(person_id, form) {
+  try {
+    const response = await http.put(`/anamnese/${person_id}`, form);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}

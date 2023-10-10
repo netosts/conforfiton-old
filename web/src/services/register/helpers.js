@@ -1,21 +1,15 @@
 import { formatAge } from "@/services/formats";
 
-export function fcmax(birth_date, diabetes, hypertension) {
+export function fcmax(birth_date, formula) {
   if (!birth_date) return null;
   const age = formatAge(birth_date);
   const formulas = {
-    default: 208 - 0.7 * age,
-    diabetes: 211 - 0.67 * age,
-    hypertension: 164 - 0.7 * age,
+    Default: 208 - 0.7 * age,
+    Diabetes: 211 - 0.67 * age,
+    Hypertension: 164 - 0.7 * age,
   };
 
-  if (diabetes) {
-    return Math.floor(formulas.diabetes);
-  } else if (hypertension) {
-    return Math.floor(formulas.hypertension);
-  } else {
-    return Math.floor(formulas.default);
-  }
+  return Math.floor(formulas[formula]);
 }
 
 export function calculateL1(fcmax, fcrepouso) {

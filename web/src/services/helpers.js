@@ -67,3 +67,45 @@ const menstruationTranslations = {
 export function translateMenstruation(value) {
   return menstruationTranslations[value];
 }
+
+const fcMaxFormulaTranslations = {
+  Padrão: "Default",
+  Diabéticos: "Diabetes",
+  Hipertensos: "Hypertension",
+};
+
+export function translateFcMaxFormula(value) {
+  return fcMaxFormulaTranslations[value] || value;
+}
+
+const fcMaxFormulaUntranslations = {
+  Default: "Padrão",
+  Diabetes: "Diabéticos",
+  Hypertension: "Hipertensos",
+};
+
+export function untranslateFcMaxFormula(value) {
+  return fcMaxFormulaUntranslations[value] || value;
+}
+
+export function untranslateMenstruation(value) {
+  if (value === true) {
+    return "Sim, menstrua regularmente";
+  } else if (value === false) {
+    return "Não, não menstrua";
+  } else if (value === null) {
+    return "Prefere não responder";
+  } else {
+    return value;
+  }
+}
+
+const updateMenstruationTranslations = {
+  "Sim, menstrua regularmente": true,
+  "Não, não menstrua": false,
+  "Prefere não responder": undefined,
+};
+
+export function updateTranslateMenstruation(value) {
+  return updateMenstruationTranslations[value];
+}

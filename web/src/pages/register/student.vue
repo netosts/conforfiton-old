@@ -9,7 +9,7 @@ import { genderList, shirtList, shortsList } from "@/services/register/lists";
 import { translateGenderToEN } from "@/services/helpers";
 import { getSecondUserIdLocal } from "@/services/api/token";
 
-import { definePage } from "vue-router/auto";
+import { definePage, useRouter } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/student";
 import { form } from "@/services/register/forms/student";
@@ -21,6 +21,8 @@ import SubmitButton from "@/components/SubmitButton.vue";
 definePage({
   meta: { requiresAuth: true },
 });
+
+const router = useRouter();
 
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {

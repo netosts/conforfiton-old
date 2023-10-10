@@ -53,7 +53,7 @@ onUnmounted(() => {
       <div class="morphofunctional">
         <div class="morphofunctional__content">
           <RouterLink
-            :to="`/student/${route.params.id}/edit-morphofunctional`"
+            :to="`/student/${route.params.id}/update-morphofunctional`"
             class="morphofunctional__content__edit"
           >
             <font-awesome-icon icon="fa-solid fa-gear" size="lg" />
@@ -70,7 +70,27 @@ onUnmounted(() => {
               store.overview.value?.q1
             }}</strong
             >" e secundário "<strong>{{ store.overview.value?.q2 }}</strong
+            >";Consome álcool "<strong>{{
+              store.overview.value?.alcohol_ingestion
+            }}</strong
+            >" por semana; e tem como limitação física "<strong>{{
+              store.overview.value?.physical_limitation
+            }}</strong
             >".
+          </p>
+          <p v-if="student.gender === 'Female'">
+            {{
+              store.overview.value?.iud
+                ? "Faz uso de Dispositivos intrauterinos (DIU)"
+                : "Não faz uso de Dispositivos intrauterinos (DIU)"
+            }}. <br />
+            {{
+              store.overview.value?.menstruation === true
+                ? "Menstrua normalmente"
+                : store.overview.value?.menstruation === false
+                ? "Não menstrua"
+                : "Prefere não informar"
+            }}.
           </p>
           <p>
             {{

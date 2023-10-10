@@ -68,11 +68,14 @@ async function onSubmit(_, { setFieldError }) {
   // Post new student
   try {
     form.menstruation = translateMenstruation(form.menstruation);
-    form.fc_max = fcmax(
-      store.student.value.birth_date,
-      form.diabetes,
-      form.hypertension
-    );
+    if (form.diabetes) {
+      form.fc_max_formula = "Diabetes";
+    } else if (form.hypertension) {
+      form.fc_max_formula = "Hypertension";
+    } else {
+      form.fc_max_formula = "Default";
+    }
+    form.fc_max = fcmax(store.student.value.birth_date, form.fc_max_formula);
     form.l1 = calculateL1(form.fc_max, form.fc_repouso);
     form.l2 = calculateL2(form.fc_max, form.fc_repouso);
     await postStudentAnamnese(form, route.params.id);

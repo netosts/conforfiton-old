@@ -1,0 +1,17 @@
+export const schema = {
+  q1: "required|maxLength:100",
+  q2: "maxLength:100",
+  q4a: "required",
+  q4b: "required|maxLength:100",
+  q21: "maxLength:255",
+  q20: "required",
+  q22: "required|maxLength:100",
+  alcohol_ingestion: "required|maxLength:100",
+  physical_limitation: "required|maxLength:255",
+  diabetes: "required",
+  hypertension: "required",
+  fc_max_formula: "required",
+  fc_repouso: "between:0,220",
+  l1: "between:0,220",
+  l2: "between:0,220",
+};

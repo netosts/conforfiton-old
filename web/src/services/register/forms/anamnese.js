@@ -7,6 +7,7 @@ export const form = reactive({
   physical_limitation: undefined,
   diabetes: undefined,
   hypertension: undefined,
+  fc_max_formula: undefined,
   fc_max: undefined,
   fc_repouso: undefined,
   l1: undefined,

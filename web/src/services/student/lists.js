@@ -25,3 +25,5 @@ export const evaluationsButtons = [
     img: "/img/human-heart.png",
   },
 ];
+
+export const fcMaxFormulas = ["Padrão", "Diabéticos", "Hipertensos"];
