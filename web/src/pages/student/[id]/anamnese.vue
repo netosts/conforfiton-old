@@ -1,7 +1,11 @@
 <script setup>
 import { getAnamnese } from "@/services/api/get";
 
-import { translateDays, translatePeriods } from "@/services/helpers";
+import {
+  translateDays,
+  translatePeriods,
+  untranslateMenstruation,
+} from "@/services/helpers";
 
 import { reactive, onMounted, onUnmounted, computed } from "vue";
 import { useRoute } from "vue-router/auto";
@@ -27,16 +31,19 @@ const labelsList = reactive([
       "Principal objetivo com o início de um programa de treinamento físico",
     value: computed(() => store.anamnese.value?.q1),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Objetivo secundário",
     value: computed(() => store.anamnese.value?.q2),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Em quanto tempo espera atingir esses objetivos",
     value: computed(() => store.anamnese.value?.q3),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Está ativo/sedentário há quanto tempo",
@@ -48,129 +55,188 @@ const labelsList = reactive([
       }
     }),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Como é ou era o último treino",
     value: computed(() => store.anamnese.value?.q5),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Exercício que não gosta de fazer",
     value: computed(() => store.anamnese.value?.q6),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Exercício que ama fazer",
     value: computed(() => store.anamnese.value?.q7),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Em quanto tempo costumava concluir o treino",
     value: computed(() => store.anamnese.value?.q8),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Restrição de tempo para treinar",
     value: computed(() => store.anamnese.value?.q9),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Tempo de treino disponível por dia",
     value: computed(() => store.anamnese.value?.q10),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Local de treino",
     value: computed(() => store.anamnese.value?.q11),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Disponibilidade para treinar durante a semana",
     value: computed(() => store.anamnese.value?.q13),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Está fazendo dieta orientado(a) por nutricionista",
     value: computed(() => (store.anamnese.value?.q14 ? "Sim" : "Não")),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Está sendo acompanhado(a) por nutrologista ou endocrinologista",
     value: computed(() => (store.anamnese.value?.q15 ? "Sim" : "Não")),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Rotina alimentar",
     value: computed(() => store.anamnese.value?.q16),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Qualidade do sono, de 1 a 10",
     value: computed(() => store.anamnese.value?.q17),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Profissão",
     value: computed(() => store.anamnese.value?.q18),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label:
       "No trabalho, permanece muito tempo sentado(a), em movimento ou realiza trabalho braçal",
     value: computed(() => store.anamnese.value?.q19),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Dores ou desconfortos",
-    value: computed(() => store.anamnese.value?.q21),
+    value: computed(() =>
+      store.anamnese.value?.q21 ? store.anamnese.value?.q21 : "Nenhum"
+    ),
     show: false,
+    gender: ["Male", "Female"],
+  },
+  {
+    label: "Limitação física",
+    value: computed(() => store.anamnese.value?.physical_limitation),
+    show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Tem Diabetes",
     value: computed(() => (store.anamnese.value?.diabetes ? "Sim" : "Não")),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Tem Hipertensão",
     value: computed(() => (store.anamnese.value?.hypertension ? "Sim" : "Não")),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Patologia (doença) diagnosticada por algum médico",
     value: computed(() => store.anamnese.value?.q22),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Uso de medicamentos de forma rotineira",
     value: computed(() => store.anamnese.value?.q23),
     show: false,
+    gender: ["Male", "Female"],
+  },
+  {
+    label: "Faz uso de Dispositivos intrauterinos (DIU)",
+    value: computed(() => (store.anamnese.value?.iud ? "Sim" : "Não")),
+    show: false,
+    gender: ["Female"],
+  },
+  {
+    label: "Menstrua regularmente",
+    value: computed(() =>
+      untranslateMenstruation(store.anamnese.value?.menstruation)
+    ),
+    show: false,
+    gender: ["Female"],
+  },
+  {
+    label: "Regularidade no consumo de álcool",
+    value: computed(() => store.anamnese.value?.alcohol_ingestion),
+    show: false,
+    gender: ["Male", "Female"],
   },
   {
     label:
-      "Tem alguma condição cardíaca e só deve realizar atividade física recomendada por um médico",
+      "O médico já mencionou condição cardíaca e só deve realizar atividade física recomendada por um médico",
     value: computed(() => (store.anamnese.value?.q24 ? "Sim" : "Não")),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Frequência cardíaca em repouso",
-    value: computed(() => store.anamnese.value?.fc_repouso),
+    value: computed(() =>
+      store.anamnese.value?.fc_repouso
+        ? store.anamnese.value?.fc_repouso
+        : "Não incluído"
+    ),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label:
       "O médico sabe que ele(a) está ingressando em um programa de treinamento físico",
     value: computed(() => (store.anamnese.value?.q25 ? "Sim" : "Não")),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Meta a atingir",
     value: computed(() => store.anamnese.value?.q26),
     show: false,
+    gender: ["Male", "Female"],
   },
   {
     label: "Algo relevante para personalizar o treino",
-    value: computed(() => store.anamnese.value?.q27),
+    value: computed(() =>
+      store.anamnese.value?.q27 ? store.anamnese.value?.q27 : "Não incluído"
+    ),
     show: false,
+    gender: ["Male", "Female"],
   },
 ]);
 
@@ -214,6 +280,12 @@ onUnmounted(() => {
 <template>
   <section>
     <h2>Anamnese</h2>
+    <RouterLink
+      :to="`/student/${route.params.id}/update-anamnese`"
+      class="update-anamnese"
+    >
+      <font-awesome-icon icon="fa-solid fa-gear" size="lg" />
+    </RouterLink>
     <div
       class="content"
       v-if="store.anamnese.value && store.anamnese.initiated"
@@ -224,7 +296,10 @@ onUnmounted(() => {
         class="content__container"
         @click="openDiv(id)"
       >
-        <div class="content__container__title">
+        <div
+          v-if="item.gender.includes(student?.gender)"
+          class="content__container__title"
+        >
           <h3>
             {{ item.label }}
           </h3>
@@ -232,11 +307,13 @@ onUnmounted(() => {
             v-show="!item.show"
             icon="fa-solid fa-circle-plus"
             size="lg"
+            class="content__container__title__icon"
           />
           <font-awesome-icon
             v-show="item.show"
             icon="fa-solid fa-circle-minus"
             size="lg"
+            class="content__container__title__icon"
           />
         </div>
         <div v-if="id === 11" class="content__container__response">
@@ -281,6 +358,7 @@ onUnmounted(() => {
 @import "@/assets/styles/mixins";
 
 section {
+  position: relative;
   padding: 20px;
   margin-bottom: 20px;
   width: 100%;
@@ -292,6 +370,25 @@ section {
     padding-bottom: 20px;
     color: $txt-title;
     text-align: center;
+  }
+
+  .update-anamnese {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 10px;
+    color: $txt-aside;
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.08);
+    }
   }
 
   .content {
@@ -319,6 +416,9 @@ section {
         justify-content: space-between;
         gap: 10px;
         color: $txt-aside;
+        &__icon {
+          color: $buttons;
+        }
       }
       h3 {
         font-weight: 500;
