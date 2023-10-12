@@ -91,6 +91,8 @@ async function onSubmit(_, { setErrors }) {
       <div class="login__buttons">
         <button type="submit" class="submit">LOGIN</button>
       </div>
+
+      <RouterView />
     </Form>
   </aside>
 </template>
@@ -103,6 +105,7 @@ aside {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   position: fixed;
   width: 100%;
   height: 100%;

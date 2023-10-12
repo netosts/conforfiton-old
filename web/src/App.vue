@@ -19,6 +19,7 @@ const handleSidebar = (emittedValue) => {
 const hiders = [
   "/login",
   "/login/register",
+  "/login/demo",
   "/print",
   "/register",
   "/register/anamnese",

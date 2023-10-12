@@ -11,6 +11,7 @@ class Roles(str, Enum):
     Admin = 'Admin'
     Guest = 'Guest'
     Owner = 'Owner'
+    Demo = 'Demo'
 
 
 class NewGlobalEntity(BaseModel):

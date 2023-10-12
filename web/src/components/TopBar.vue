@@ -8,7 +8,7 @@ const tooltip = ref();
 
 function logout() {
   localStorage.removeItem("user");
-  sessionStorage.removeItem("u:u");
+  localStorage.removeItem("u:u");
   location.reload();
 }
 
