@@ -1,6 +1,11 @@
 <script setup>
 import { getOverviewInformation } from "@/services/api/get";
 
+import {
+  weeklyCaloricExpenditure,
+  dailyCaloricExpenditure,
+} from "@/services/avaliar/cardio/helpers";
+
 import { onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router/auto";
 
@@ -141,6 +146,15 @@ onUnmounted(() => {
                 : "[NÃO INCLUÍDO]"
             }}</strong
             >. <br />
+          </p>
+          <p>
+            Gastos Calóricos &#8595; <br />
+            DIÁRIO:
+            <strong>{{ dailyCaloricExpenditure(student?.weight) }}kcal</strong>.
+            <br />
+            SEMANAL:
+            <strong>{{ weeklyCaloricExpenditure(student?.weight) }}kcal</strong
+            >.
           </p>
         </div>
       </div>
