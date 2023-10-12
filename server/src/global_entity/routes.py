@@ -35,7 +35,7 @@ async def new_global_entity(data: NewGlobalEntity):
     person.birth_date = data.birth_date
 
     if person.save():
-        if data.role == 'Admin':
+        if data.role == 'Admin' or data.role == 'Demo':
             personal = Personal()
             personal.person_id = person.id
             personal.company_id = 1
