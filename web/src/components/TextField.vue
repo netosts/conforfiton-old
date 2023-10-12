@@ -33,7 +33,9 @@ const emit = defineEmits(["update:modelValue"]);
 const value = ref(props.modelValue);
 
 watch(value, (newValue) => {
-  emit("update:modelValue", newValue);
+  if (newValue) {
+    emit("update:modelValue", newValue);
+  }
 
   if (props.name === "cpf") {
     handleChange(maskCpf(newValue));
@@ -103,11 +105,17 @@ const { errorMessage, handleChange, meta } = useField(name);
     >
       <Field
         :name="name"
-        :type="type"
-        :id="name + radio.label"
         :value="radio.value"
         @update:model-value="value = $event"
-      />
+        v-slot="{ field }"
+      >
+        <input
+          v-bind="field"
+          :type="type"
+          :id="name + radio.label"
+          :checked="radio.value === value"
+        />
+      </Field>
       <label :for="name + radio.label">{{ radio.label }}</label>
     </div>
 

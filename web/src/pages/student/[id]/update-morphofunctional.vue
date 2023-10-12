@@ -148,26 +148,14 @@ onMounted(() => {
           type="text"
           label="E como objetivo secundário:"
         />
-        <div class="register-field">
-          <label>O aluno(a) está parado(a) ou treinando:</label>
-          <div v-for="(radio, id) in q4Radio" :key="id" class="radio-container">
-            <Field
-              v-model="form.q4.training"
-              name="q4a"
-              :meta="meta"
-              v-slot="{ field }"
-            >
-              <input
-                v-bind="field"
-                :value="radio.value"
-                type="radio"
-                :id="'q4a' + radio.label"
-                :checked="radio.value === form.q4.training"
-              />
-            </Field>
-            <label :for="'q4a' + radio.label">{{ radio.label }}</label>
-          </div>
-        </div>
+        <TextField
+          v-model="form.q4.training"
+          name="q4a"
+          :meta="meta"
+          type="radio"
+          :radios="q4Radio"
+          label="O aluno(a) está parado(a) ou treinando:"
+        />
         <TextField
           v-model="form.q4.time"
           name="q4b"

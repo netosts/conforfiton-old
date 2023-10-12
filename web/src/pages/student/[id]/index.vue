@@ -70,7 +70,7 @@ onUnmounted(() => {
               store.overview.value?.q1
             }}</strong
             >" e secundário "<strong>{{ store.overview.value?.q2 }}</strong
-            >";Consome álcool "<strong>{{
+            >"; consome álcool "<strong>{{
               store.overview.value?.alcohol_ingestion
             }}</strong
             >" por semana; e tem como limitação física "<strong>{{
@@ -78,7 +78,7 @@ onUnmounted(() => {
             }}</strong
             >".
           </p>
-          <p v-if="student.gender === 'Female'">
+          <p v-if="student?.gender === 'Female'">
             {{
               store.overview.value?.iud
                 ? "Faz uso de Dispositivos intrauterinos (DIU)"
@@ -111,7 +111,10 @@ onUnmounted(() => {
                 : "Não tem hipertensão."
             }}
             <br />
-            Suas patologias são: {{ store.overview.value?.q22 }}
+            Suas patologias são: "<strong>{{
+              store.overview.value?.q22
+            }}</strong
+            >".
           </p>
           <p>
             Sua frequência cardíaca máxima é
