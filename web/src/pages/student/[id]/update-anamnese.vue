@@ -1,5 +1,5 @@
 <script setup>
-import { updateMorphofunctional } from "@/services/api/put";
+import { updateAnamnese } from "@/services/api/put";
 import {
   q4Radio,
   YesOrNoRadio,
@@ -8,7 +8,7 @@ import {
 } from "@/services/register/lists";
 import { fcMaxFormulas } from "@/services/student/lists";
 
-import { fcmax } from "@/services/register/helpers";
+import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 import {
   transformQ13,
   createAnamneseForm,
@@ -27,7 +27,7 @@ import { useStudentStore } from "@/stores/student";
 import { definePage, useRoute, useRouter } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/anamnese";
-import { Form } from "vee-validate";
+import { Form, Field } from "vee-validate";
 import TextField from "@/components/TextField.vue";
 
 definePage({
@@ -370,12 +370,25 @@ async function onSubmit(_, { setFieldError }) {
   }
 
   try {
-    console.log(form);
-    return;
-    form.menstruation = updateTranslateMenstruation(form.menstruation);
-    form.fc_max_formula = translateFcMaxFormula(form.fc_max_formula);
-    form.fc_max = fcmax(props.student.birth_date, form.fc_max_formula);
-    const anamneseForm = createAnamneseForm();
+    form.menstruation.value = updateTranslateMenstruation(
+      form.menstruation.value
+    );
+    form.fc_max_formula.value = translateFcMaxFormula(
+      form.fc_max_formula.value
+    );
+    const anamneseForm = createAnamneseForm(form);
+    anamneseForm["fc_max"] = fcmax(
+      props.student.birth_date,
+      form.fc_max_formula.value
+    );
+    anamneseForm["l1"] = calculateL1(
+      anamneseForm.fc_max,
+      form.fc_repouso.value
+    );
+    anamneseForm["l2"] = calculateL2(
+      anamneseForm.fc_max,
+      form.fc_repouso.value
+    );
 
     await updateAnamnese(route.params.id, anamneseForm);
 
@@ -453,7 +466,11 @@ onMounted(() => {
           class="form__section__fields"
         >
           <TextField
-            v-if="id !== 13 && item.gender.includes(student?.gender)"
+            v-if="
+              id !== 13 &&
+              item.gender.includes(student?.gender) &&
+              item.type !== 'radio'
+            "
             v-model="item.value"
             :name="item.name"
             :meta="meta"
@@ -464,6 +481,36 @@ onMounted(() => {
             :radios="item.radios ? item.radios : null"
             :options="item.options ? item.options : null"
           />
+
+          <div
+            v-if="
+              item.type === 'radio' && item.gender.includes(student?.gender)
+            "
+            class="radio-field"
+          >
+            <label>{{ item.label }}</label>
+            <div
+              v-for="(radio, id) in item.radios"
+              :key="id"
+              class="radio-container"
+            >
+              <Field
+                v-model="item.value"
+                :name="item.name"
+                :meta="meta"
+                v-slot="{ field }"
+              >
+                <input
+                  v-bind="field"
+                  :value="radio.value"
+                  type="radio"
+                  :id="item.name + radio.label"
+                  :checked="radio.value === item.value"
+                />
+              </Field>
+              <label :for="item.name + radio.label">{{ radio.label }}</label>
+            </div>
+          </div>
 
           <table v-if="id === 13">
             <thead>
@@ -542,6 +589,27 @@ onMounted(() => {
 
       .register-field {
         margin-bottom: 16px;
+      }
+
+      .radio-field {
+        @include inputContainers();
+        margin-bottom: 16px;
+
+        p {
+          color: $error-msg;
+        }
+
+        .radio-container {
+          display: flex;
+          gap: 5px;
+          padding: 0 10px;
+
+          label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: $txt-aside;
+          }
+        }
       }
 
       table {

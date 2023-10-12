@@ -97,28 +97,6 @@ const { errorMessage, handleChange, meta } = useField(name);
       ></textarea>
     </Field>
 
-    <div
-      v-else-if="type === 'radio'"
-      v-for="radio in radios"
-      :key="radio"
-      class="radio-container"
-    >
-      <Field
-        :name="name"
-        :value="radio.value"
-        @update:model-value="value = $event"
-        v-slot="{ field }"
-      >
-        <input
-          v-bind="field"
-          :type="type"
-          :id="name + radio.label"
-          :checked="radio.value === value"
-        />
-      </Field>
-      <label :for="name + radio.label">{{ radio.label }}</label>
-    </div>
-
     <Field
       v-else
       :value="value"

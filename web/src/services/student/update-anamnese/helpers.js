@@ -47,7 +47,7 @@ export function createAnamneseForm(form) {
         key.startsWith("menstruation") &&
         form[key].hasOwnProperty("value")
       ) {
-        extractedValues[key] = updateTranslateMenstruation(form[key].value);
+        extractedValues[key] = form[key].value;
       } else if (
         key.startsWith("fc_max_formula") &&
         form[key].hasOwnProperty("value")
