@@ -290,52 +290,55 @@ onUnmounted(() => {
       class="content"
       v-if="store.anamnese.value && store.anamnese.initiated"
     >
-      <div
-        v-for="(item, id) in labelsList"
-        :key="id"
-        class="content__container"
-        @click="openDiv(id)"
-      >
+      <div v-for="(item, id) in labelsList" :key="id" @click="openDiv(id)">
         <div
-          v-if="item.gender.includes(student?.gender)"
-          class="content__container__title"
+          :class="
+            !item.gender.includes(student?.gender)
+              ? 'content__loop__container--hidden'
+              : 'content__loop__container'
+          "
         >
-          <h3>
-            {{ item.label }}
-          </h3>
-          <font-awesome-icon
-            v-show="!item.show"
-            icon="fa-solid fa-circle-plus"
-            size="lg"
-            class="content__container__title__icon"
-          />
-          <font-awesome-icon
-            v-show="item.show"
-            icon="fa-solid fa-circle-minus"
-            size="lg"
-            class="content__container__title__icon"
-          />
-        </div>
-        <div v-if="id === 11" class="content__container__response">
-          <h4
-            v-show="item.show"
-            v-for="(subItem, subId) in item.value"
-            :key="subId"
+          <div
+            v-if="item.gender.includes(student?.gender)"
+            class="content__loop__container__title"
           >
-            {{ translateDays(subItem.day) }}:
-            <span
-              v-for="(period, periodId) in subItem.periods"
-              :key="periodId"
-              >{{
-                periodId !== 0
-                  ? `, ${translatePeriods(period)}`
-                  : translatePeriods(period)
-              }}</span
+            <h3>
+              {{ item.label }}
+            </h3>
+            <font-awesome-icon
+              v-show="!item.show"
+              icon="fa-solid fa-circle-plus"
+              size="lg"
+              class="content__loop__container__title__icon"
+            />
+            <font-awesome-icon
+              v-show="item.show"
+              icon="fa-solid fa-circle-minus"
+              size="lg"
+              class="content__loop__container__title__icon"
+            />
+          </div>
+          <div v-if="id === 11" class="content__loop__container__response">
+            <h4
+              v-show="item.show"
+              v-for="(subItem, subId) in item.value"
+              :key="subId"
             >
-          </h4>
-        </div>
-        <div v-else class="content__container__response">
-          <h4 v-show="item.show">{{ item.value }}</h4>
+              {{ translateDays(subItem.day) }}:
+              <span
+                v-for="(period, periodId) in subItem.periods"
+                :key="periodId"
+                >{{
+                  periodId !== 0
+                    ? `, ${translatePeriods(period)}`
+                    : translatePeriods(period)
+                }}</span
+              >
+            </h4>
+          </div>
+          <div v-else class="content__loop__container__response">
+            <h4 v-show="item.show">{{ item.value }}</h4>
+          </div>
         </div>
       </div>
     </div>
@@ -394,39 +397,44 @@ section {
   .content {
     display: flex;
     flex-direction: column;
-    gap: 16px;
 
-    &__container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 10px 20px;
-      border-bottom: 1px solid $input-border;
-      border-radius: $border-radius;
-      box-shadow: $box-shadow;
-      cursor: pointer;
-      transition: 0.1s;
-
-      &:hover {
-        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.14);
+    &__loop {
+      &--hidden {
+        display: none;
       }
-
-      &__title {
+      &__container {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         gap: 10px;
-        color: $txt-aside;
-        &__icon {
-          color: $buttons;
-        }
-      }
-      h3 {
-        font-weight: 500;
-      }
+        margin-bottom: 16px;
+        padding: 10px 20px;
+        border-bottom: 1px solid $input-border;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow;
+        cursor: pointer;
+        transition: 0.1s;
 
-      h4 {
-        font-weight: 400;
-        color: $logo-color;
+        &:hover {
+          box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.14);
+        }
+
+        &__title {
+          display: flex;
+          justify-content: space-between;
+          gap: 10px;
+          color: $txt-aside;
+          &__icon {
+            color: $buttons;
+          }
+        }
+        h3 {
+          font-weight: 500;
+        }
+
+        h4 {
+          font-weight: 400;
+          color: $logo-color;
+        }
       }
     }
   }
