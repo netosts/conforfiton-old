@@ -21,9 +21,8 @@ const hiders = [
   "/login/register",
   "/login/demo",
   "/print",
-  "/register",
-  "/register/anamnese",
-  /\/register\/anamnese\/\d+/,
+  /\/register\/\d+/,
+  /\/register\/\d+\/anamnese\//,
 ];
 
 watch(route, () => {

@@ -186,3 +186,13 @@ export async function countPhoneDuplicateEditStudent(phone_number, person_id) {
       throw err;
     });
 }
+
+export async function checkAnamnese(person_id) {
+  return http
+    .get(`/anamnese/count/${person_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}

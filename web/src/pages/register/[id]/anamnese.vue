@@ -16,7 +16,7 @@ import {
 } from "@/services/helpers";
 
 import { onMounted, ref } from "vue";
-import { definePage, useRouter } from "vue-router/auto";
+import { definePage, useRouter, useRoute } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/anamnese";
 import { form } from "@/services/register/forms/anamnese";
@@ -29,6 +29,7 @@ definePage({
   meta: { requiresAuth: true },
 });
 
+const route = useRoute();
 const router = useRouter();
 const studentForm = ref(null);
 
@@ -166,10 +167,10 @@ onMounted(async () => {
     >
       <section class="form__section">
         <div class="form__section__title">
-          <RouterLink to="/register" class="back">
+          <RouterLink :to="`/register/${route.params.id}`" class="back">
             <font-awesome-icon icon="fa-solid fa-chevron-left" size="xl" />
           </RouterLink>
-          <h1>Formulário Anamnese</h1>
+          <h2>Formulário Anamnese</h2>
         </div>
         <TextField
           v-model="form.q1"
@@ -533,15 +534,19 @@ main {
 
         .back {
           position: absolute;
-          top: 10px;
-          left: 10px;
+          top: 40px;
+          left: 35px;
           @include tool();
           color: $buttons;
+
+          @include mq(xs-s) {
+            top: 20px;
+            left: 15px;
+          }
         }
 
-        h1 {
-          padding: 0 30px;
-          margin-bottom: 10px;
+        h2 {
+          padding: 0 20px;
           color: $buttons;
         }
       }

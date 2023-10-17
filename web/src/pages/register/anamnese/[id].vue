@@ -1,6 +1,6 @@
 <script setup>
 import { postStudentAnamnese } from "@/services/api/post";
-import { getStudent } from "@/services/api/get";
+import { getStudent, checkAnamnese } from "@/services/api/get";
 import {
   q4Radio,
   YesOrNoRadio,
@@ -127,12 +127,18 @@ function disableCheckbox(value) {
 
 async function initStudent() {
   try {
+    if (await checkAnamnese(route.params.id)) {
+      router.push(`/student/${route.params.id}`);
+    }
     if (store.student.id !== route.params.id) {
       store.student.value = await getStudent(route.params.id);
       store.student.id = route.params.id;
     }
   } catch (err) {
     console.error(err);
+    if (err.response.data.msg === "Student not found.") {
+      router.push("/NotFound");
+    }
   }
 }
 
@@ -155,7 +161,7 @@ onMounted(() => {
           <RouterLink :to="`/student/${route.params.id}/anamnese`" class="back">
             <font-awesome-icon icon="fa-solid fa-chevron-left" size="xl" />
           </RouterLink>
-          <h2>Formulário Anamnese</h2>
+          <h1>Formulário Anamnese - {{ store.student.value?.name }}</h1>
         </div>
         <TextField
           v-model="form.q1"
@@ -514,14 +520,15 @@ main {
 
         .back {
           position: absolute;
-          top: 40px;
-          left: 35px;
+          top: 10px;
+          left: 10px;
           @include tool();
           color: $buttons;
         }
 
-        h2 {
-          padding: 0 20px;
+        h1 {
+          padding: 0 30px;
+          margin-bottom: 10px;
           color: $buttons;
         }
       }

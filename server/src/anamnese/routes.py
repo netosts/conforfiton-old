@@ -164,49 +164,6 @@ async def new_student_anamnese(person_id, data: NewAnamnese):
         }, 422)
 
 
-@anamnese_router.get('/{person_id}')
-async def get_anamnese(person_id):
-    anamnese = Anamnese.find(person_id)
-    if anamnese:
-        return anamnese.serialize()
-    else:
-        return JSONResponse({
-            "error": True,
-            "msg": f"Anamnese not found."
-        }, 404)
-
-
-@anamnese_router.get("/overview/{person_id}")
-async def get_overview_information(person_id):
-    anamnese = Anamnese.select(
-        'fc_max_formula',
-        'q1',
-        'q2',
-        'q4',
-        'q21',
-        'q20',
-        'diabetes',
-        'hypertension',
-        'q22',
-        'iud',
-        'menstruation',
-        'alcohol_ingestion',
-        'physical_limitation',
-        'fc_max',
-        'fc_repouso',
-        'l1',
-        'l2'
-    ).where('person_id', person_id).first()
-
-    if anamnese:
-        return anamnese.serialize()
-    else:
-        return JSONResponse({
-            "error": True,
-            "msg": f"Anamnese not found."
-        }, 404)
-
-
 @anamnese_router.put('/morphofunctional/{person_id}')
 async def update_morphofunctional(person_id, data: UpdateMorphofunctional):
     anamnese = Anamnese.find(person_id)
@@ -311,3 +268,55 @@ async def update_anamnese(person_id, data: NewAnamnese):
             "error": True,
             "msg": f"Something went wrong and Anamnese was not updated."
         }, 422)
+
+
+@anamnese_router.get('/{person_id}')
+async def get_anamnese(person_id):
+    anamnese = Anamnese.find(person_id)
+    if anamnese:
+        return anamnese.serialize()
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Anamnese not found."
+        }, 404)
+
+
+@anamnese_router.get("/overview/{person_id}")
+async def get_overview_information(person_id):
+    anamnese = Anamnese.select(
+        'fc_max_formula',
+        'q1',
+        'q2',
+        'q4',
+        'q21',
+        'q20',
+        'diabetes',
+        'hypertension',
+        'q22',
+        'iud',
+        'menstruation',
+        'alcohol_ingestion',
+        'physical_limitation',
+        'fc_max',
+        'fc_repouso',
+        'l1',
+        'l2'
+    ).where('person_id', person_id).first()
+
+    if anamnese:
+        return anamnese.serialize()
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Anamnese not found."
+        }, 404)
+
+
+@anamnese_router.get("/count/{person_id}")
+async def check_if_anamnese_exists(person_id):
+    counted_anamnese = Anamnese.where('person_id', person_id).count()
+    if counted_anamnese > 0:
+        return True
+    else:
+        return False

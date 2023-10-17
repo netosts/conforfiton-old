@@ -79,6 +79,10 @@ function onReset() {
 
 <template>
   <main>
+    <div class="top">
+      <h1>Bem-Vindo</h1>
+    </div>
+
     <Form
       @submit="onSubmit"
       :validation-schema="schema"
@@ -87,10 +91,7 @@ function onReset() {
     >
       <section class="form__section">
         <div class="form__section__title">
-          <RouterLink to="/" class="back">
-            <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
-          </RouterLink>
-          <h1>Cadastrar Aluno com Anamnese</h1>
+          <h2>Preencha as Informações de Cadastro</h2>
         </div>
         <TextField
           v-model="form.name"
@@ -230,6 +231,17 @@ main {
     color: $txt-aside;
     box-shadow: $box-shadow;
 
+    .back {
+      position: absolute;
+      top: 40px;
+      @include tool();
+      color: $buttons;
+
+      @include mq(xs-s) {
+        top: 20px;
+      }
+    }
+
     h1 {
       text-align: center;
       text-transform: uppercase;
@@ -256,17 +268,7 @@ main {
         text-align: center;
         border-bottom: 3px dotted $background;
 
-        .back {
-          position: absolute;
-          top: 20px;
-          left: 10px;
-          @include tool();
-          color: $buttons;
-        }
-
-        h1 {
-          padding: 0 30px;
-          margin-bottom: 10px;
+        h2 {
           color: $buttons;
         }
       }
