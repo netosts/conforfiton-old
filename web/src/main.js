@@ -25,6 +25,7 @@ import {
   faPenToSquare,
   faDna,
   faGear,
+  faLink,
 } from "@fortawesome/free-solid-svg-icons";
 import { faMoon } from "@fortawesome/free-regular-svg-icons";
 
@@ -53,6 +54,7 @@ import App from "./App.vue";
 import router from "./router";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { faCircleMinus } from "@fortawesome/free-solid-svg-icons";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -95,7 +97,9 @@ library.add(
   faDna,
   faGear,
   faCirclePlus,
-  faCircleMinus
+  faCircleMinus,
+  faLink,
+  faCopy
 );
 
 app.use(router);

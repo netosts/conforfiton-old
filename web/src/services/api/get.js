@@ -196,3 +196,33 @@ export async function checkAnamnese(person_id) {
       throw err;
     });
 }
+
+export async function checkSalt(salt_link) {
+  return http
+    .get(`/link_share/count/${salt_link}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}
+
+export async function getLinkSharePersonalId(salt_link) {
+  return http
+    .get(`/link_share/personal_id/${salt_link}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}
+
+export async function checkLinkStatus(salt_link) {
+  return http
+    .get(`/link_share/available/${salt_link}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}

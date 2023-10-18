@@ -3,10 +3,13 @@ import {
   countCpfDuplicate,
   countEmailDuplicate,
   countPhoneDuplicate,
+  checkSalt,
+  checkLinkStatus,
 } from "@/services/api/get";
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
 
-import { definePage, useRouter } from "vue-router/auto";
+import { useRouter, useRoute } from "vue-router/auto";
+import { onMounted } from "vue";
 
 import { schema } from "@/services/register/schemas/student";
 import { form } from "@/services/register/forms/student";
@@ -14,11 +17,8 @@ import { form } from "@/services/register/forms/student";
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
 
-definePage({
-  meta: { requiresAuth: true },
-});
-
 // VARIABLES
+const route = useRoute();
 const router = useRouter();
 
 // FUNCTIONS
@@ -59,7 +59,7 @@ async function onSubmit(_, { setFieldError }) {
   // Save informations in session storage
   try {
     sessionStorage.setItem("registerStudent", JSON.stringify(form));
-    router.push("/register/anamnese");
+    router.push(`/register/${route.params.salt}/anamnese`);
   } catch (err) {
     console.error(err);
     throw err;
@@ -75,6 +75,16 @@ function onReset() {
     throw e;
   }
 }
+
+onMounted(async () => {
+  if (!(await checkSalt(route.params.salt))) {
+    router.push("/NotFound");
+  }
+  const linkAvailable = await checkLinkStatus(route.params.salt);
+  if (!linkAvailable) {
+    router.push("/"); // make a link not available page
+  }
+});
 </script>
 
 <template>

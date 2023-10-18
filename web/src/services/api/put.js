@@ -68,3 +68,27 @@ export async function updateAnamnese(person_id, form) {
     throw err;
   }
 }
+
+export async function usedLinkShare(salt_link) {
+  try {
+    const response = await http.put(`/link_share/${salt_link}`, {
+      status: "Used",
+    });
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}
+
+// export async function expireLinkShare(salt_link) {
+//   try {
+//     const response = await http.put(`/link_share/${salt_link}`, {
+//       status: "Expired",
+//     });
+//     return response.data;
+//   } catch (err) {
+//     console.error(err.response);
+//     throw err;
+//   }
+// }

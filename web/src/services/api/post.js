@@ -111,3 +111,13 @@ export async function postWeight(id, weight) {
     throw err;
   }
 }
+
+export async function newLinkShare(data) {
+  return http
+    .post(`/link_share/`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
+}

@@ -4,15 +4,20 @@ import {
   countEmailDuplicate,
   countPhoneDuplicate,
 } from "@/services/api/get";
+import { newLinkShare } from "@/services/api/post";
 import { genderList, shirtList, shortsList } from "@/services/register/lists";
 
+import { getSecondUserIdLocal } from "@/services/api/token";
+
 import { definePage, useRouter } from "vue-router/auto";
+import { ref } from "vue";
 
 import { schema } from "@/services/register/schemas/student";
 import { form } from "@/services/register/forms/student";
 
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
+import DialogGenerateLink from "@/components/register/DialogGenerateLink.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -21,7 +26,25 @@ definePage({
 // VARIABLES
 const router = useRouter();
 
+const isDialogActive = ref(false);
+const generatedLink = ref(null);
+
 // FUNCTIONS
+const handleDialog = (emittedValue) => {
+  return (isDialogActive.value = emittedValue);
+};
+
+async function generateLink() {
+  const userId = getSecondUserIdLocal();
+  const data = {
+    status: "Available",
+    personal_id: userId,
+  };
+  const newLink = await newLinkShare(data);
+  generatedLink.value = `localhost:5173/register/${newLink}`;
+  isDialogActive.value = true;
+}
+
 async function onSubmit(_, { setFieldError }) {
   // Transform values
   const digitsCpf = form.cpf.replace(/\D/g, ""); // only digits
@@ -86,6 +109,14 @@ function onReset() {
       class="form"
     >
       <section class="form__section">
+        <DialogGenerateLink
+          :link="generatedLink"
+          @isDialogActive="handleDialog"
+          v-show="isDialogActive"
+        />
+        <button type="button" @click="generateLink" class="link-share">
+          <font-awesome-icon icon="fa-solid fa-link" size="lg" />
+        </button>
         <div class="form__section__title">
           <RouterLink to="/" class="back">
             <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
@@ -220,28 +251,13 @@ main {
     margin: 10px;
   }
 
-  .top {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    background-color: white;
-    color: $txt-aside;
-    box-shadow: $box-shadow;
-
-    h1 {
-      text-align: center;
-      text-transform: uppercase;
-    }
-  }
-
   .form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 
     &__section {
+      position: relative;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -249,6 +265,19 @@ main {
       background-color: white;
       border-radius: $border-radius;
       box-shadow: $box-shadow;
+
+      .link-share {
+        position: absolute;
+        top: 25px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        padding: 10px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        color: $buttons;
+      }
 
       &__title {
         padding: 10px;

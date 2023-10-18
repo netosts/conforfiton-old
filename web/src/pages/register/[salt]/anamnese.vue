@@ -1,5 +1,7 @@
 <script setup>
 import { postStudent, postAnamnese } from "@/services/api/post";
+import { usedLinkShare } from "@/services/api/put";
+import { getLinkSharePersonalId } from "@/services/api/get";
 import {
   q4Radio,
   YesOrNoRadio,
@@ -8,7 +10,6 @@ import {
 } from "@/services/register/lists";
 import { fcmax, calculateL1, calculateL2 } from "@/services/register/helpers";
 
-import { getSecondUserIdLocal } from "@/services/api/token";
 import {
   translateGenderToEN,
   translateDays,
@@ -16,7 +17,7 @@ import {
 } from "@/services/helpers";
 
 import { onMounted, ref } from "vue";
-import { definePage, useRouter, useRoute } from "vue-router/auto";
+import { useRouter, useRoute } from "vue-router/auto";
 
 import { schema } from "@/services/register/schemas/anamnese";
 import { form } from "@/services/register/forms/anamnese";
@@ -24,10 +25,6 @@ import { form } from "@/services/register/forms/anamnese";
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
-
-definePage({
-  meta: { requiresAuth: true },
-});
 
 const route = useRoute();
 const router = useRouter();
@@ -69,7 +66,7 @@ async function onSubmit(_, { setFieldError }) {
 
   // Post new student
   try {
-    const userId = getSecondUserIdLocal();
+    const userId = await getLinkSharePersonalId(route.params.salt);
 
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();
@@ -100,8 +97,10 @@ async function onSubmit(_, { setFieldError }) {
     alert("Cadastro realizado com sucesso!");
 
     sessionStorage.removeItem("registerStudent");
-    sessionStorage.setItem("submitted", true);
-    router.push("/");
+
+    await usedLinkShare(route.params.salt);
+
+    router.push("/"); // CRIAR UMA PAGINA ESTÁTICA PARA JOGAR O ALUNO
   } catch (err) {
     console.error(err);
     throw err;
@@ -152,6 +151,9 @@ async function initStudentForm() {
 }
 
 onMounted(async () => {
+  if (!sessionStorage.getItem("registerStudent")) {
+    router.push(`/register/${route.params.salt}`);
+  }
   await initStudentForm();
   form.q13 = [];
 });
@@ -167,7 +169,7 @@ onMounted(async () => {
     >
       <section class="form__section">
         <div class="form__section__title">
-          <RouterLink :to="`/register/${route.params.id}`" class="back">
+          <RouterLink :to="`/register/${route.params.salt}`" class="back">
             <font-awesome-icon icon="fa-solid fa-chevron-left" size="xl" />
           </RouterLink>
           <h2>Formulário Anamnese</h2>

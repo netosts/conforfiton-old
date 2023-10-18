@@ -85,13 +85,6 @@ async function onSubmit(_, { setFieldError }) {
 
 <template>
   <main>
-    <div class="top">
-      <RouterLink to="/" class="back">
-        <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
-      </RouterLink>
-      <h1>Bem-Vindo</h1>
-    </div>
-
     <Form
       @submit="onSubmit"
       :validation-schema="schema"
@@ -100,7 +93,10 @@ async function onSubmit(_, { setFieldError }) {
     >
       <section class="form__section">
         <div class="form__section__title">
-          <h2>Cadastrar Aluno sem Anamnese</h2>
+          <RouterLink to="/" class="back">
+            <font-awesome-icon icon="fa-solid fa-angles-left" size="xl" />
+          </RouterLink>
+          <h1>Cadastrar Aluno sem Anamnese</h1>
         </div>
         <TextField
           v-model="form.name"
@@ -214,34 +210,6 @@ main {
     margin: 10px;
   }
 
-  .top {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    background-color: white;
-    color: $txt-aside;
-    box-shadow: $box-shadow;
-
-    .back {
-      position: absolute;
-      top: 40px;
-      @include tool();
-      color: $buttons;
-
-      @include mq(xs-s) {
-        top: 20px;
-      }
-    }
-
-    h1 {
-      padding: 0 40px;
-      text-align: center;
-      text-transform: uppercase;
-    }
-  }
-
   .form {
     display: flex;
     flex-direction: column;
@@ -262,7 +230,17 @@ main {
         text-align: center;
         border-bottom: 3px dotted $background;
 
-        h2 {
+        .back {
+          position: absolute;
+          top: 20px;
+          left: 10px;
+          @include tool();
+          color: $buttons;
+        }
+
+        h1 {
+          padding: 0 30px;
+          margin-bottom: 10px;
           color: $buttons;
         }
       }

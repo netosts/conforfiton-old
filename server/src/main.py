@@ -20,6 +20,7 @@ from .neuromuscular.routes import neuromuscular_router
 from .personal.routes import personal_router
 from .antropometria.routes import antropometria_router
 from .cardio.routes import cardio_router
+from .link_share.routes import link_share_router
 
 from .person.model import Person
 
@@ -55,6 +56,7 @@ app.include_router(neuromuscular_router)
 app.include_router(personal_router)
 app.include_router(antropometria_router)
 app.include_router(cardio_router)
+app.include_router(link_share_router)
 
 
 @app.get('/cpf/{cpf}')  # CPF
