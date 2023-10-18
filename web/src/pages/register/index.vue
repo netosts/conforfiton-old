@@ -41,7 +41,7 @@ async function generateLink() {
     personal_id: userId,
   };
   const newLink = await newLinkShare(data);
-  generatedLink.value = `localhost:5173/register/${newLink}`;
+  generatedLink.value = `https://hml.conforfiton.com.br/register/${newLink}`;
   isDialogActive.value = true;
 }
 
