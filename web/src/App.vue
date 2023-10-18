@@ -23,6 +23,9 @@ const hiders = [
   "/print",
   /\/register\/(?!anamnese$)(?!anamnese\/\d+)[A-Za-z0-9]+/,
   /\/register\/[A-Za-z0-9]+\/anamnese\//,
+  "/successful-register",
+  "/invalid-link",
+  "/welcome",
 ];
 
 watch(route, () => {

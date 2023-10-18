@@ -100,7 +100,7 @@ async function onSubmit(_, { setFieldError }) {
 
     await usedLinkShare(route.params.salt);
 
-    router.push("/"); // CRIAR UMA PAGINA ESTÁTICA PARA JOGAR O ALUNO
+    router.push("/successful-register");
   } catch (err) {
     console.error(err);
     throw err;

@@ -283,6 +283,7 @@ onUnmounted(() => {
     <RouterLink
       :to="`/student/${route.params.id}/update-anamnese`"
       class="update-anamnese"
+      v-if="store.anamnese.value && store.anamnese.initiated"
     >
       <font-awesome-icon icon="fa-solid fa-gear" size="lg" />
     </RouterLink>

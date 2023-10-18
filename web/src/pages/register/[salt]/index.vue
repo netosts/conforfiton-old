@@ -79,10 +79,11 @@ function onReset() {
 onMounted(async () => {
   if (!(await checkSalt(route.params.salt))) {
     router.push("/NotFound");
-  }
-  const linkAvailable = await checkLinkStatus(route.params.salt);
-  if (!linkAvailable) {
-    router.push("/"); // make a link not available page
+  } else {
+    const linkAvailable = await checkLinkStatus(route.params.salt);
+    if (!linkAvailable) {
+      router.push("/invalid-link");
+    }
   }
 });
 </script>
