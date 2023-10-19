@@ -63,20 +63,25 @@ const { errorMessage, handleChange, meta } = useField(name);
       <span class="span" v-show="!!span">{{ span }}</span>
     </div>
 
-    <Field
-      v-if="type === 'select'"
-      :name="name"
-      :value="value"
-      @update:model-value="value = $event"
-      :tabindex="tabindex"
-      v-slot="{ field }"
-    >
-      <select v-bind="field" :id="name">
-        <option v-for="(option, index) in options" :key="index" :value="option">
-          {{ option }}
-        </option>
-      </select>
-    </Field>
+    <div v-if="type === 'select'" class="select-field">
+      <Field
+        :name="name"
+        :value="value"
+        @update:model-value="value = $event"
+        :tabindex="tabindex"
+        v-slot="{ field }"
+      >
+        <select v-bind="field" :id="name">
+          <option
+            v-for="(option, index) in options"
+            :key="index"
+            :value="option"
+          >
+            {{ option }}
+          </option>
+        </select>
+      </Field>
+    </div>
 
     <Field
       v-else-if="type === 'textarea'"
@@ -137,6 +142,14 @@ const { errorMessage, handleChange, meta } = useField(name);
 @import "../assets/styles/variables";
 @import "../assets/styles/mixins";
 
+input,
+select,
+textarea {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 .label-span {
   display: flex;
   align-items: center;
@@ -162,6 +175,26 @@ const { errorMessage, handleChange, meta } = useField(name);
 
   p {
     color: $error-msg;
+  }
+
+  .select-field {
+    position: relative;
+    @include inputContainers();
+
+    select {
+      background-color: white;
+    }
+
+    &::after {
+      content: "\0025BC";
+      font: normal normal normal 12px/1 FontAwesome;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $txt-title;
+      pointer-events: none;
+    }
   }
 
   .radio-container {

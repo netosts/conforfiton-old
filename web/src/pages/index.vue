@@ -136,10 +136,12 @@ onMounted(() => {
             placeholder="Procurar alunos no banco de dados..."
           />
         </div>
-        <select v-model="inputFilter">
-          <option value="inputName">Nome</option>
-          <option value="inputCpf">CPF</option>
-        </select>
+        <div class="searchbox__input__filter">
+          <select v-model="inputFilter">
+            <option value="inputName">Nome</option>
+            <option value="inputCpf">CPF</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -163,24 +165,6 @@ onMounted(() => {
                 <div class="student__container__profile__info__name">
                   <p>{{ student.name }}</p>
                 </div>
-                <!-- <div class="student__container__profile__info__content">
-                  <p>
-                    Sexo:
-                    <strong>{{ translateGender(student.gender) }}</strong> |
-                  </p>
-                  <p>
-                    Idade:
-                    <strong>{{ formatAge(student.birth_date) }}</strong>
-                    |
-                  </p>
-                  <p>
-                    Altura: <strong>{{ student.height }}cm</strong> |
-                  </p>
-                  <p>
-                    Peso:
-                    <strong>{{ student.weight + "kg" }}</strong>
-                  </p>
-                </div> -->
               </div>
             </div>
           </RouterLink>
@@ -200,6 +184,13 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import "../assets/styles/variables";
 @import "../assets/styles/mixins";
+
+select,
+input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 
 main {
   display: flex;
@@ -266,21 +257,37 @@ main {
         }
       }
 
-      select {
-        padding: 8px 15px 8px 10px;
-        width: 250px;
-        @include inputBar();
-        cursor: pointer;
-        color: $txt-title;
+      &__filter {
+        position: relative;
 
-        @include mq(m) {
-          width: 100%;
+        select {
+          padding: 8px 15px 8px 10px;
+          width: 250px;
+          @include inputBar();
+          cursor: pointer;
+          color: $txt-title;
+
+          @include mq(m) {
+            width: 100%;
+          }
+        }
+
+        &::after {
+          content: "\0025BC";
+          font: normal normal normal 12px/1 FontAwesome;
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: $txt-title;
+          pointer-events: none;
         }
       }
     }
   }
 
   .filter {
+    position: relative;
     display: flex;
     justify-content: flex-end;
 
@@ -289,8 +296,20 @@ main {
       outline: none;
       border: none;
       border-radius: $border-radius;
+      background-color: white;
       cursor: pointer;
       color: $txt-title;
+    }
+
+    &::after {
+      content: "\0025BC";
+      font: normal normal normal 12px/1 FontAwesome;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $txt-title;
+      pointer-events: none;
     }
   }
 

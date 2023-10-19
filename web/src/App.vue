@@ -21,7 +21,7 @@ const hiders = [
   "/login/register",
   "/login/demo",
   "/print",
-  /\/register\/(?!anamnese$)(?!anamnese\/\d+)[A-Za-z0-9]+/,
+  /\/register\/(?!anamnese$)(?!anamnese\/\d+)(?!student$)[A-Za-z0-9]+/,
   /\/register\/[A-Za-z0-9]+\/anamnese\//,
   "/successful-register",
   "/invalid-link",
