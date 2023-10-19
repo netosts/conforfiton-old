@@ -131,6 +131,7 @@ const { errorMessage, handleChange, meta } = useField(name);
         :type="type"
         :id="name"
         :placeholder="placeholder"
+        :class="type === 'date' ? 'webkit-date' : null"
       />
     </Field>
 
@@ -148,6 +149,11 @@ textarea {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+}
+
+.webkit-date {
+  background-color: white;
+  height: 2rem;
 }
 
 .label-span {

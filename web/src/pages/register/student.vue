@@ -199,12 +199,6 @@ async function onSubmit(_, { setFieldError }) {
 @import "@/assets/styles/variables";
 @import "@/assets/styles/mixins";
 
-input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
 main {
   display: flex;
   flex-direction: column;
