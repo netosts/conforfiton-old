@@ -5,6 +5,7 @@ import { formatEvaluatedAt } from "@/services/formats";
 import { protocolsList } from "@/services/avaliar/neuromuscular/lists";
 
 import { onMounted, ref } from "vue";
+import { useWindowSize } from "@vueuse/core";
 
 import { useStudentStore } from "@/stores/student";
 import { useRoute, definePage } from "vue-router/auto";
@@ -23,6 +24,7 @@ const store = useStudentStore();
 const evaluationResult = ref(null);
 const isDeleteActive = ref(false);
 const evaluationToDelete = ref(null);
+const { width, height } = useWindowSize();
 
 function handleDelete(emittedValue) {
   if (evaluationResult.value?.id === emittedValue) {
@@ -118,16 +120,16 @@ onMounted(() => {
         <table>
           <thead>
             <tr>
-              <th>Exercício</th>
-              <th>Peso L.</th>
-              <th>Reps</th>
+              <th>{{ width < 410 ? "Exc." : "Exercício" }}</th>
+              <th>{{ width < 410 ? "P.L." : "Peso L." }}</th>
+              <th>{{ width < 410 ? "R." : "Reps." }}</th>
               <th>1RM</th>
-              <th>Pontos</th>
+              <th>{{ width < 410 ? "Pts." : "Pontos" }}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Supino</td>
+              <td>{{ width < 410 ? "Spn." : "Supino" }}</td>
               <td>{{ evaluationResult.bench_press_lifted }} kg</td>
               <td>{{ evaluationResult.bench_press_reps }}</td>
               <td>{{ evaluationResult.bench_press_rm }}</td>
@@ -136,7 +138,7 @@ onMounted(() => {
               </td>
             </tr>
             <tr>
-              <td>Rosca Direta</td>
+              <td>{{ width < 410 ? "R. D." : "Rosca Direta" }}</td>
               <td>{{ evaluationResult.barbell_curl_lifted }} kg</td>
               <td>{{ evaluationResult.barbell_curl_reps }}</td>
               <td>{{ evaluationResult.barbell_curl_rm }}</td>
@@ -145,21 +147,21 @@ onMounted(() => {
               </td>
             </tr>
             <tr>
-              <td>Puxada Pela Frente</td>
+              <td>{{ width < 410 ? "P. P. F." : "Puxada Pela Frente" }}</td>
               <td>{{ evaluationResult.pull_down_lifted }} kg</td>
               <td>{{ evaluationResult.pull_down_reps }}</td>
               <td>{{ evaluationResult.pull_down_rm }}</td>
               <td class="emphasize">{{ evaluationResult.pull_down_points }}</td>
             </tr>
             <tr>
-              <td>Leg Press</td>
+              <td>{{ width < 410 ? "L. P." : "Leg Press" }}</td>
               <td>{{ evaluationResult.leg_press_lifted }} kg</td>
               <td>{{ evaluationResult.leg_press_reps }}</td>
               <td>{{ evaluationResult.leg_press_rm }}</td>
               <td class="emphasize">{{ evaluationResult.leg_press_points }}</td>
             </tr>
             <tr>
-              <td>Extenção de Joelhos</td>
+              <td>{{ width < 410 ? "E. J." : "Extensão de Joelhos" }}</td>
               <td>{{ evaluationResult.leg_extension_lifted }} kg</td>
               <td>{{ evaluationResult.leg_extension_reps }}</td>
               <td>{{ evaluationResult.leg_extension_rm }}</td>
@@ -168,7 +170,7 @@ onMounted(() => {
               </td>
             </tr>
             <tr>
-              <td>Flexão de Joelhos</td>
+              <td>{{ width < 410 ? "F. J." : "Flexão de Joelhos" }}</td>
               <td>{{ evaluationResult.leg_curl_lifted }} kg</td>
               <td>{{ evaluationResult.leg_curl_reps }}</td>
               <td>{{ evaluationResult.leg_curl_rm }}</td>
@@ -181,8 +183,18 @@ onMounted(() => {
           <span>{{ evaluationResult.total_points }}</span>
         </div>
         <div class="total">
-          <h4>Desempenho:</h4>
-          <span>{{ evaluationResult.classification }}</span>
+          <h4>
+            Desempenho: <span>{{ evaluationResult.classification }}</span>
+          </h4>
+        </div>
+        <div class="legenda" v-if="width < 410">
+          <h4>Legenda</h4>
+          <p>Spn. > Supino</p>
+          <p>R. D. > Rosca Direta</p>
+          <p>P. P. F. > Puxada Pela Frente</p>
+          <p>L. P. > Leg Press</p>
+          <p>E. J. > Extensão de Joelhos</p>
+          <p>F. J. > Flexão de Joelhos</p>
         </div>
       </div>
 
@@ -194,29 +206,38 @@ onMounted(() => {
         <table>
           <thead>
             <tr>
-              <th>Indicador</th>
-              <th>Avaliação</th>
-              <th>Classificação</th>
+              <th>{{ width < 415 ? "Ind." : "Indicador" }}</th>
+              <th>{{ width < 415 ? "Aval." : "Avaliação" }}</th>
+              <th>{{ width < 415 ? "Class." : "Classificação" }}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Abdominal</td>
+              <td>{{ width < 415 ? "Abd." : "Abdominal" }}</td>
               <td>{{ evaluationResult.sit_up }} reps</td>
               <td class="emphasize">{{ evaluationResult.sit_up_result }}</td>
             </tr>
             <tr>
-              <td>Flexão de Braço</td>
+              <td>{{ width < 415 ? "F. B." : "Flexão de Braço" }}</td>
               <td>{{ evaluationResult.push_up }} reps</td>
               <td class="emphasize">{{ evaluationResult.push_up_result }}</td>
             </tr>
             <tr>
-              <td>Salto Horizontal</td>
+              <td>{{ width < 415 ? "S. H." : "Salto Horizontal" }}</td>
               <td>{{ evaluationResult.jump }} cm</td>
               <td class="emphasize">{{ evaluationResult.jump_result }}</td>
             </tr>
           </tbody>
         </table>
+        <div class="legenda" v-if="width < 415">
+          <h4>Legenda</h4>
+          <p>Ind. > Indicador</p>
+          <p>Aval. > Avaliação</p>
+          <p>Class. > Classificação</p>
+          <p>Abd. > Abdominal</p>
+          <p>F. B. > Flexão de Braço</p>
+          <p>S. H. > Salto Horizontal</p>
+        </div>
       </div>
     </div>
   </section>
@@ -369,6 +390,18 @@ section {
         font-size: 1.2rem;
         font-weight: 800;
         color: $logo-color;
+      }
+    }
+
+    .legenda {
+      display: flex;
+      flex-direction: column;
+      padding: 0 10px;
+      border: 1px solid $input-border;
+      color: $txt-aside;
+
+      h4 {
+        font-size: 1.2rem;
       }
     }
 

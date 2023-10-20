@@ -13,6 +13,8 @@ import { translateDays, translateMenstruation } from "@/services/helpers";
 
 import { useStudentStore } from "@/stores/student";
 
+import { useWindowSize } from "@vueuse/core";
+
 import { onMounted } from "vue";
 import { definePage, useRouter, useRoute } from "vue-router/auto";
 
@@ -30,6 +32,7 @@ definePage({
 const route = useRoute();
 const router = useRouter();
 const store = useStudentStore();
+const { width, height } = useWindowSize();
 
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {
@@ -269,9 +272,9 @@ onMounted(() => {
           <thead>
             <tr>
               <th></th>
-              <th>Manhã</th>
-              <th>Tarde</th>
-              <th>Noite</th>
+              <th>{{ width <= 360 ? "M" : "Manhã" }}</th>
+              <th>{{ width <= 360 ? "T" : "Tarde" }}</th>
+              <th>{{ width <= 360 ? "N" : "Noite" }}</th>
             </tr>
           </thead>
           <tbody>

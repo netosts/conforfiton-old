@@ -18,6 +18,7 @@ import {
 
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router/auto";
+import { useWindowSize } from "@vueuse/core";
 
 import { schema } from "@/services/register/schemas/anamnese";
 import { form } from "@/services/register/forms/anamnese";
@@ -29,6 +30,7 @@ import SubmitButton from "@/components/SubmitButton.vue";
 const route = useRoute();
 const router = useRouter();
 const studentForm = ref(null);
+const { width, height } = useWindowSize();
 
 // FUNCTIONS
 async function onSubmit(_, { setFieldError }) {
@@ -280,9 +282,9 @@ onMounted(async () => {
           <thead>
             <tr>
               <th></th>
-              <th>Manhã</th>
-              <th>Tarde</th>
-              <th>Noite</th>
+              <th>{{ width <= 360 ? "M" : "Manhã" }}</th>
+              <th>{{ width <= 360 ? "T" : "Tarde" }}</th>
+              <th>{{ width <= 360 ? "N" : "Noite" }}</th>
             </tr>
           </thead>
           <tbody>

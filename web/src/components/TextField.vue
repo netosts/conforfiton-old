@@ -208,6 +208,19 @@ textarea {
     gap: 5px;
     padding: 0 10px;
 
+    input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      border: 2px solid $txt-subtitle;
+      border-radius: 50%;
+      background-clip: content-box;
+      padding: 3px;
+    }
+
+    input[type="radio"]:checked {
+      background-color: $buttons;
+    }
+
     label {
       font-size: 0.95rem;
       font-weight: 600;

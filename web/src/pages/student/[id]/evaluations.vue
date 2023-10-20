@@ -88,6 +88,10 @@ section {
     text-align: center;
     padding-bottom: 20px;
     color: $txt-title;
+    transition: 0.2s;
+    @include mq(xs) {
+      font-size: 1.3rem;
+    }
   }
 }
 .view-container {
@@ -126,6 +130,10 @@ section {
       cursor: pointer;
       transition: 0.2s;
 
+      @include mq(xs) {
+        width: 265px;
+      }
+
       &:hover {
         filter: brightness(0.9);
       }
@@ -139,15 +147,26 @@ section {
           font-size: 1.2rem;
           font-weight: 700;
           color: rgb(43, 43, 43);
+          @include mq(xs) {
+            font-size: 1.1rem;
+          }
         }
         p {
           font-size: 1rem;
           color: $txt-subtitle;
+          @include mq(xs) {
+            font-size: 0.9rem;
+          }
         }
       }
       img {
         height: 90px;
         width: 90px;
+        transition: 0.2s;
+        @include mq(xs) {
+          height: 65px;
+          width: 65px;
+        }
       }
     }
   }

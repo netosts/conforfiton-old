@@ -5,6 +5,7 @@ import { formatEvaluatedAt } from "@/services/formats";
 import { protocolsList } from "@/services/avaliar/antropometria/lists";
 
 import { onMounted, ref } from "vue";
+import { useWindowSize } from "@vueuse/core";
 
 import { useStudentStore } from "@/stores/student";
 import { useRoute, definePage } from "vue-router/auto";
@@ -23,6 +24,7 @@ const store = useStudentStore();
 const evaluationResult = ref(null);
 const isDeleteActive = ref(false);
 const evaluationToDelete = ref(null);
+const { width, height } = useWindowSize();
 
 function handleDelete(emittedValue) {
   if (evaluationResult.value?.id === emittedValue) {
@@ -109,10 +111,9 @@ onMounted(() => {
         <table>
           <thead>
             <tr>
-              <th>Indicador</th>
-              <th>Avaliação</th>
-              <th>Classificação</th>
-              <!-- <th>Meta</th> -->
+              <th>{{ width < 415 ? "Ind." : "Indicador" }}</th>
+              <th>{{ width < 415 ? "Aval." : "Avaliação" }}</th>
+              <th>{{ width < 415 ? "Class." : "Classificação" }}</th>
             </tr>
           </thead>
           <tbody>
@@ -149,8 +150,8 @@ onMounted(() => {
         <table>
           <thead>
             <tr>
-              <th>Indicador</th>
-              <th>Avaliação</th>
+              <th>{{ width < 340 ? "Ind." : "Indicador" }}</th>
+              <th>{{ width < 340 ? "Aval." : "Avaliação" }}</th>
               <th>Meta</th>
             </tr>
           </thead>
