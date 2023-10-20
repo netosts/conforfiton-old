@@ -42,7 +42,7 @@ function getInactiveStudents(value, limit) {
   if (inputBar.value === "") {
     value = "*";
   }
-  const personal_id = getUserIdSession();
+  const personal_id = getSecondUserIdLocal();
   http
     .get(
       `/student/inactive/${inputFilter.value}/${value}/${limit}/${personal_id}`
@@ -59,7 +59,7 @@ function getAllStudents(value, limit) {
   if (inputBar.value === "") {
     value = "*";
   }
-  const personal_id = getUserIdSession();
+  const personal_id = getSecondUserIdLocal();
   http
     .get(`/student/${inputFilter.value}/${value}/${limit}/${personal_id}`)
     .then((res) => {
@@ -292,7 +292,7 @@ main {
     justify-content: flex-end;
 
     select {
-      padding: 8px 15px 8px 10px;
+      padding: 8px 40px 8px 10px;
       outline: none;
       border: none;
       border-radius: $border-radius;

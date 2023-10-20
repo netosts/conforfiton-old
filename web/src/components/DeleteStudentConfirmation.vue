@@ -1,55 +1,41 @@
 <script setup>
-import { deleteEvaluation } from "@/services/api/delete";
+import {
+  softDeleteStudent,
+  permanentDeleteStudent,
+} from "@/services/api/delete";
+import { activateStudent } from "@/services/api/put";
 import { ref, onMounted } from "vue";
 
-import { useStudentStore } from "@/stores/student";
-
 const props = defineProps({
-  evaluation: Object,
+  student: Object,
 });
 
 // VARIABLES
-const store = useStudentStore();
 const bodyElement = ref(null);
+const confirmInput = ref(null);
 
 // Emits
-const emit = defineEmits(["deactivateDelete", "closeDeleteButton"]);
+const emit = defineEmits(["closeDelete", "pushHome"]);
 
 // FUNCTIONS
 function closeDelete() {
-  emit("deactivateDelete", props.evaluation.id);
+  emit("closeDelete", false);
   bodyElement.value.style.overflow = "auto";
-}
-
-function closeDeleteButton() {
-  emit("closeDeleteButton");
-  bodyElement.value.style.overflow = "auto";
-}
-
-async function updateStorage() {
-  if (
-    props.evaluation.type === "neuromuscular" ||
-    props.evaluation.type === "neuromuscular/rml"
-  ) {
-    store.neuromuscular.value = store.neuromuscular.value.filter(
-      (item) => item.id !== props.evaluation.id
-    );
-  } else if (props.evaluation.type === "antropometria") {
-    store.antropometria.value = store.antropometria.value.filter(
-      (item) => item.id !== props.evaluation.id
-    );
-  } else if (props.evaluation.type === "cardio") {
-    store.cardio.value = store.cardio.value.filter(
-      (item) => item.id !== props.evaluation.id
-    );
-  }
 }
 
 async function onSubmit() {
   try {
-    await deleteEvaluation(props.evaluation.type, props.evaluation.id);
-    await updateStorage();
-    closeDelete();
+    if (props.student.typeOfDelete === "soft") {
+      await softDeleteStudent(props.student.id);
+      location.reload();
+    } else if (props.student.typeOfDelete === "permanent") {
+      await permanentDeleteStudent(props.student.id);
+      sessionStorage.setItem("submitted", true);
+      emit("pushHome");
+    } else if (props.student.typeOfDelete === "activate") {
+      await activateStudent(props.student.id);
+      location.reload();
+    }
   } catch (err) {
     console.error(err);
   }
@@ -66,7 +52,16 @@ onMounted(() => {
     <div class="container">
       <div class="container__title">
         <div class="container__title__text">
-          <h1>Deletar avaliação?</h1>
+          <h1>
+            {{
+              student?.typeOfDelete === "soft"
+                ? "Desativar"
+                : student?.typeOfDelete === "permanent"
+                ? "Deletar"
+                : "Reativar"
+            }}
+            {{ student?.name }}?
+          </h1>
         </div>
         <div class="container__title__buttons">
           <button type="button" @click="closeDelete">
@@ -75,15 +70,54 @@ onMounted(() => {
         </div>
       </div>
       <div class="container__content">
-        <p>
-          A avaliação <strong>{{ evaluation.name }}</strong> será deletada.
+        <p v-if="student?.typeOfDelete === 'soft'">
+          O aluno <strong>{{ student?.name }}</strong> será desativado. Nenhum
+          dado será perdido!
+        </p>
+        <p v-if="student?.typeOfDelete === 'permanent'">
+          Todos dados de <strong>{{ student?.name }}</strong> serão
+          <strong>permanentemente perdidos</strong>. Você tem certeza que deseja
+          continuar?
+        </p>
+        <p v-if="student?.typeOfDelete === 'activate'">
+          O aluno <strong>{{ student?.name }}</strong> será reativado. Deseja
+          prosseguir?
         </p>
       </div>
+      <div
+        class="container__input"
+        v-if="student?.typeOfDelete === 'permanent'"
+      >
+        <label for="confirm">Para deletar, insira o nome do aluno:</label>
+        <input v-model="confirmInput" type="text" name="confirm" id="confirm" />
+      </div>
       <div class="container__submit">
-        <button @click="closeDeleteButton" class="container__submit__no">
+        <button @click="closeDelete" class="container__submit__no">
           Cancelar
         </button>
-        <button @click="onSubmit" class="container__submit__yes">Delete</button>
+        <button
+          :id="student?.typeOfDelete === 'activate' ? 'activate-btn' : null"
+          :class="
+            student?.typeOfDelete === 'permanent' &&
+            confirmInput !== student.name
+              ? 'disabled'
+              : null
+          "
+          :disabled="
+            student?.typeOfDelete === 'permanent' &&
+            confirmInput !== student.name
+          "
+          @click="onSubmit"
+          class="container__submit__yes"
+        >
+          {{
+            student?.typeOfDelete === "soft"
+              ? "Desativar"
+              : student?.typeOfDelete === "permanent"
+              ? "Deletar"
+              : "Reativar"
+          }}
+        </button>
       </div>
     </div>
   </aside>
@@ -167,6 +201,19 @@ aside {
       color: $txt-aside;
     }
 
+    &__input {
+      display: flex;
+      flex-direction: column;
+      padding: 0 10px 10px 10px;
+      label {
+        font-size: 14px;
+        color: $txt-subtitle;
+      }
+      input {
+        @include createInput();
+      }
+    }
+
     &__submit {
       display: flex;
       justify-content: flex-end;
@@ -199,5 +246,14 @@ aside {
       }
     }
   }
+}
+
+.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+#activate-btn {
+  background-color: $validation;
 }
 </style>

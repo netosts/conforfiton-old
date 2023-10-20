@@ -107,6 +107,24 @@ async def edit_student(person_id, data: EditStudent):
         }, 422)
 
 
+@student_router.put('/activate/{person_id}')
+async def activate_student(person_id):
+    person = Person.with_trashed().find(person_id)
+
+    person.deleted_at = None
+
+    if person.save():
+        return JSONResponse({
+            "error": False,
+            "msg": f"{person.name} was successfully activated."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": f"Something went wrong and {person.name} was not activated."
+        }, 422)
+
+
 # Get active Students + input bar value
 @student_router.get('/active/{inputFilter}/{inputBar}/{limit}/{personal_id}')
 async def inputbar_active_students(inputFilter, inputBar, limit, personal_id):
@@ -193,18 +211,35 @@ async def inputbar_all_students(inputFilter, inputBar, limit, personal_id):
 @student_router.get('/{person_id}')
 async def find_student(person_id):
     newest_weight = Weight.where('person_id', person_id).max('created_at')
-    if newest_weight:
-        student = di["db"].table('persons as p') \
-            .join('students as s', 'p.id', '=', 's.person_id') \
-            .where('p.id', person_id) \
-            .join('weights as w', 'p.id', '=', 'w.person_id') \
-            .where('w.created_at', newest_weight) \
-            .first()
-    else:
-        student = di["db"].table('persons as p') \
-            .join('students as s', 'p.id', '=', 's.person_id') \
-            .where('p.id', person_id) \
-            .first()
+    student = di["db"].table('persons as p') \
+        .select(
+        "p.id",
+        "p.name",
+        "p.cpf",
+        "p.gender",
+        "p.role",
+        "p.email",
+        "p.phone_number",
+        "p.birth_date",
+        "p.height",
+        "p.shirt_size",
+        "p.shorts_size",
+        "p.address_picture",
+        "p.created_at",
+        "p.updated_at",
+        "p.deleted_at",
+        "s.person_id",
+        "s.personal_id",
+        "s.neuromuscular_protocol",
+        "s.antropometria_protocol",
+        "s.cardio_protocol",
+        "w.weight",
+    ) \
+        .join('students as s', 'p.id', '=', 's.person_id') \
+        .where('p.id', person_id) \
+        .join('weights as w', 'p.id', '=', 'w.person_id') \
+        .where('w.created_at', newest_weight) \
+        .first()
 
     if student:
         return student.serialize()
@@ -225,7 +260,7 @@ async def get_student_credentials(person_id):
     else:
         return JSONResponse({
             "error": True,
-            "das": "Student not found."
+            "msg": "Student not found."
         }, 404)
 
 
@@ -245,5 +280,37 @@ async def get_student_for_avaliar_page(person_id):
     else:
         return JSONResponse({
             "error": True,
-            "das": "Student not found."
+            "msg": "Student not found."
+        }, 404)
+
+
+@student_router.delete("/soft/{person_id}")
+async def soft_delete_student(person_id):
+    student = Person.find(person_id)
+
+    if student.delete():
+        return JSONResponse({
+            "error": False,
+            "msg": f"${student.name} was successfully soft deleted."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": "Student not found."
+        }, 404)
+
+
+@student_router.delete("/permanent/{person_id}")
+async def permanent_delete_student(person_id):
+    student = Person.where('id', person_id)
+
+    if student.delete():
+        return JSONResponse({
+            "error": False,
+            "msg": "Successfully permanently deleted."
+        }, 200)
+    else:
+        return JSONResponse({
+            "error": True,
+            "msg": "Student not found."
         }, 404)

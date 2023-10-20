@@ -50,7 +50,10 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="profile">
+    <div
+      class="profile"
+      :class="store.student.value?.deleted_at ? 'inactive' : null"
+    >
       <div class="profile__picture"></div>
       <div class="profile__info">
         <div class="profile__info__credentials">
@@ -72,7 +75,10 @@ onMounted(() => {
     </div>
 
     <div class="content">
-      <div class="content__buttons">
+      <div
+        class="content__buttons"
+        :class="store.student.value?.deleted_at ? 'inactive' : null"
+      >
         <div class="content__buttons--buttons">
           <RouterLink
             v-for="(item, id) in studentButtons"
@@ -204,5 +210,9 @@ onMounted(() => {
       }
     }
   }
+}
+
+.inactive {
+  background-color: rgb(251, 65, 65);
 }
 </style>

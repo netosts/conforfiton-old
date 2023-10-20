@@ -10,13 +10,14 @@ import { genderList, shirtList, shortsList } from "@/services/register/lists";
 import { translateGenderToPT, translateGenderToEN } from "@/services/helpers";
 import { formatCpf, formatTelefone } from "@/services/formats";
 
-import { reactive, onMounted } from "vue";
+import { ref, reactive, onMounted } from "vue";
 
 import { definePage, useRoute, useRouter } from "vue-router/auto";
 
 import { schema } from "@/services/student/update-profile/schema";
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
+import DeleteStudentConfirmation from "@/components/DeleteStudentConfirmation.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -25,9 +26,15 @@ definePage({
 const props = defineProps({
   student: Object,
 });
-
 const route = useRoute();
 const router = useRouter();
+
+const studentProps = reactive({
+  id: route.params.id,
+  name: props.student?.name,
+  typeOfDelete: undefined,
+});
+const isDeleteActive = ref(false);
 
 const form = reactive({
   name: props.student?.name,
@@ -41,6 +48,15 @@ const form = reactive({
   height: props.student?.height,
   weight: props.student?.weight,
 });
+
+const handleCloseDelete = (emittedValue) => {
+  isDeleteActive.value = emittedValue;
+};
+
+function popupDeleteDialog(type) {
+  studentProps.typeOfDelete = type;
+  isDeleteActive.value = true;
+}
 
 async function onSubmit(_, { setFieldError }) {
   // Transform values
@@ -178,6 +194,22 @@ onMounted(() => {
       </div>
     </Form>
   </section>
+
+  <div class="delete-options">
+    <button @click="popupDeleteDialog('soft')" v-if="!student?.deleted_at">
+      Desativar
+    </button>
+    <button id="activate-btn" @click="popupDeleteDialog('activate')" v-else>
+      Reativar
+    </button>
+    <button @click="popupDeleteDialog('permanent')">Deletar Permanente</button>
+  </div>
+  <DeleteStudentConfirmation
+    :student="studentProps"
+    @closeDelete="handleCloseDelete"
+    @pushHome="router.push('/')"
+    v-if="isDeleteActive"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -266,6 +298,38 @@ onMounted(() => {
       button {
         @include submitButtons($buttons, white);
       }
+    }
+  }
+}
+
+.delete-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
+  button {
+    padding: 10px;
+    font-weight: 600;
+    background-color: transparent;
+    border: 1px solid $error-msg;
+    color: $error-msg;
+    cursor: pointer;
+    transition: 0.4s;
+
+    &:hover {
+      background-color: red;
+      color: white;
+    }
+  }
+
+  #activate-btn {
+    background-color: transparent;
+    border: 1px solid $validation;
+    color: $validation;
+
+    &:hover {
+      background-color: $validation;
+      color: white;
     }
   }
 }

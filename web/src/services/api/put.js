@@ -81,14 +81,12 @@ export async function usedLinkShare(salt_link) {
   }
 }
 
-// export async function expireLinkShare(salt_link) {
-//   try {
-//     const response = await http.put(`/link_share/${salt_link}`, {
-//       status: "Expired",
-//     });
-//     return response.data;
-//   } catch (err) {
-//     console.error(err.response);
-//     throw err;
-//   }
-// }
+export async function activateStudent(person_id) {
+  try {
+    const response = await http.put(`/student/activate/${person_id}`);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}

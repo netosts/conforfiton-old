@@ -8,7 +8,7 @@ import { onMounted, ref } from "vue";
 
 import { useStudentStore } from "@/stores/student";
 import { useRoute, definePage } from "vue-router/auto";
-import DeleteConfirmation from "@/components/DeleteConfirmation.vue";
+import DeleteEvaluationConfirmation from "@/components/DeleteEvaluationConfirmation.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -66,7 +66,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DeleteConfirmation
+  <DeleteEvaluationConfirmation
     :evaluation="evaluationToDelete"
     @deactivateDelete="handleDelete"
     @closeDeleteButton="handleCloseButton"
