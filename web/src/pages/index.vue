@@ -5,6 +5,7 @@ import { getSecondUserIdLocal } from "@/services/api/token";
 
 import { definePage } from "vue-router/auto";
 import { ref, onMounted, watch } from "vue";
+import Pagination from "../components/home/Pagination.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -74,11 +75,11 @@ function getAllStudents(value, limit) {
 function filterNget() {
   // Show students based on filter
   if (studentsFilter.value === "ativos") {
-    getActiveStudents("*", 5);
+    getActiveStudents("*", 100);
   } else if (studentsFilter.value === "desativados") {
-    getInactiveStudents("*", 5);
+    getInactiveStudents("*", 100);
   } else if (studentsFilter.value === "todos") {
-    getAllStudents("*", 5);
+    getAllStudents("*", 100);
   }
 }
 
@@ -87,17 +88,17 @@ watch(inputBar, (newValue) => {
   if (studentsFilter.value === "ativos" && newValue !== "") {
     getActiveStudents(newValue, 100);
   } else if (studentsFilter.value === "ativos" && newValue === "") {
-    getActiveStudents("*", 5);
+    getActiveStudents("*", 100);
   }
   if (studentsFilter.value === "desativados" && newValue !== "") {
     getInactiveStudents(newValue, 100);
   } else if (studentsFilter.value === "desativados" && newValue === "") {
-    getInactiveStudents("*", 5);
+    getInactiveStudents("*", 100);
   }
   if (studentsFilter.value === "todos" && newValue !== "") {
     getAllStudents(newValue, 100);
   } else if (studentsFilter.value === "todos" && newValue === "") {
-    getAllStudents("*", 5);
+    getAllStudents("*", 100);
   }
 });
 
@@ -153,31 +154,7 @@ onMounted(() => {
       </select>
     </div>
 
-    <div class="students">
-      <section v-for="student in students" :key="student" class="student">
-        <div class="student__container">
-          <RouterLink :to="`/student/${student.id}`">
-            <div class="student__container__profile">
-              <div class="student__container__profile__picture">
-                <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
-              </div>
-              <div class="student__container__profile__info">
-                <div class="student__container__profile__info__name">
-                  <p>{{ student.name }}</p>
-                </div>
-              </div>
-            </div>
-          </RouterLink>
-          <div class="student__container__button">
-            <div class="student__container__button__box">
-              <RouterLink :to="`/student/${student.id}/evaluations`">
-                <button>Avaliação</button>
-              </RouterLink>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <Pagination :students="students" />
   </main>
 </template>
 
@@ -310,97 +287,6 @@ main {
       transform: translateY(-50%);
       color: $txt-title;
       pointer-events: none;
-    }
-  }
-
-  .students {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    width: 100%;
-
-    .student {
-      border-radius: $border-radius;
-      box-shadow: $box-shadow;
-      background-color: white;
-
-      &__container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-
-        a {
-          flex: 1;
-          padding: 16px;
-          text-decoration: none;
-          transition: 0.2s;
-
-          &:hover {
-            filter: brightness(0.8);
-          }
-        }
-
-        &__profile {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 14px;
-
-          &__picture {
-            width: 60px;
-            height: 60px;
-            border-radius: $border-radius;
-            background-image: url("../assets/images/default-profile-picture2.jpg");
-            background-size: cover;
-          }
-
-          &__info {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-
-            &__name {
-              font-size: 1.2rem;
-              font-weight: 600;
-              color: $txt-title;
-            }
-
-            &__content {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 5px;
-              font-size: 0.9rem;
-              color: $txt-subtitle;
-
-              @include mq(l) {
-                display: none;
-              }
-            }
-          }
-        }
-
-        &__button {
-          margin-right: 16px;
-          button {
-            padding: 14px 20px;
-            border: none;
-            border-radius: $border-radius;
-            background-color: $validation;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-
-            &:hover {
-              filter: brightness(0.9);
-            }
-
-            &:active {
-              filter: brightness(0.7);
-            }
-          }
-        }
-      }
     }
   }
 }
