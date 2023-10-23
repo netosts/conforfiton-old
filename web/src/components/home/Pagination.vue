@@ -47,7 +47,7 @@ const pageCount = computed(() =>
         :disabled="currentPage === 0"
         class="pagination--inactive"
       >
-        Previous
+        Anterior
       </button>
       <button
         v-for="(page, id) in pageCount"
@@ -63,7 +63,7 @@ const pageCount = computed(() =>
         :disabled="currentPage >= pageCount - 1"
         class="pagination--inactive"
       >
-        Next
+        Próxima
       </button>
     </div>
   </section>
