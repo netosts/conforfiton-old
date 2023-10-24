@@ -26,6 +26,7 @@ import {
   faDna,
   faGear,
   faLink,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { faMoon } from "@fortawesome/free-regular-svg-icons";
 
@@ -99,7 +100,8 @@ library.add(
   faCirclePlus,
   faCircleMinus,
   faLink,
-  faCopy
+  faCopy,
+  faSpinner
 );
 
 app.use(router);
