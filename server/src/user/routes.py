@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-from jose import JWTError, jwt
+from jose import jwt
 from passlib import pwd
 from passlib.hash import pbkdf2_sha256
 from pydantic import BaseModel

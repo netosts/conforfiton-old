@@ -1,8 +1,7 @@
 # pylint: skip-file
 import re
-from decimal import Decimal
 from enum import Enum
-from pydantic import BaseModel, validator, Field, constr
+from pydantic import BaseModel, validator, Field
 from datetime import timedelta, datetime
 
 from ..base_model.types import name, cpf, Genders, email, phone_number, birth_date, shirt_size, shorts_size, created_at

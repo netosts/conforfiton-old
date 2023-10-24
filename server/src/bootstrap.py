@@ -2,6 +2,7 @@ import yaml
 from kink import di
 from orator import DatabaseManager
 from os import path
+from boto3 import session
 
 # Get current directory "conforfit-db\\server\\src\\"
 script_dir = path.dirname(path.abspath(__file__))
@@ -25,3 +26,10 @@ def bootstrap():
     di["ACCESS_TOKEN_EXP"] = config["ACCESS_TOKEN_EXPIRE_MINUTES"]
     # Cors Middleware ORIGINS
     di["ORIGINS"] = config["ORIGINS"]
+    # Digital Ocean Spaces Connection
+    my_session = session.Session()
+    di["space_connection"] = my_session.client('s3',
+                                               region_name='nyc3',
+                                               endpoint_url='https://conforfiton-space.nyc3.digitaloceanspaces.com',
+                                               aws_access_key_id=config["DO_ACCESS_KEY"],
+                                               aws_secret_access_key=config["DO_SECRET_KEY"])

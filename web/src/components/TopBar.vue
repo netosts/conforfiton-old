@@ -23,7 +23,9 @@ onClickOutside(tooltip, closePopup);
   <header>
     <div class="topbar">
       <div ref="tooltip" class="user" @click="userPopup = !userPopup">
-        <div class="user__image"></div>
+        <div class="user__image">
+          <img src="/img/default-profile-picture.jpg" />
+        </div>
         <div class="user__info">
           <p class="user__info-name">{{ personal?.name }}</p>
           <p class="user__info-credential">{{ personal?.role }}</p>
@@ -70,10 +72,12 @@ header {
       cursor: pointer;
 
       &__image {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        background-color: gray;
+        img {
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          background-color: gray;
+        }
       }
 
       &__info-name {

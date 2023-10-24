@@ -1,7 +1,8 @@
 # pylint: skip-file
 from kink import di
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile
 from fastapi.responses import JSONResponse
+from passlib import pwd
 
 from .model import Student
 from .schema import NewStudent, EditStudent
@@ -16,6 +17,23 @@ def type_search(inputFilter):
         return "name"
     elif inputFilter == 'inputCpf':
         return "cpf"
+
+
+@student_router.post('/photo')
+async def upload_photo(file: UploadFile):
+    try:
+        bucket = 'photos'
+        salt = pwd.genword(entropy=56, charset="ascii_62")
+        file_name = salt + file.filename
+        di["space_connection"].upload_fileobj(
+            file.file, bucket, file_name)
+        file_url = f"https://conforfiton-space.nyc3.digitaloceanspaces.com/{bucket}/{file_name}"
+        return file_url
+    except:
+        return JSONResponse({
+            "error": True,
+            "msg": "Photo was not uploaded."
+        }, 422)
 
 
 @student_router.post('/')
@@ -56,6 +74,7 @@ async def new_student(data: NewStudent):
     person.shirt_size = data.shirt_size
     person.shorts_size = data.shorts_size
     person.address_picture = data.address_picture
+
     if person.save():
         weight = Weight()
         weight.person_id = person.id
@@ -143,7 +162,7 @@ async def inputbar_active_students(inputFilter, inputBar, limit, personal_id):
         .join('students as s', 's.person_id', '=', 'p.id') \
         .where('s.personal_id', personal_id) \
         .left_join('weights as w', 'p.id', '=', max_peso) \
-        .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight') \
+        .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.address_picture') \
         .where_null('p.deleted_at') \
         .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
         .order_by('p.created_at', 'desc') \
@@ -171,7 +190,7 @@ async def inputbar_inactive_students(inputFilter, inputBar, limit, personal_id):
                        .join('students as s', 's.person_id', '=', 'p.id') \
                        .where('s.personal_id', personal_id) \
                        .left_join('weights as w', 'p.id', '=', max_peso) \
-                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.deleted_at') \
+                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.address_picture', 'p.deleted_at') \
                        .where_not_null('p.deleted_at') \
                        .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('p.created_at', 'desc') \
@@ -199,7 +218,7 @@ async def inputbar_all_students(inputFilter, inputBar, limit, personal_id):
                        .join('students as s', 's.person_id', '=', 'p.id') \
                        .where('s.personal_id', personal_id) \
                        .left_join('weights as w', 'p.id', '=', max_peso) \
-                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.deleted_at') \
+                       .select('p.id', 'p.name', 'p.birth_date', 'p.height', 'p.gender', 'w.weight', 'p.address_picture', 'p.deleted_at') \
                        .where('p.' + type_search(inputFilter), 'ilike', inputBar + '%') \
                        .order_by('p.created_at', 'desc') \
                        .limit(limit) \

@@ -14,6 +14,16 @@ export async function postStudent(form) {
   }
 }
 
+export async function uploadPhoto(file) {
+  try {
+    const response = await http.post(`/student/photo`, file);
+    return response.data;
+  } catch (err) {
+    console.error(err.response);
+    throw err;
+  }
+}
+
 export async function getToken(payload) {
   try {
     const response = await http.post("/user/token", payload);

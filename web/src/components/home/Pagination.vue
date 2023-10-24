@@ -23,7 +23,13 @@ const pageCount = computed(() =>
         <RouterLink :to="`/student/${student.id}`">
           <div class="student__container__profile">
             <div class="student__container__profile__picture">
-              <!-- <img src="../assets/images/default-profile-picture2.jpg" alt="default profile picture"> -->
+              <img
+                :src="
+                  student.address_picture
+                    ? student.address_picture
+                    : '/img/default-profile-picture.jpg'
+                "
+              />
             </div>
             <div class="student__container__profile__info">
               <div class="student__container__profile__info__name">
@@ -108,11 +114,12 @@ const pageCount = computed(() =>
         gap: 14px;
 
         &__picture {
-          width: 60px;
-          height: 60px;
-          border-radius: $border-radius;
-          background-image: url("@/assets/images/default-profile-picture2.jpg");
-          background-size: cover;
+          img {
+            width: 60px;
+            height: 60px;
+            border-radius: $border-radius;
+            background-size: cover;
+          }
         }
 
         &__info {
