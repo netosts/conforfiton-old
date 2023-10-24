@@ -26,7 +26,7 @@ async def upload_photo(file: UploadFile):
         salt = pwd.genword(entropy=56, charset="ascii_62")
         file_name = salt + file.filename
         di["space_connection"].upload_fileobj(
-            file.file, bucket, file_name)
+            file.file, bucket, file_name, ExtraArgs={'ACL': 'public-read'})
         file_url = f"https://conforfiton-space.nyc3.digitaloceanspaces.com/{bucket}/{file_name}"
         return file_url
     except:
