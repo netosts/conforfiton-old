@@ -24,6 +24,7 @@ definePage({
 });
 
 const router = useRouter();
+const isSubmitting = ref(false);
 const photoTooltip = ref(false);
 const fileInput = ref(null);
 const photoSrc = ref(null);
@@ -40,6 +41,7 @@ async function fileChange(event) {
 }
 
 async function onSubmit(_, { setFieldError }) {
+  isSubmitting.value = true;
   // Transform values
   form.cpf = form.cpf.replace(/\D/g, ""); // only digits
   form.phone_number = form.phone_number.replace(/\D/g, ""); // only digits
@@ -87,6 +89,8 @@ async function onSubmit(_, { setFieldError }) {
     form.address_picture = uploadedPhoto;
 
     await postStudent(form);
+
+    isSubmitting.value = false;
 
     alert(`${form.name} cadastrado com sucesso!`);
 
@@ -234,7 +238,11 @@ async function onSubmit(_, { setFieldError }) {
             placeholder="Ex: 90,30"
           />
         </div>
-        <SubmitButton msg="Cadastrar" :meta="meta" />
+        <SubmitButton
+          msg="Cadastrar"
+          :meta="meta"
+          :isSubmitting="isSubmitting"
+        />
       </section>
     </Form>
   </main>
