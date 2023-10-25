@@ -20,7 +20,10 @@ def type_search(inputFilter):
 
 
 @student_router.post('/photo')
-async def upload_photo(file: UploadFile):
+async def upload_photo(file: UploadFile = None):
+    if not file:
+        return None
+
     try:
         bucket = 'photos'
         salt = pwd.genword(entropy=56, charset="ascii_62")

@@ -18,6 +18,7 @@ import { form } from "@/services/register/forms/student";
 import { Form } from "vee-validate";
 import TextField from "@/components/TextField.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
+import PictureInput from "@/components/register/PictureInput.vue";
 
 definePage({
   meta: { requiresAuth: true },
@@ -25,19 +26,15 @@ definePage({
 
 const router = useRouter();
 const isSubmitting = ref(false);
-const photoTooltip = ref(false);
-const fileInput = ref(null);
-const photoSrc = ref(null);
-const pictureFormData = new FormData();
+const pictureFormData = ref(null);
 
-async function fileChange(event) {
-  fileInput.value = event.target.files[0];
-  let reader = new FileReader();
-  reader.readAsDataURL(fileInput.value);
-  reader.onload = (e) => {
-    photoSrc.value = e.target.result;
-  };
-  pictureFormData.append("file", fileInput.value, fileInput.value.name);
+function handleFormData(emittedValue) {
+  if (emittedValue) {
+    pictureFormData.value = new FormData();
+    pictureFormData.value.append("file", emittedValue, emittedValue.name);
+  } else {
+    pictureFormData.value = null;
+  }
 }
 
 async function onSubmit(_, { setFieldError }) {
@@ -85,7 +82,7 @@ async function onSubmit(_, { setFieldError }) {
     form.created_at = formattedDate;
     form.personal_id = userId;
 
-    const uploadedPhoto = await uploadPhoto(pictureFormData);
+    const uploadedPhoto = await uploadPhoto(pictureFormData.value);
     form.address_picture = uploadedPhoto;
 
     await postStudent(form);
@@ -98,6 +95,12 @@ async function onSubmit(_, { setFieldError }) {
     sessionStorage.setItem("submitted", true);
     router.push("/");
   } catch (err) {
+    isSubmitting.value = false;
+    if (err.response.data.msg === "Photo was not uploaded.") {
+      alert("Houve um erro ao salvar a foto");
+    } else {
+      alert("Houve um erro ao cadastrar o aluno");
+    }
     console.error(err);
     throw err;
   }
@@ -119,34 +122,7 @@ async function onSubmit(_, { setFieldError }) {
           </RouterLink>
           <h1>Cadastrar Aluno sem Anamnese</h1>
         </div>
-        <div class="form__section__photo">
-          <div class="form__section__photo__input">
-            <div class="form__section__photo__input__image">
-              <img
-                @click="fileInput.click()"
-                @mouseover="photoTooltip = true"
-                @mouseleave="photoTooltip = false"
-                :src="photoSrc ? photoSrc : '/img/default-profile-picture.jpg'"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                ref="fileInput"
-                class="hidden"
-                @change="fileChange"
-              />
-              <Transition name="fade">
-                <div
-                  class="form__section__photo__input__image--tooltip"
-                  v-show="photoTooltip"
-                >
-                  <span>Selecionar Imagem</span>
-                </div>
-              </Transition>
-            </div>
-            <span class="form__section__photo__input--text">Foto do Aluno</span>
-          </div>
-        </div>
+        <PictureInput @formData="handleFormData" />
         <TextField
           v-model="form.name"
           :meta="meta"
@@ -298,58 +274,6 @@ main {
         }
       }
 
-      &__photo {
-        &__input {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          &__image {
-            position: relative;
-            img {
-              border: 8px solid $profile-pic;
-              border-radius: 50%;
-              width: 90px;
-              height: 90px;
-              cursor: pointer;
-            }
-            &--tooltip {
-              position: absolute;
-              z-index: 2;
-              top: 28px;
-              right: -150px;
-              height: 30px;
-              border-radius: $border-radius;
-              background-color: rgb(80, 80, 80);
-              span {
-                position: relative;
-                z-index: 2;
-                padding: 10px;
-                font-size: 12px;
-                color: rgb(240, 240, 240);
-              }
-              &::before {
-                content: "";
-                position: absolute;
-                z-index: 1;
-                top: 5px;
-                left: -2px;
-                width: 20px;
-                height: 20px;
-                background-color: rgb(80, 80, 80);
-                transform: rotate(45deg);
-              }
-            }
-          }
-          &--text {
-            font-size: 14px;
-            font-weight: 500;
-            color: $txt-title;
-          }
-        }
-      }
-
       &__1-1 {
         display: flex;
         gap: 20px;
@@ -450,20 +374,5 @@ main {
       }
     }
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.hidden {
-  visibility: hidden;
-  position: absolute;
 }
 </style>
