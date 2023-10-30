@@ -1,0 +1,8 @@
+.vscode/
+web/
+web/node_modules/
+
+.gitignore
+
+LICENSE
+README.md

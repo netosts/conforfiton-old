@@ -1,0 +1,79 @@
+@import "variables";
+
+@mixin mq($value) {
+  $size: map-get($breakpoints, $value);
+  @media (max-width: $size) {
+    @content;
+  }
+}
+
+// TopBar.vue
+@mixin tool() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: #eaf1fe;
+    // color: #6477f1;
+  }
+}
+
+// HomeView.vue
+@mixin inputBar() {
+  outline: none;
+  border: none;
+  border-radius: $border-radius;
+  background-color: $background;
+}
+
+// CreateStudent.vue
+@mixin createInput() {
+  padding: 5px 10px;
+  border-radius: $border-radius;
+  outline: none;
+  transition: 0.35s;
+  border: 1px solid $input-border;
+
+  &:focus {
+    border: 1px solid #7a85ac;
+  }
+
+  &::placeholder {
+    color: $placeholder;
+  }
+}
+
+@mixin inputContainers() {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  input,
+  select {
+    @include createInput();
+  }
+}
+
+@mixin submitButtons($bg-color, $txt-color) {
+  padding: 10px 20px;
+  border: none;
+  border-radius: $border-radius;
+  background-color: $bg-color;
+  color: $txt-color;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:active {
+    filter: brightness(0.7);
+  }
+}
