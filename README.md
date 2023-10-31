@@ -83,7 +83,7 @@ orator migrate:status -c etc/config.yaml
 
 - src/services/api/env.js
 
-```json
+```js
 export const apiUrl = "https://api.domain";
 ```
 
