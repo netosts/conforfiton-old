@@ -1,9 +1,2 @@
-# configs
-etc/
-ivar/
-
 .vscode/
 docker-compose.yaml
-requirements.txt
-
-.env
